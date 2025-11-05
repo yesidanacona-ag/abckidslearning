@@ -89,7 +89,7 @@ server.listen(PORT, () => {
     console.log('✅ Listo para usar');
     console.log('');
     console.log('💡 Consejos:');
-    console.log('   - Abre http://localhost:3000 en tu navegador');
+    console.log(`   - Abre http://localhost:${PORT} en tu navegador`);
     console.log('   - Presiona Ctrl+C para detener el servidor');
     console.log('   - Recarga la página después de hacer cambios');
     console.log('');
