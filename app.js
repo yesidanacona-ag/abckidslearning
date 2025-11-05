@@ -11,6 +11,9 @@ class MultiplicationGame {
         this.gameState = {};
         this.adaptiveSystem = new AdaptiveSystem(this.player);
 
+        // Sistema de práctica adaptativo
+        this.practiceSystem = window.PracticeSystemEngine ? new PracticeSystemEngine() : null;
+
         this.init();
     }
 
@@ -342,18 +345,284 @@ class MultiplicationGame {
             });
         }
 
-        // Resetear selección
-        document.querySelector('.practice-setup').classList.remove('hidden');
-        document.querySelector('.practice-game').classList.add('hidden');
+        // Ocultar todas las pantallas de práctica
+        document.getElementById('diagnosticScreen')?.classList.add('hidden');
+        document.getElementById('diagnosticQuiz')?.classList.add('hidden');
+        document.getElementById('diagnosticResults')?.classList.add('hidden');
+        document.getElementById('domainMap')?.classList.add('hidden');
+        document.getElementById('practiceSetup')?.classList.add('hidden');
+        document.getElementById('practiceGame')?.classList.add('hidden');
 
-        // Sugerir tablas basado en sistema adaptativo
-        const suggested = this.adaptiveSystem.getSuggestedTables();
-        document.querySelectorAll('.table-btn').forEach(btn => {
-            btn.classList.remove('selected');
-            if (suggested.includes(parseInt(btn.dataset.table))) {
-                btn.classList.add('selected');
-            }
+        // Verificar si necesita diagnóstico
+        if (this.practiceSystem && this.practiceSystem.needsDiagnostic) {
+            this.showDiagnosticWelcome();
+        } else {
+            this.showDomainMap();
+        }
+    }
+
+    // =============================
+    // DIAGNÓSTICO
+    // =============================
+
+    showDiagnosticWelcome() {
+        document.getElementById('diagnosticScreen')?.classList.remove('hidden');
+
+        document.getElementById('startDiagnostic')?.addEventListener('click', () => {
+            this.startDiagnostic();
+        }, { once: true });
+    }
+
+    startDiagnostic() {
+        document.getElementById('diagnosticScreen')?.classList.add('hidden');
+        document.getElementById('diagnosticQuiz')?.classList.remove('hidden');
+
+        this.diagnosticState = {
+            questions: this.practiceSystem.generateDiagnosticQuestions(),
+            currentIndex: 0,
+            answers: [],
+            timeLeft: 10,
+            timerInterval: null
+        };
+
+        this.showDiagnosticQuestion();
+    }
+
+    showDiagnosticQuestion() {
+        const state = this.diagnosticState;
+        const question = state.questions[state.currentIndex];
+
+        // Actualizar progreso
+        document.getElementById('diagnosticQuestionNum').textContent = state.currentIndex + 1;
+        const progressPercent = ((state.currentIndex + 1) / state.questions.length) * 100;
+        document.getElementById('diagnosticProgressFill').style.width = progressPercent + '%';
+
+        // Mostrar pregunta
+        document.getElementById('diagnosticQuestion').textContent = `${question.table} × ${question.multiplier} = ?`;
+
+        // Generar opciones
+        const options = this.practiceSystem.generateOptions(question.answer);
+        const container = document.getElementById('diagnosticOptions');
+        container.innerHTML = '';
+
+        options.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'diagnostic-option';
+            btn.textContent = option;
+            btn.addEventListener('click', () => this.handleDiagnosticAnswer(option));
+            container.appendChild(btn);
         });
+
+        // Iniciar timer
+        state.timeLeft = 10;
+        state.startTime = Date.now();
+        this.startDiagnosticTimer();
+    }
+
+    startDiagnosticTimer() {
+        const state = this.diagnosticState;
+        document.getElementById('diagnosticTimeLeft').textContent = state.timeLeft;
+
+        if (state.timerInterval) clearInterval(state.timerInterval);
+
+        state.timerInterval = setInterval(() => {
+            state.timeLeft--;
+            document.getElementById('diagnosticTimeLeft').textContent = state.timeLeft;
+
+            if (state.timeLeft <= 0) {
+                clearInterval(state.timerInterval);
+                this.handleDiagnosticAnswer(null); // Timeout
+            }
+        }, 1000);
+    }
+
+    handleDiagnosticAnswer(selectedAnswer) {
+        if (this.diagnosticState.timerInterval) {
+            clearInterval(this.diagnosticState.timerInterval);
+        }
+
+        const state = this.diagnosticState;
+        const question = state.questions[state.currentIndex];
+        const responseTime = Date.now() - state.startTime;
+        const isCorrect = selectedAnswer === question.answer;
+
+        // Guardar respuesta
+        state.answers.push({
+            table: question.table,
+            correct: isCorrect,
+            time: responseTime
+        });
+
+        // Siguiente pregunta o finalizar
+        state.currentIndex++;
+
+        if (state.currentIndex < state.questions.length) {
+            setTimeout(() => this.showDiagnosticQuestion(), 500);
+        } else {
+            this.finishDiagnostic();
+        }
+    }
+
+    finishDiagnostic() {
+        const results = this.practiceSystem.processDiagnosticResults(this.diagnosticState.answers);
+
+        // Mostrar resultados
+        document.getElementById('diagnosticQuiz')?.classList.add('hidden');
+        document.getElementById('diagnosticResults')?.classList.remove('hidden');
+
+        const content = document.getElementById('diagnosticResultsContent');
+        content.innerHTML = `
+            <div class="diagnostic-summary">
+                <h3>¡Evaluación Completada!</h3>
+                <div class="diagnostic-stats">
+                    <div class="diagnostic-stat">
+                        <div class="diagnostic-stat-value">${results.strongTables.length}</div>
+                        <div class="diagnostic-stat-label">🟢 Tablas Dominadas</div>
+                    </div>
+                    <div class="diagnostic-stat">
+                        <div class="diagnostic-stat-value">${9 - results.strongTables.length - results.weakTables.length}</div>
+                        <div class="diagnostic-stat-label">🟡 En Progreso</div>
+                    </div>
+                    <div class="diagnostic-stat">
+                        <div class="diagnostic-stat-value">${results.weakTables.length}</div>
+                        <div class="diagnostic-stat-label">🔴 Necesitan Práctica</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('continueToDomainMap')?.addEventListener('click', () => {
+            this.showDomainMap();
+        }, { once: true });
+    }
+
+    // =============================
+    // MAPA DE DOMINIO
+    // =============================
+
+    showDomainMap() {
+        // Ocultar otras pantallas
+        document.getElementById('diagnosticResults')?.classList.add('hidden');
+        document.getElementById('practiceSetup')?.classList.add('hidden');
+        document.getElementById('practiceGame')?.classList.add('hidden');
+
+        // Mostrar mapa
+        document.getElementById('domainMap')?.classList.remove('hidden');
+
+        // Actualizar mapa
+        this.updateDomainMap();
+
+        // Event listeners
+        document.getElementById('practiceSuggested')?.addEventListener('click', () => {
+            const suggested = this.practiceSystem.getSuggestedTables();
+            this.startPracticeWithTables(suggested);
+        });
+
+        document.getElementById('chooseCustomTables')?.addEventListener('click', () => {
+            this.showTableSelector();
+        });
+    }
+
+    updateDomainMap() {
+        const report = this.practiceSystem.generateProgressReport();
+
+        // Actualizar círculo de dominio general
+        const percent = report.overallMastery;
+        document.getElementById('overallMasteryPercent').textContent = percent + '%';
+
+        const circle = document.getElementById('masteryCircleFill');
+        const circumference = 283;
+        const offset = circumference - (percent / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        // Actualizar tablas por nivel
+        this.updateTablesByLevel('masteredTables', report.tablesByLevel.mastered);
+        this.updateTablesByLevel('learningTables', report.tablesByLevel.learning);
+        this.updateTablesByLevel('weakTables', report.tablesByLevel.weak);
+    }
+
+    updateTablesByLevel(containerId, tables) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        if (tables.length === 0) {
+            container.innerHTML = '<p class="no-tables">Ninguna todavía</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+        tables.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'table-mastery-card';
+            card.innerHTML = `
+                <div class="table-mastery-number">${item.table}</div>
+                <div class="table-mastery-percent">${item.mastery}%</div>
+                <div class="table-mastery-bar">
+                    <div class="table-mastery-bar-fill" style="width: ${item.mastery}%; background: ${item.status.color}"></div>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                this.startPracticeWithTables([item.table]);
+            });
+            container.appendChild(card);
+        });
+    }
+
+    // =============================
+    // SELECTOR DE TABLAS
+    // =============================
+
+    showTableSelector() {
+        document.getElementById('domainMap')?.classList.add('hidden');
+        document.getElementById('practiceSetup')?.classList.remove('hidden');
+
+        // Actualizar botones con info de mastery
+        document.querySelectorAll('.table-btn-select').forEach(btn => {
+            const table = parseInt(btn.dataset.table);
+            const stats = this.practiceSystem.getTableStats(table);
+
+            btn.querySelector('.table-mastery-mini').textContent = stats.mastery + '%';
+            btn.querySelector('.table-status-dot').style.backgroundColor = stats.status.color;
+
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('selected');
+            });
+        });
+
+        document.getElementById('backToDomainMap')?.addEventListener('click', () => {
+            this.showDomainMap();
+        });
+
+        document.getElementById('startCustomPractice')?.addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('.table-btn-select.selected'))
+                .map(btn => parseInt(btn.dataset.table));
+
+            if (selected.length === 0) {
+                alert('Selecciona al menos una tabla');
+                return;
+            }
+
+            this.startPracticeWithTables(selected);
+        });
+    }
+
+    startPracticeWithTables(tables) {
+        this.gameState = {
+            mode: 'practice',
+            tables: tables,
+            questions: this.practiceSystem.generateMixedSession(tables, 15),
+            currentQuestionIndex: 0,
+            score: 0,
+            correct: 0,
+            incorrect: 0,
+            streak: 0
+        };
+
+        document.getElementById('domainMap')?.classList.add('hidden');
+        document.getElementById('practiceSetup')?.classList.add('hidden');
+        document.getElementById('practiceGame')?.classList.remove('hidden');
+
+        this.showNextQuestion();
     }
 
     handleStartPractice() {
@@ -538,6 +807,12 @@ class MultiplicationGame {
         // Tracking de misión
         this.trackMissionCorrectAnswer();
 
+        // Actualizar mastery del sistema de práctica
+        if (this.practiceSystem && this.currentQuestion) {
+            const responseTime = Date.now() - (this.currentQuestion.startTime || Date.now());
+            this.practiceSystem.updateMastery(this.currentQuestion.table, true, responseTime);
+        }
+
         // Sonidos
         if (window.soundSystem) {
             window.soundSystem.playSuccess();
@@ -587,6 +862,12 @@ class MultiplicationGame {
         this.player.streak = 0;
 
         this.player.stats.incorrectAnswers++;
+
+        // Actualizar mastery del sistema de práctica
+        if (this.practiceSystem && this.currentQuestion) {
+            const responseTime = Date.now() - (this.currentQuestion.startTime || Date.now());
+            this.practiceSystem.updateMastery(this.currentQuestion.table, false, responseTime);
+        }
 
         // Sonido suave de error
         if (window.soundSystem) {

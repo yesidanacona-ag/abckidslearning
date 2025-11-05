@@ -197,7 +197,7 @@
         </div>
     </div>
 
-    <!-- Pantalla de Modo Práctica -->
+    <!-- Pantalla de Modo Práctica Adaptativo -->
     <div id="practiceScreen" class="screen">
         <div class="game-header">
             <button class="btn-back" id="backFromPractice">← Volver</button>
@@ -205,49 +205,180 @@
             <div class="score-display">Puntos: <span id="practiceScore">0</span></div>
         </div>
 
-        <div class="practice-setup">
-            <h3>Selecciona las tablas para practicar:</h3>
-            <div class="tables-grid">
-                <button class="table-btn" data-table="1">1</button>
-                <button class="table-btn" data-table="2">2</button>
-                <button class="table-btn" data-table="3">3</button>
-                <button class="table-btn" data-table="4">4</button>
-                <button class="table-btn" data-table="5">5</button>
-                <button class="table-btn" data-table="6">6</button>
-                <button class="table-btn" data-table="7">7</button>
-                <button class="table-btn" data-table="8">8</button>
-                <button class="table-btn" data-table="9">9</button>
-                <button class="table-btn" data-table="10">10</button>
+        <!-- Pantalla de Diagnóstico (primera vez) -->
+        <div class="diagnostic-screen hidden" id="diagnosticScreen">
+            <div class="diagnostic-welcome">
+                <h2>¡Hola! 👋</h2>
+                <p class="diagnostic-subtitle">Antes de comenzar, vamos a ver qué tablas ya conoces.</p>
+                <p class="diagnostic-description">Son solo 15 preguntas rápidas. ¡No te preocupes si no sabes alguna!</p>
+                <button class="btn-primary diagnostic-start-btn" id="startDiagnostic">
+                    Comenzar Evaluación
+                </button>
             </div>
-            <button class="btn-primary" id="startPractice">Comenzar Práctica</button>
         </div>
 
-        <div class="practice-game hidden">
+        <!-- Pantalla de Preguntas Diagnósticas -->
+        <div class="diagnostic-quiz hidden" id="diagnosticQuiz">
+            <div class="diagnostic-progress">
+                <div class="diagnostic-progress-bar">
+                    <div class="diagnostic-progress-fill" id="diagnosticProgressFill"></div>
+                </div>
+                <div class="diagnostic-progress-text">
+                    Pregunta <span id="diagnosticQuestionNum">1</span> de 15
+                </div>
+            </div>
+
+            <div class="diagnostic-question">
+                <div class="diagnostic-timer">
+                    <div class="timer-circle" id="diagnosticTimerCircle"></div>
+                    <span id="diagnosticTimeLeft">10</span>s
+                </div>
+                <div class="question-text-large" id="diagnosticQuestion">2 × 3 = ?</div>
+            </div>
+
+            <div class="diagnostic-options" id="diagnosticOptions">
+                <!-- Opciones generadas dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Resultados del Diagnóstico -->
+        <div class="diagnostic-results hidden" id="diagnosticResults">
+            <h2>📊 Resultados de tu Evaluación</h2>
+            <p class="results-subtitle">Aquí está tu mapa de dominio:</p>
+            <div id="diagnosticResultsContent">
+                <!-- Contenido generado dinámicamente -->
+            </div>
+            <button class="btn-primary" id="continueToDomainMap">
+                Ver Mi Mapa de Dominio
+            </button>
+        </div>
+
+        <!-- Mapa de Dominio Visual -->
+        <div class="domain-map hidden" id="domainMap">
+            <div class="domain-header">
+                <h2>🗺️ Tu Mapa de Multiplicación</h2>
+                <div class="overall-mastery">
+                    <div class="mastery-circle" id="overallMasteryCircle">
+                        <svg width="100" height="100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="10"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="10"
+                                    stroke-dasharray="283" stroke-dashoffset="283" id="masteryCircleFill"/>
+                        </svg>
+                        <div class="mastery-percent" id="overallMasteryPercent">0%</div>
+                    </div>
+                    <div class="mastery-label">Dominio General</div>
+                </div>
+            </div>
+
+            <div class="domain-legend">
+                <div class="legend-item">
+                    <span class="legend-dot mastered"></span>
+                    <span class="legend-label">🟢 DOMINADAS (80%+)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot learning"></span>
+                    <span class="legend-label">🟡 EN PROGRESO (50-79%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot weak"></span>
+                    <span class="legend-label">🔴 NECESITAN PRÁCTICA (0-49%)</span>
+                </div>
+            </div>
+
+            <div class="tables-by-level">
+                <div class="level-section mastered-section">
+                    <h3 class="level-title">🟢 DOMINADAS</h3>
+                    <div class="tables-grid-mastery" id="masteredTables">
+                        <!-- Tablas dominadas -->
+                    </div>
+                </div>
+
+                <div class="level-section learning-section">
+                    <h3 class="level-title">🟡 EN PROGRESO</h3>
+                    <div class="tables-grid-mastery" id="learningTables">
+                        <!-- Tablas en progreso -->
+                    </div>
+                </div>
+
+                <div class="level-section weak-section">
+                    <h3 class="level-title">🔴 NECESITAN PRÁCTICA</h3>
+                    <div class="tables-grid-mastery" id="weakTables">
+                        <!-- Tablas débiles -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="domain-actions">
+                <button class="btn-primary" id="practiceSuggested">
+                    🎯 Practicar Recomendadas
+                </button>
+                <button class="btn-secondary" id="chooseCustomTables">
+                    ✏️ Elegir Mis Tablas
+                </button>
+            </div>
+        </div>
+
+        <!-- Selector de Tablas (modo custom) -->
+        <div class="practice-setup hidden" id="practiceSetup">
+            <h3>Selecciona las tablas para practicar:</h3>
+            <div class="tables-grid-select">
+                <button class="table-btn-select" data-table="2">
+                    <div class="table-number">2</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="3">
+                    <div class="table-number">3</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="4">
+                    <div class="table-number">4</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="5">
+                    <div class="table-number">5</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="6">
+                    <div class="table-number">6</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="7">
+                    <div class="table-number">7</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="8">
+                    <div class="table-number">8</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="9">
+                    <div class="table-number">9</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+                <button class="table-btn-select" data-table="10">
+                    <div class="table-number">10</div>
+                    <div class="table-mastery-mini">0%</div>
+                    <div class="table-status-dot"></div>
+                </button>
+            </div>
+            <div class="practice-setup-actions">
+                <button class="btn-secondary" id="backToDomainMap">← Volver al Mapa</button>
+                <button class="btn-primary" id="startCustomPractice">Comenzar Práctica</button>
+            </div>
+        </div>
+
+        <!-- Juego de Práctica -->
+        <div class="practice-game hidden" id="practiceGame">
             <div class="question-container">
                 <div class="progress-indicator">
                     <span>Pregunta <span id="questionNumber">1</span> de <span id="totalQuestions">10</span></span>
-                </div>
-
-                <!-- Power-ups Bar -->
-                <div class="powerups-bar" id="powerupsBar">
-                    <div class="powerup-item" id="powerupShield" data-powerup="shield">
-                        <div class="powerup-icon">🛡️</div>
-                        <div class="powerup-count" id="shieldCount">0</div>
-                        <div class="powerup-label">Escudo</div>
-                    </div>
-                    <div class="powerup-item" id="powerupHint" data-powerup="hint">
-                        <div class="powerup-icon">💡</div>
-                        <div class="powerup-count" id="hintCount">0</div>
-                        <div class="powerup-label">Pista</div>
-                    </div>
-                    <div class="powerup-item" id="powerupSkip" data-powerup="skip">
-                        <div class="powerup-icon">⏭️</div>
-                        <div class="powerup-count" id="skipCount">0</div>
-                        <div class="powerup-label">Saltar</div>
-                    </div>
-                    <button class="trick-btn" id="showTricksBtn" title="Ver trucos para recordar">
-                        📚 Trucos
-                    </button>
                 </div>
 
                 <div class="question-display">
@@ -257,11 +388,6 @@
                 <div class="answer-section">
                     <div class="answer-options" id="answerOptions">
                         <!-- Opciones generadas dinámicamente -->
-                    </div>
-
-                    <div class="answer-input-mode hidden">
-                        <input type="number" id="answerInput" placeholder="Tu respuesta...">
-                        <button class="btn-primary" id="submitAnswer">Responder</button>
                     </div>
                 </div>
 
@@ -613,6 +739,7 @@
     <script src="dailyMissionsSystem.js"></script>
     <script src="spaceGameEngine.js"></script>
     <script src="bossGameEngine.js"></script>
+    <script src="practiceSystemEngine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

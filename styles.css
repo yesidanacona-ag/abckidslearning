@@ -5381,3 +5381,393 @@ body.light-theme .pause-control-label {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
 }
+
+/* ================================
+   MODO PRÁCTICA ADAPTATIVO - FASE 5
+   ================================ */
+
+/* Diagnóstico */
+.diagnostic-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+    text-align: center;
+}
+
+.diagnostic-welcome {
+    max-width: 600px;
+    padding: 40px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 20px;
+}
+
+.diagnostic-subtitle {
+    font-size: 1.3rem;
+    margin: 20px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.diagnostic-description {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.diagnostic-start-btn {
+    font-size: 1.3rem;
+    padding: 15px 40px;
+}
+
+/* Quiz Diagnóstico */
+.diagnostic-quiz {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.diagnostic-progress {
+    margin-bottom: 30px;
+}
+
+.diagnostic-progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.diagnostic-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10B981, #059669);
+    transition: width 0.3s ease;
+}
+
+.diagnostic-progress-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.diagnostic-question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.diagnostic-timer {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border-top-color: #F59E0B;
+    animation: spin 1s linear infinite;
+}
+
+.question-text-large {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.diagnostic-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.diagnostic-option {
+    padding: 30px;
+    font-size: 2rem;
+    font-weight: bold;
+    background: rgba(99, 102, 241, 0.3);
+    border: 3px solid var(--primary);
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.diagnostic-option:hover {
+    transform: scale(1.05);
+    background: rgba(99, 102, 241, 0.5);
+}
+
+/* Resultados Diagnóstico */
+.diagnostic-results {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.diagnostic-summary {
+    margin: 40px 0;
+}
+
+.diagnostic-stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.diagnostic-stat {
+    flex: 1;
+    padding: 20px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 15px;
+}
+
+.diagnostic-stat-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #10B981;
+}
+
+.diagnostic-stat-label {
+    font-size: 1rem;
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Mapa de Dominio */
+.domain-map {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.domain-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.overall-mastery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.mastery-circle {
+    position: relative;
+}
+
+.mastery-circle svg {
+    transform: rotate(-90deg);
+}
+
+.mastery-percent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #10B981;
+}
+
+.domain-legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.legend-dot.mastered {
+    background: #10B981;
+}
+
+.legend-dot.learning {
+    background: #F59E0B;
+}
+
+.legend-dot.weak {
+    background: #EF4444;
+}
+
+.tables-by-level {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.level-section {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.level-title {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.tables-grid-mastery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.table-mastery-card {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.table-mastery-card:hover {
+    transform: scale(1.05);
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.table-mastery-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.table-mastery-percent {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.table-mastery-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-mastery-bar-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.no-tables {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.domain-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Selector de Tablas */
+.tables-grid-select {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.table-btn-select {
+    position: relative;
+    padding: 20px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 3px solid rgba(99, 102, 241, 0.5);
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.table-btn-select:hover {
+    transform: scale(1.05);
+    border-color: var(--primary);
+}
+
+.table-btn-select.selected {
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+.table-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.table-mastery-mini {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.table-status-dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.practice-setup-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .diagnostic-options {
+        grid-template-columns: 1fr;
+    }
+
+    .diagnostic-stats {
+        flex-direction: column;
+    }
+
+    .domain-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .tables-grid-mastery {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .tables-grid-select {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
