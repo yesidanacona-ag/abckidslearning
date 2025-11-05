@@ -180,6 +180,11 @@ class MultiplicationGame {
 
         this.createConfetti();
         this.showNotification(`¡Nivel ${this.player.level}! 🎉`, 'success');
+
+        // Mostrar Mateo celebrando nivel up
+        if (window.mateoMascot) {
+            window.mateoMascot.onLevelUp(this.player.level);
+        }
     }
 
     // ================================
@@ -500,6 +505,11 @@ class MultiplicationGame {
         feedback.innerHTML = `<div style="color: #10b981; font-size: 1.5rem;">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
 
         this.createMiniConfetti();
+
+        // Mostrar Mateo celebrando
+        if (window.mateoMascot) {
+            window.mateoMascot.onCorrectAnswer(this.gameState.streak);
+        }
     }
 
     handleIncorrectAnswer(selectedAnswer) {
@@ -549,6 +559,11 @@ class MultiplicationGame {
                 </div>
             </div>
         `;
+
+        // Mostrar Mateo dando apoyo
+        if (window.mateoMascot) {
+            window.mateoMascot.onIncorrectAnswer(true);
+        }
     }
 
     analyzeError(selectedAnswer) {
@@ -845,6 +860,11 @@ class MultiplicationGame {
 
         if (window.soundSystem) {
             window.soundSystem.playPowerup();
+        }
+
+        // Mostrar Mateo explicando el power-up
+        if (window.mateoMascot) {
+            window.mateoMascot.onPowerUpUsed(type);
         }
 
         setTimeout(() => effect.remove(), 1000);
