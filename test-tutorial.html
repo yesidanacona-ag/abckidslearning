@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test del Tutorial</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { margin-top: 0; }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .success {
+            background: rgba(16, 185, 129, 0.3);
+            border: 2px solid #10b981;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.3);
+            border: 2px solid #ef4444;
+        }
+        .warning {
+            background: rgba(245, 158, 11, 0.3);
+            border: 2px solid #f59e0b;
+        }
+        button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .log-success { color: #10b981; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #60a5fa; }
+        .log-warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test del Sistema de Tutorial</h1>
+
+        <div id="serverStatus" class="status warning">
+            ⏳ Verificando servidor...
+        </div>
+
+        <div id="localStorageStatus" class="status warning">
+            ⏳ Verificando localStorage...
+        </div>
+
+        <div class="controls">
+            <button onclick="clearAndReload()">🗑️ Limpiar localStorage y Recargar</button>
+            <button onclick="openMainApp()">🚀 Ir a la Aplicación Principal</button>
+            <button onclick="runTests()">▶️ Ejecutar Tests</button>
+        </div>
+
+        <h3>📋 Logs de Verificación:</h3>
+        <div id="logs" class="log"></div>
+
+        <h3>📝 Instrucciones:</h3>
+        <ol>
+            <li>Verifica que el servidor esté corriendo (debe decir ✅ arriba)</li>
+            <li>Click en "Limpiar localStorage" para borrar el tutorial guardado</li>
+            <li>Click en "Ir a la Aplicación Principal"</li>
+            <li>Abre la consola del navegador (F12)</li>
+            <li>Deberías ver los logs del tutorial</li>
+        </ol>
+    </div>
+
+    <script>
+        const logsDiv = document.getElementById('logs');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        function checkServerStatus() {
+            log('🔍 Verificando servidor en http://localhost:3000...', 'info');
+
+            fetch('/')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('serverStatus').className = 'status success';
+                        document.getElementById('serverStatus').innerHTML = '✅ Servidor HTTP funcionando correctamente';
+                        log('✅ Servidor respondiendo correctamente', 'success');
+                    } else {
+                        throw new Error('Respuesta no OK');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('serverStatus').className = 'status error';
+                    document.getElementById('serverStatus').innerHTML = '❌ Servidor NO está corriendo<br>Ejecuta: <code>npm start</code>';
+                    log('❌ Error: Servidor no responde. ¿Ejecutaste npm start?', 'error');
+                });
+        }
+
+        function checkLocalStorage() {
+            log('🔍 Verificando localStorage...', 'info');
+
+            const tutorialCompleted = localStorage.getItem('tutorialCompleted');
+            const statusDiv = document.getElementById('localStorageStatus');
+
+            if (tutorialCompleted === 'true') {
+                statusDiv.className = 'status warning';
+                statusDiv.innerHTML = '⚠️ Tutorial ya fue completado<br>Click en "Limpiar localStorage" para verlo de nuevo';
+                log('⚠️ Tutorial ya visto: tutorialCompleted = "true"', 'warning');
+            } else {
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = '✅ localStorage limpio, tutorial se mostrará';
+                log('✅ Tutorial no visto, se mostrará al entrar', 'success');
+            }
+        }
+
+        function clearAndReload() {
+            log('🗑️ Limpiando localStorage...', 'info');
+            localStorage.clear();
+            log('✅ localStorage limpiado', 'success');
+            log('🔄 Recargando página...', 'info');
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function openMainApp() {
+            log('🚀 Abriendo aplicación principal...', 'info');
+            window.location.href = '/';
+        }
+
+        function runTests() {
+            log('▶️ Ejecutando tests...', 'info');
+
+            // Test 1: Verificar elementos del DOM
+            log('Test 1: Verificando elementos del tutorial...', 'info');
+            fetch('/')
+                .then(response => response.text())
+                .then(html => {
+                    const hasOverlay = html.includes('id="tutorialOverlay"');
+                    const hasSkipBtn = html.includes('id="tutorialSkip"');
+                    const hasNextBtn = html.includes('id="tutorialNext"');
+
+                    if (hasOverlay && hasSkipBtn && hasNextBtn) {
+                        log('✅ Todos los elementos del tutorial presentes en HTML', 'success');
+                    } else {
+                        log('❌ Faltan elementos del tutorial en HTML', 'error');
+                    }
+                });
+
+            // Test 2: Verificar app.js
+            log('Test 2: Verificando app.js...', 'info');
+            fetch('/app.js')
+                .then(response => response.text())
+                .then(js => {
+                    const hasLogs = js.includes('Tutorial: start() llamado');
+                    const hasSkip = js.includes('Tutorial: Click en Saltar');
+                    const hasComplete = js.includes('Tutorial: Complete() finalizado');
+
+                    if (hasLogs && hasSkip && hasComplete) {
+                        log('✅ Logs de debug presentes en app.js', 'success');
+                    } else {
+                        log('❌ Faltan logs de debug en app.js', 'error');
+                    }
+                });
+
+            // Test 3: Verificar styles.css
+            log('Test 3: Verificando opacidad del tutorial...', 'info');
+            fetch('/styles.css')
+                .then(response => response.text())
+                .then(css => {
+                    const hasLightBackdrop = css.includes('rgba(0, 0, 0, 0.5)');
+
+                    if (hasLightBackdrop) {
+                        log('✅ Opacidad del tutorial reducida (0.5)', 'success');
+                    } else {
+                        log('⚠️ Opacidad del tutorial no encontrada o diferente', 'warning');
+                    }
+                });
+
+            log('✅ Tests completados', 'success');
+        }
+
+        // Ejecutar verificaciones al cargar
+        window.addEventListener('load', () => {
+            log('🚀 Iniciando verificaciones...', 'info');
+            checkServerStatus();
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html>
