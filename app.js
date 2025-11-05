@@ -243,6 +243,8 @@ class MultiplicationGame {
         document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
         document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
         document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
+        document.getElementById('shopMode')?.addEventListener('click', () => this.openShop());
+        document.getElementById('missionsMode')?.addEventListener('click', () => this.openMissions());
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
@@ -532,6 +534,9 @@ class MultiplicationGame {
             const optionElement = document.querySelector('.answer-option.correct');
             window.coinSystem.addStars(10, optionElement);
         }
+
+        // Tracking de misión
+        this.trackMissionCorrectAnswer();
 
         // Sonidos
         if (window.soundSystem) {
@@ -1260,6 +1265,9 @@ class MultiplicationGame {
             this.player.stats.correctAnswers++;
             this.addXP(3);
 
+            // Tracking de misión
+            this.trackMissionCorrectAnswer();
+
             // Sistema de feedback: Confeti y animación
             if (window.feedbackSystem && clickedButton) {
                 await window.feedbackSystem.showCorrectFeedback(clickedButton, points);
@@ -1359,6 +1367,10 @@ class MultiplicationGame {
         this.savePlayer();
         this.checkAchievements();
         this.checkMedals();
+
+        // Tracking de misión: Desafío completado
+        this.trackMissionChallengePlayed();
+
         this.showResultsModal();
     }
 
@@ -1985,6 +1997,9 @@ class MultiplicationGame {
         this.gameState.bossesDefeated++;
         this.addBattleLog(`🎉 ¡Derrotaste a ${this.gameState.bosses[this.gameState.currentBoss - 1].name}!`, 'victory');
 
+        // Tracking de misión: Jefe derrotado
+        this.trackMissionBossWin();
+
         if (window.soundSystem) {
             window.soundSystem.playVictory();
         }
@@ -2060,6 +2075,51 @@ class MultiplicationGame {
     showProgressScreen() {
         this.showScreen('progressScreen');
         this.updateProgressStats();
+    }
+
+    // ================================
+    // TIENDA Y MISIONES
+    // ================================
+
+    openShop() {
+        if (window.shopSystem) {
+            window.shopSystem.open();
+        } else {
+            console.error('❌ Sistema de tienda no disponible');
+        }
+    }
+
+    openMissions() {
+        if (window.dailyMissionsSystem) {
+            window.dailyMissionsSystem.open();
+        } else {
+            console.error('❌ Sistema de misiones no disponible');
+        }
+    }
+
+    // Tracking de misiones
+    trackMissionCorrectAnswer() {
+        if (window.dailyMissionsSystem) {
+            window.dailyMissionsSystem.trackCorrectAnswer();
+        }
+    }
+
+    trackMissionBossWin() {
+        if (window.dailyMissionsSystem) {
+            window.dailyMissionsSystem.trackBossWin();
+        }
+    }
+
+    trackMissionChallengePlayed() {
+        if (window.dailyMissionsSystem) {
+            window.dailyMissionsSystem.trackChallengePlayed();
+        }
+    }
+
+    trackMissionPracticeTime(minutes) {
+        if (window.dailyMissionsSystem) {
+            window.dailyMissionsSystem.trackPracticeTime(minutes);
+        }
     }
 
     updateProgressStats() {
@@ -2940,6 +3000,7 @@ class TutorialSystem {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new MultiplicationGame();
+    window.app = window.game; // Alias para compatibilidad con shopSystem
 
     // Iniciar tutorial si es primera vez y usuario está en pantalla principal
     setTimeout(() => {
