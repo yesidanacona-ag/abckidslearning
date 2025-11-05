@@ -4,7 +4,7 @@
 
 1. **Doble click en: `INICIAR.bat`**
 2. Espera a que se abra la ventana
-3. Abre tu navegador en: `http://localhost:3000`
+3. Abre tu navegador en: `http://localhost:8080`
 4. ¡Listo! 🎉
 
 ---
@@ -14,7 +14,7 @@
 1. **Doble click en: `iniciar.sh`**
    - (O en terminal: `./iniciar.sh`)
 2. Espera a que inicie el servidor
-3. Abre tu navegador en: `http://localhost:3000`
+3. Abre tu navegador en: `http://localhost:8080`
 4. ¡Listo! 🎉
 
 ---
@@ -25,13 +25,13 @@
 npm start
 ```
 
-Luego abre: `http://localhost:3000`
+Luego abre: `http://localhost:8080`
 
 ---
 
 ## 🐛 Para probar el tutorial:
 
-1. Abre: `http://localhost:3000/test-tutorial.html`
+1. Abre: `http://localhost:8080/test-tutorial.html`
 2. Click en "Limpiar localStorage"
 3. Click en "Ir a la Aplicación Principal"
 4. Presiona F12 para ver los logs
@@ -83,7 +83,7 @@ Luego recarga: `F5`
 ## ✅ Checklist Rápido
 
 - [ ] Ejecuté `INICIAR.bat` o `iniciar.sh`
-- [ ] Abrí `http://localhost:3000` (NO abrí index.html directamente)
+- [ ] Abrí `http://localhost:8080` (NO abrí index.html directamente)
 - [ ] Presioné F12 para abrir consola
 - [ ] Vi los logs del tutorial en consola
 - [ ] El fondo es gris/transparente (no negro completo)
@@ -99,7 +99,7 @@ Luego recarga: `F5`
 
 ### ✅ HAZ ESTO:
 - Usar `INICIAR.bat` / `iniciar.sh` / `npm start`
-- Abrir `http://localhost:3000` en el navegador
+- Abrir `http://localhost:8080` en el navegador
 
 ---
 

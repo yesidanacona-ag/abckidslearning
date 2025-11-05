@@ -51,18 +51,18 @@ if not exist "node_modules\" (
     echo.
 )
 
-echo 🚀 Iniciando servidor en http://localhost:3000
+echo 🚀 Iniciando servidor en http://localhost:8080
 echo.
 echo 💡 INSTRUCCIONES:
 echo    1. Abre tu navegador
-echo    2. Ve a: http://localhost:3000
+echo    2. Ve a: http://localhost:8080
 echo    3. Presiona F12 para abrir la consola
 echo    4. Para ver el tutorial de nuevo:
 echo       - En consola: localStorage.clear()
 echo       - Luego: F5 (recargar)
 echo.
 echo 🐛 Para testing:
-echo    - Ve a: http://localhost:3000/test-tutorial.html
+echo    - Ve a: http://localhost:8080/test-tutorial.html
 echo.
 echo ⛔ Para detener el servidor:
 echo    - Presiona Ctrl+C

@@ -2,7 +2,7 @@
 
 /**
  * Servidor HTTP simple para desarrollo local
- * Sirve la aplicación en http://localhost:3000
+ * Sirve la aplicación en http://localhost:8080
  *
  * Uso:
  *   node server.js
@@ -18,7 +18,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = 8080;
 
 // Tipos MIME para diferentes archivos
 const mimeTypes = {

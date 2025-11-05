@@ -33,14 +33,14 @@ Usa el servidor HTTP incluido para servir la aplicación correctamente.
    ========================================
 
    📂 Sirviendo archivos desde: C:\...\abckidslearning
-   🌐 URL: http://localhost:3000
+   🌐 URL: http://localhost:8080
 
    ✅ Listo para usar
    ```
 
 4. **Abre tu navegador y ve a:**
    ```
-   http://localhost:3000
+   http://localhost:8080
    ```
 
 5. **Para detener el servidor:**
@@ -54,12 +54,12 @@ Usa el servidor HTTP incluido para servir la aplicación correctamente.
 
 2. **Python 3:**
    ```bash
-   python -m http.server 3000
+   python -m http.server 8080
    ```
 
 3. **Abre tu navegador:**
    ```
-   http://localhost:3000
+   http://localhost:8080
    ```
 
 ---
@@ -80,7 +80,7 @@ El tutorial ahora incluye **logs detallados** en la consola del navegador.
 
 ### Para ver los logs:
 
-1. Abre la aplicación con el servidor (`http://localhost:3000`)
+1. Abre la aplicación con el servidor (`http://localhost:8080`)
 
 2. Presiona `F12` para abrir las Herramientas de Desarrollador
 
@@ -238,7 +238,7 @@ cd ruta/a/abckidslearning
 npm start
 
 # 3. Abre el navegador
-# Ve a: http://localhost:3000
+# Ve a: http://localhost:8080
 
 # 4. Abre consola para ver logs
 # Presiona F12 → Console
