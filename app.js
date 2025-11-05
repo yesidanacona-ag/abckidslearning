@@ -103,6 +103,8 @@ class MultiplicationGame {
             tableMastery: {}, // Maestría de cada tabla (1-10)
             achievements: [],
             medals: { gold: 0, silver: 0, bronze: 0 },
+            powerups: { shield: 2, hint: 3, skip: 1 }, // Power-ups iniciales
+            activePowerups: [], // Power-ups activos en la partida actual
             lastPlayed: Date.now()
         };
     }
@@ -251,6 +253,15 @@ class MultiplicationGame {
                 this.startChallengeMode();
             }
         });
+
+        // Modal de trucos mnemotécnicos
+        document.getElementById('showTricksBtn')?.addEventListener('click', () => this.showTricksModal());
+        document.getElementById('closeTrickModal')?.addEventListener('click', () => this.hideTricksModal());
+        document.getElementById('trickModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'trickModal') {
+                this.hideTricksModal();
+            }
+        });
     }
 
     handleWelcomeComplete() {
@@ -317,6 +328,9 @@ class MultiplicationGame {
             incorrect: 0,
             streak: 0
         };
+
+        // Inicializar power-ups
+        this.initializePowerups();
 
         document.querySelector('.practice-setup').classList.add('hidden');
         document.querySelector('.practice-game').classList.remove('hidden');
@@ -489,6 +503,24 @@ class MultiplicationGame {
     }
 
     handleIncorrectAnswer() {
+        // Verificar si tiene escudo activo
+        if (this.player.activePowerups.includes('shield')) {
+            this.showNotification('¡El escudo te protegió! 🛡️', 'success');
+            if (window.soundSystem) {
+                window.soundSystem.playPowerup();
+            }
+
+            // Remover escudo
+            this.player.activePowerups = this.player.activePowerups.filter(p => p !== 'shield');
+            document.querySelector('.question-display')?.classList.remove('shielded');
+
+            const feedback = document.getElementById('feedbackContainer');
+            feedback.innerHTML = `<div style="color: #10b981; font-size: 1.5rem;">🛡️ ¡Escudo activado! No perdiste la racha.</div>`;
+
+            // No contar como error
+            return;
+        }
+
         this.gameState.incorrect++;
         this.gameState.streak = 0;
         this.player.streak = 0;
@@ -507,6 +539,293 @@ class MultiplicationGame {
             `¡Inténtalo de nuevo! La respuesta es ${this.currentQuestion.answer} 💪`
         ];
         feedback.innerHTML = `<div style="color: #f59e0b;">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
+    }
+
+    // ================================
+    // SISTEMA DE POWER-UPS
+    // ================================
+
+    initializePowerups() {
+        // Asegurar que el jugador tenga los power-ups
+        if (!this.player.powerups) {
+            this.player.powerups = { shield: 2, hint: 3, skip: 1 };
+        }
+        if (!this.player.activePowerups) {
+            this.player.activePowerups = [];
+        }
+
+        // Actualizar contadores visuales
+        this.updatePowerupCounts();
+
+        // Agregar event listeners
+        document.getElementById('powerupShield')?.addEventListener('click', () => this.activatePowerup('shield'));
+        document.getElementById('powerupHint')?.addEventListener('click', () => this.activatePowerup('hint'));
+        document.getElementById('powerupSkip')?.addEventListener('click', () => this.activatePowerup('skip'));
+    }
+
+    updatePowerupCounts() {
+        document.getElementById('shieldCount').textContent = this.player.powerups.shield || 0;
+        document.getElementById('hintCount').textContent = this.player.powerups.hint || 0;
+        document.getElementById('skipCount').textContent = this.player.powerups.skip || 0;
+
+        // Actualizar estado disabled
+        this.updatePowerupStates();
+    }
+
+    updatePowerupStates() {
+        const shieldBtn = document.getElementById('powerupShield');
+        const hintBtn = document.getElementById('powerupHint');
+        const skipBtn = document.getElementById('powerupSkip');
+
+        if (shieldBtn) {
+            if (this.player.powerups.shield <= 0 || this.player.activePowerups.includes('shield')) {
+                shieldBtn.classList.add('disabled');
+            } else {
+                shieldBtn.classList.remove('disabled');
+            }
+
+            if (this.player.activePowerups.includes('shield')) {
+                shieldBtn.classList.add('active');
+            } else {
+                shieldBtn.classList.remove('active');
+            }
+        }
+
+        if (hintBtn) {
+            hintBtn.classList.toggle('disabled', this.player.powerups.hint <= 0);
+        }
+
+        if (skipBtn) {
+            skipBtn.classList.toggle('disabled', this.player.powerups.skip <= 0);
+        }
+    }
+
+    activatePowerup(type) {
+        // Verificar si tiene disponibles
+        if (!this.player.powerups[type] || this.player.powerups[type] <= 0) {
+            this.showNotification('¡No tienes más de este power-up!', 'warning');
+            if (window.soundSystem) window.soundSystem.playNotification();
+            return;
+        }
+
+        // No permitir activar escudo si ya está activo
+        if (type === 'shield' && this.player.activePowerups.includes('shield')) {
+            this.showNotification('¡El escudo ya está activo!', 'warning');
+            if (window.soundSystem) window.soundSystem.playNotification();
+            return;
+        }
+
+        // Consumir power-up
+        this.player.powerups[type]--;
+        this.savePlayer();
+
+        // Efecto visual
+        this.showPowerupEffect(type);
+
+        // Ejecutar power-up
+        switch(type) {
+            case 'shield':
+                this.activateShield();
+                break;
+            case 'hint':
+                this.activateHint();
+                break;
+            case 'skip':
+                this.activateSkip();
+                break;
+        }
+
+        // Actualizar contadores
+        this.updatePowerupCounts();
+    }
+
+    showPowerupEffect(type) {
+        const icons = { shield: '🛡️', hint: '💡', skip: '⏭️' };
+        const effect = document.createElement('div');
+        effect.className = 'powerup-effect';
+        effect.textContent = icons[type];
+        document.body.appendChild(effect);
+
+        if (window.soundSystem) {
+            window.soundSystem.playPowerup();
+        }
+
+        setTimeout(() => effect.remove(), 1000);
+    }
+
+    activateShield() {
+        this.player.activePowerups.push('shield');
+        document.querySelector('.question-display')?.classList.add('shielded');
+        this.showNotification('¡Escudo activado! Te protegerá del próximo error 🛡️', 'success');
+    }
+
+    activateHint() {
+        // Encontrar la respuesta correcta
+        const correctAnswer = this.currentQuestion.answer;
+        const options = document.querySelectorAll('.answer-option');
+
+        let correctOption = null;
+        options.forEach(opt => {
+            if (parseInt(opt.dataset.answer) === correctAnswer) {
+                correctOption = opt;
+            }
+        });
+
+        if (correctOption) {
+            correctOption.classList.add('hint-highlight');
+            this.showNotification('¡Pista activada! La respuesta correcta brilla 💡', 'success');
+
+            setTimeout(() => {
+                correctOption?.classList.remove('hint-highlight');
+            }, 3000);
+        }
+    }
+
+    activateSkip() {
+        this.showNotification('¡Pregunta saltada! ⏭️', 'success');
+
+        // Contar como correcta para no romper la racha
+        this.gameState.correct++;
+        this.gameState.score += 5;
+
+        // Avanzar a siguiente pregunta
+        setTimeout(() => {
+            this.gameState.currentQuestionIndex++;
+            this.showNextQuestion();
+        }, 500);
+    }
+
+    // ================================
+    // TRUCOS MNEMOTÉCNICOS
+    // ================================
+
+    showTricksModal() {
+        if (!window.mnemonicSystem) {
+            this.showNotification('Sistema de trucos no disponible', 'warning');
+            return;
+        }
+
+        // Detectar qué tablas está practicando
+        const currentTables = this.gameState.tables || [2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        // Crear selector de tablas
+        let selectorHTML = '<div class="table-selector-grid">';
+        currentTables.forEach(table => {
+            selectorHTML += `
+                <button class="table-selector-btn" data-table="${table}">
+                    Tabla del ${table}
+                </button>
+            `;
+        });
+        selectorHTML += '</div>';
+
+        // Mostrar primera tabla por defecto
+        const firstTable = currentTables[0];
+        const tableInfo = window.mnemonicSystem.getTableInfo(firstTable);
+
+        if (!tableInfo) {
+            this.showNotification('No hay trucos disponibles', 'warning');
+            return;
+        }
+
+        // Actualizar modal
+        document.getElementById('trickEmoji').textContent = tableInfo.emoji;
+        document.getElementById('trickTitle').textContent = tableInfo.title;
+
+        let bodyHTML = selectorHTML + this.generateTrickContent(tableInfo);
+        document.getElementById('trickBody').innerHTML = bodyHTML;
+
+        // Agregar event listeners a los botones de tabla
+        document.querySelectorAll('.table-selector-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const table = parseInt(e.target.dataset.table);
+                this.showTableTricks(table);
+
+                // Actualizar botón activo
+                document.querySelectorAll('.table-selector-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // Marcar primer botón como activo
+        document.querySelector('.table-selector-btn')?.classList.add('active');
+
+        // Mostrar modal
+        document.getElementById('trickModal').style.display = 'flex';
+
+        if (window.soundSystem) {
+            window.soundSystem.playClick();
+        }
+    }
+
+    showTableTricks(table) {
+        const tableInfo = window.mnemonicSystem.getTableInfo(table);
+        if (!tableInfo) return;
+
+        document.getElementById('trickEmoji').textContent = tableInfo.emoji;
+        document.getElementById('trickTitle').textContent = tableInfo.title;
+
+        // Mantener el selector pero actualizar el contenido
+        const currentSelector = document.querySelector('.table-selector-grid');
+        const newContent = this.generateTrickContent(tableInfo);
+
+        // Reemplazar solo el contenido después del selector
+        const trickBody = document.getElementById('trickBody');
+        trickBody.innerHTML = '';
+        if (currentSelector) {
+            trickBody.appendChild(currentSelector);
+        }
+        trickBody.innerHTML += newContent;
+
+        if (window.soundSystem) {
+            window.soundSystem.playClick();
+        }
+    }
+
+    generateTrickContent(tableInfo) {
+        let html = `
+            <div class="trick-section" style="border-left-color: ${tableInfo.color}">
+                <h3>💡 Consejos para Recordar</h3>
+                <ul class="trick-tips-list">
+        `;
+
+        tableInfo.tips.forEach(tip => {
+            html += `<li>${tip}</li>`;
+        });
+
+        html += `
+                </ul>
+            </div>
+
+            <div class="trick-section" style="border-left-color: ${tableInfo.color}">
+                <h3>✨ Ejemplos Prácticos</h3>
+                <div class="trick-examples">
+        `;
+
+        tableInfo.tricks.forEach(trick => {
+            html += `
+                <div class="trick-example">
+                    <div class="trick-example-question">${trick.question} = ?</div>
+                    <div class="trick-example-tip">${trick.tip}</div>
+                    <div class="trick-example-visual">${trick.visual}</div>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    hideTricksModal() {
+        document.getElementById('trickModal').style.display = 'none';
+
+        if (window.soundSystem) {
+            window.soundSystem.playClick();
+        }
     }
 
     endPracticeMode() {
@@ -642,13 +961,76 @@ class MultiplicationGame {
             this.player.stats.correctAnswers++;
             this.addXP(3);
             this.createMiniConfetti();
+
+            // Actualizar combo visual
+            this.updateComboDisplay();
+
+            // Mostrar mensaje especial en combos altos
+            if (this.gameState.streak === 5) {
+                this.showComboText('¡COMBO! 🔥');
+            } else if (this.gameState.streak === 10) {
+                this.showComboText('¡MEGA COMBO! ⚡');
+            } else if (this.gameState.streak === 20) {
+                this.showComboText('¡ULTRA COMBO! 💫');
+            } else if (this.gameState.streak >= 30 && this.gameState.streak % 10 === 0) {
+                this.showComboText('¡IMBATIBLE! 👑');
+            }
         } else {
             this.gameState.streak = 0;
             this.player.stats.incorrectAnswers++;
+
+            // Ocultar combo
+            this.updateComboDisplay();
         }
 
         this.player.stats.totalQuestions++;
         this.showChallengeQuestion();
+    }
+
+    updateComboDisplay() {
+        const comboCounter = document.getElementById('comboCounter');
+        const comboNumber = document.getElementById('comboNumber');
+        const comboMultiplier = document.getElementById('comboMultiplier');
+
+        if (this.gameState.streak >= 3) {
+            comboCounter.classList.remove('hidden');
+            comboNumber.textContent = this.gameState.streak;
+
+            // Calcular multiplicador
+            const multiplier = 1 + Math.floor(this.gameState.streak / 5);
+            comboMultiplier.textContent = `×${multiplier}`;
+
+            // Animación de pulso
+            comboNumber.style.animation = 'none';
+            setTimeout(() => {
+                comboNumber.style.animation = 'comboPulse 0.5s ease-in-out';
+            }, 10);
+
+            // Cambiar estilo según el combo
+            comboCounter.classList.remove('combo-fire', 'combo-mega', 'combo-ultra');
+            if (this.gameState.streak >= 20) {
+                comboCounter.classList.add('combo-ultra');
+            } else if (this.gameState.streak >= 10) {
+                comboCounter.classList.add('combo-mega');
+            } else if (this.gameState.streak >= 5) {
+                comboCounter.classList.add('combo-fire');
+            }
+        } else {
+            comboCounter.classList.add('hidden');
+        }
+    }
+
+    showComboText(text) {
+        const comboText = document.createElement('div');
+        comboText.className = 'combo-text';
+        comboText.textContent = text;
+        document.body.appendChild(comboText);
+
+        if (window.soundSystem) {
+            window.soundSystem.playVictory();
+        }
+
+        setTimeout(() => comboText.remove(), 1500);
     }
 
     endChallengeMode() {
@@ -1403,13 +1785,260 @@ class MultiplicationGame {
     // ================================
 
     checkAchievements() {
-        // Verificar logros especiales aquí
-        if (this.gameState.incorrect === 0 && this.gameState.correct >= 10) {
-            if (!this.player.achievements.includes('perfect_game')) {
-                this.player.achievements.push('perfect_game');
-                this.showNotification('¡Logro desbloqueado: Perfección! 💎', 'success');
+        const achievements = [
+            // Logros básicos
+            {
+                id: 'first_steps',
+                name: 'Primeros Pasos',
+                desc: 'Responde 10 preguntas',
+                icon: '👶',
+                check: () => this.player.stats.totalQuestions >= 10
+            },
+            {
+                id: 'apprentice',
+                name: 'Aprendiz',
+                desc: 'Responde 50 preguntas',
+                icon: '📚',
+                check: () => this.player.stats.totalQuestions >= 50
+            },
+            {
+                id: 'scholar',
+                name: 'Estudiante',
+                desc: 'Responde 100 preguntas',
+                icon: '🎓',
+                check: () => this.player.stats.totalQuestions >= 100
+            },
+            {
+                id: 'master',
+                name: 'Maestro',
+                desc: 'Responde 500 preguntas',
+                icon: '🧙‍♂️',
+                check: () => this.player.stats.totalQuestions >= 500
+            },
+            {
+                id: 'legend',
+                name: 'Leyenda',
+                desc: 'Responde 1000 preguntas',
+                icon: '👑',
+                check: () => this.player.stats.totalQuestions >= 1000
+            },
+
+            // Logros de precisión
+            {
+                id: 'perfect_game',
+                name: 'Perfección',
+                desc: 'Responde 10 preguntas sin errores',
+                icon: '💎',
+                check: () => this.gameState.incorrect === 0 && this.gameState.correct >= 10
+            },
+            {
+                id: 'sniper',
+                name: 'Francotirador',
+                desc: 'Logra 95% de precisión en 20 preguntas',
+                icon: '🎯',
+                check: () => {
+                    const total = this.player.stats.correctAnswers + this.player.stats.incorrectAnswers;
+                    return total >= 20 && (this.player.stats.correctAnswers / total) >= 0.95;
+                }
+            },
+            {
+                id: 'sharp_mind',
+                name: 'Mente Aguda',
+                desc: 'Responde 100 preguntas con 90% precisión',
+                icon: '🧠',
+                check: () => {
+                    const total = this.player.stats.correctAnswers + this.player.stats.incorrectAnswers;
+                    return total >= 100 && (this.player.stats.correctAnswers / total) >= 0.90;
+                }
+            },
+
+            // Logros de racha
+            {
+                id: 'streak_5',
+                name: 'Racha Ardiente',
+                desc: 'Logra racha de 5',
+                icon: '🔥',
+                check: () => this.player.streak >= 5
+            },
+            {
+                id: 'streak_10',
+                name: 'Imparable',
+                desc: 'Logra racha de 10',
+                icon: '⚡',
+                check: () => this.player.streak >= 10
+            },
+            {
+                id: 'streak_20',
+                name: 'Fenómeno',
+                desc: 'Logra racha de 20',
+                icon: '💫',
+                check: () => this.player.streak >= 20
+            },
+            {
+                id: 'streak_50',
+                name: 'Imbatible',
+                desc: 'Logra racha de 50',
+                icon: '🌟',
+                check: () => this.player.streak >= 50
+            },
+
+            // Logros de nivel
+            {
+                id: 'level_5',
+                name: 'Ascenso',
+                desc: 'Alcanza nivel 5',
+                icon: '⬆️',
+                check: () => this.player.level >= 5
+            },
+            {
+                id: 'level_10',
+                name: 'Veterano',
+                desc: 'Alcanza nivel 10',
+                icon: '🏆',
+                check: () => this.player.level >= 10
+            },
+            {
+                id: 'level_20',
+                name: 'Élite',
+                desc: 'Alcanza nivel 20',
+                icon: '💪',
+                check: () => this.player.level >= 20
+            },
+            {
+                id: 'level_50',
+                name: 'Dios de las Matemáticas',
+                desc: 'Alcanza nivel 50',
+                icon: '⚡👑',
+                check: () => this.player.level >= 50
+            },
+
+            // Logros de maestría
+            {
+                id: 'table_master_1',
+                name: 'Maestro de una Tabla',
+                desc: 'Domina 100% una tabla',
+                icon: '🎖️',
+                check: () => Object.values(this.player.tableMastery).some(m => m >= 100)
+            },
+            {
+                id: 'table_master_5',
+                name: 'Experto',
+                desc: 'Domina 5 tablas al 100%',
+                icon: '🏅',
+                check: () => Object.values(this.player.tableMastery).filter(m => m >= 100).length >= 5
+            },
+            {
+                id: 'table_master_all',
+                name: 'Gran Maestro',
+                desc: 'Domina todas las tablas',
+                icon: '👑✨',
+                check: () => {
+                    for (let i = 2; i <= 10; i++) {
+                        if (!this.player.tableMastery[i] || this.player.tableMastery[i] < 100) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            },
+
+            // Logros de medallas
+            {
+                id: 'gold_collector',
+                name: 'Coleccionista Dorado',
+                desc: 'Consigue 10 medallas de oro',
+                icon: '🥇',
+                check: () => this.player.medals.gold >= 10
+            },
+            {
+                id: 'medal_hoarder',
+                name: 'Acaparador',
+                desc: 'Consigue 50 medallas en total',
+                icon: '🏆',
+                check: () => this.player.totalMedals >= 50
+            },
+
+            // Logros especiales
+            {
+                id: 'speed_demon',
+                name: 'Demonio de Velocidad',
+                desc: 'Responde 50 preguntas en el Desafío Rápido',
+                icon: '💨',
+                check: () => this.currentMode === 'challenge' && this.gameState.correct >= 50
+            },
+            {
+                id: 'space_explorer',
+                name: 'Explorador Espacial',
+                desc: 'Completa la Aventura Espacial',
+                icon: '🚀',
+                check: () => this.currentMode === 'adventure' && this.gameState.planet > 10
+            },
+            {
+                id: 'racer',
+                name: 'Piloto Campeón',
+                desc: 'Gana 10 carreras',
+                icon: '🏁',
+                check: () => (this.player.achievements.filter(a => a === 'racer_win').length >= 10)
+            },
+            {
+                id: 'boss_slayer',
+                name: 'Cazador de Jefes',
+                desc: 'Derrota a todos los jefes',
+                icon: '⚔️',
+                check: () => this.player.achievements.includes('all_bosses_defeated')
+            },
+            {
+                id: 'power_user',
+                name: 'Estratega',
+                desc: 'Usa 20 power-ups',
+                icon: '🎮',
+                check: () => {
+                    const used = (2 - (this.player.powerups?.shield || 0)) +
+                                 (3 - (this.player.powerups?.hint || 0)) +
+                                 (1 - (this.player.powerups?.skip || 0));
+                    return used >= 20;
+                }
+            },
+            {
+                id: 'dedicated',
+                name: 'Dedicado',
+                desc: 'Juega 7 días seguidos',
+                icon: '📅',
+                check: () => false // Requeriría tracking de días
+            },
+            {
+                id: 'night_owl',
+                name: 'Búho Nocturno',
+                desc: 'Juega después de las 10 PM',
+                icon: '🦉',
+                check: () => new Date().getHours() >= 22 || new Date().getHours() < 6
+            },
+            {
+                id: 'early_bird',
+                name: 'Madrugador',
+                desc: 'Juega antes de las 7 AM',
+                icon: '🌅',
+                check: () => new Date().getHours() < 7
             }
+        ];
+
+        let newAchievements = 0;
+        achievements.forEach(achievement => {
+            if (!this.player.achievements.includes(achievement.id) && achievement.check()) {
+                this.player.achievements.push(achievement.id);
+                this.showNotification(`¡Logro desbloqueado: ${achievement.name} ${achievement.icon}!`, 'success');
+                if (window.soundSystem) {
+                    window.soundSystem.playVictory();
+                }
+                newAchievements++;
+            }
+        });
+
+        if (newAchievements > 0) {
+            this.savePlayer();
         }
+
+        return newAchievements;
     }
 
     checkMedals() {

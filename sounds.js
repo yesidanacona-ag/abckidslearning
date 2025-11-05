@@ -396,6 +396,41 @@ class SoundSystem {
             osc.stop(startTime + 0.2);
         });
     }
+
+    playPowerup() {
+        if (!this.enabled || !this.audioContext) return;
+
+        const ctx = this.audioContext;
+        const now = ctx.currentTime;
+
+        // Sonido mágico ascendente: C - E - G - C (octava superior)
+        const frequencies = [261.63, 329.63, 392.00, 523.25];
+
+        frequencies.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(2000, now);
+            filter.Q.setValueAtTime(1, now);
+
+            const startTime = now + (i * 0.1);
+            osc.frequency.setValueAtTime(freq, startTime);
+            osc.type = 'triangle';
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(this.volume * 0.4, startTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.3);
+        });
+    }
 }
 
 // ================================

@@ -6,6 +6,10 @@
     <meta name="description" content="La mejor app del mundo para aprender tablas de multiplicar - Divertida, adaptativa e inteligente">
     <meta name="theme-color" content="#6366f1">
     <title>Multiplicar Mágico - Aprende Jugando</title>
+    <!-- Google Fonts: Fuentes amigables para niños -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
@@ -210,6 +214,28 @@
                     <span>Pregunta <span id="questionNumber">1</span> de <span id="totalQuestions">10</span></span>
                 </div>
 
+                <!-- Power-ups Bar -->
+                <div class="powerups-bar" id="powerupsBar">
+                    <div class="powerup-item" id="powerupShield" data-powerup="shield">
+                        <div class="powerup-icon">🛡️</div>
+                        <div class="powerup-count" id="shieldCount">0</div>
+                        <div class="powerup-label">Escudo</div>
+                    </div>
+                    <div class="powerup-item" id="powerupHint" data-powerup="hint">
+                        <div class="powerup-icon">💡</div>
+                        <div class="powerup-count" id="hintCount">0</div>
+                        <div class="powerup-label">Pista</div>
+                    </div>
+                    <div class="powerup-item" id="powerupSkip" data-powerup="skip">
+                        <div class="powerup-icon">⏭️</div>
+                        <div class="powerup-count" id="skipCount">0</div>
+                        <div class="powerup-label">Saltar</div>
+                    </div>
+                    <button class="trick-btn" id="showTricksBtn" title="Ver trucos para recordar">
+                        📚 Trucos
+                    </button>
+                </div>
+
                 <div class="question-display">
                     <div class="question-text" id="questionText">5 × 7 = ?</div>
                 </div>
@@ -258,6 +284,13 @@
 
         <div class="challenge-game">
             <div class="challenge-score-big" id="challengeScoreBig">0</div>
+
+            <!-- Combo Counter -->
+            <div class="combo-counter hidden" id="comboCounter">
+                <div class="combo-number" id="comboNumber">0</div>
+                <div class="combo-label">COMBO</div>
+                <div class="combo-multiplier" id="comboMultiplier">×1</div>
+            </div>
 
             <div class="question-container">
                 <div class="question-display-large">
@@ -572,7 +605,22 @@
         <span class="sound-icon">🔊</span>
     </button>
 
+    <!-- Modal de Trucos Mnemotécnicos -->
+    <div id="trickModal" class="modal-overlay" style="display: none;">
+        <div class="trick-modal-content">
+            <button class="modal-close" id="closeTrickModal">✕</button>
+            <div class="trick-header">
+                <div class="trick-emoji" id="trickEmoji">📚</div>
+                <h2 id="trickTitle">Trucos para Recordar</h2>
+            </div>
+            <div class="trick-body" id="trickBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
     <script src="sounds.js"></script>
+    <script src="mnemonicTricks.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
