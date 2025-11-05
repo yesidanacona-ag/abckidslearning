@@ -431,6 +431,66 @@ class SoundSystem {
             osc.stop(startTime + 0.3);
         });
     }
+
+    // ================================
+    // ALIASES PARA SISTEMAS NUEVOS
+    // ================================
+
+    playCorrect() {
+        // Alias para feedback system
+        this.playSuccess();
+    }
+
+    playWrong() {
+        // Alias para feedback system
+        this.playError();
+    }
+
+    playLevelComplete() {
+        // Alias para nivel completado (similar a victory pero más corto)
+        this.playVictory();
+    }
+
+    // ================================
+    // CONTROL DE MÚSICA
+    // ================================
+
+    setMusicSpeed(speed) {
+        // Placeholder para control de velocidad de música
+        // En una implementación real con música de fondo,
+        // aquí se ajustaría el playbackRate del audio
+        if (this.backgroundMusic) {
+            this.backgroundMusic.playbackRate = speed;
+        }
+        console.log(`🎵 Velocidad de música: ${speed}x`);
+    }
+
+    pauseBackgroundMusic() {
+        // Placeholder para pausar música de fondo
+        if (this.backgroundMusic) {
+            this.backgroundMusic.pause();
+        }
+    }
+
+    resumeBackgroundMusic() {
+        // Placeholder para reanudar música de fondo
+        if (this.backgroundMusic) {
+            this.backgroundMusic.play();
+        }
+    }
+
+    // Música de fondo (placeholders)
+    musicEnabled = true;
+
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        if (this.musicEnabled) {
+            this.resumeBackgroundMusic();
+        } else {
+            this.pauseBackgroundMusic();
+        }
+        return this.musicEnabled;
+    }
 }
 
 // ================================

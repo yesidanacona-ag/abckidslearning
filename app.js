@@ -143,6 +143,16 @@ class MultiplicationGame {
             window.pauseButton.hide();
         }
 
+        // Ocultar HUD de monedas en menú principal
+        if (window.coinSystem) {
+            window.coinSystem.hide();
+        }
+
+        // Resetear modo fuego si está activo
+        if (window.fireModeSystem) {
+            window.fireModeSystem.reset();
+        }
+
         // Cerrar menú de pausa si estaba abierto
         if (window.pauseMenu && window.pauseMenu.isPaused) {
             window.pauseMenu.hide();
@@ -313,6 +323,11 @@ class MultiplicationGame {
         // Mostrar botón de pausa
         if (window.pauseButton) {
             window.pauseButton.show();
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
         }
 
         // Configurar callbacks del menú de pausa
@@ -511,6 +526,12 @@ class MultiplicationGame {
         this.addXP(5);
         this.player.stats.correctAnswers++;
         this.player.totalStars += 1;
+
+        // Sistema de monedas: Agregar estrellas
+        if (window.coinSystem) {
+            const optionElement = document.querySelector('.answer-option.correct');
+            window.coinSystem.addStars(10, optionElement);
+        }
 
         // Sonidos
         if (window.soundSystem) {
@@ -1103,6 +1124,16 @@ class MultiplicationGame {
             window.pauseButton.show();
         }
 
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        // Resetear modo fuego
+        if (window.fireModeSystem) {
+            window.fireModeSystem.reset();
+        }
+
         // Configurar callbacks del menú de pausa
         if (window.pauseMenu) {
             window.pauseMenu.setRestartCallback(() => {
@@ -1205,19 +1236,41 @@ class MultiplicationGame {
         });
     }
 
-    handleChallengeAnswer(selectedAnswer) {
+    async handleChallengeAnswer(selectedAnswer) {
         const isCorrect = selectedAnswer === this.currentQuestion.answer;
+        const clickedButton = event?.target;
 
         this.adaptiveSystem.recordAnswer(this.currentQuestion.table, isCorrect, 0);
 
         if (isCorrect) {
             this.gameState.correct++;
             this.gameState.streak++;
-            const points = 10 + (this.gameState.streak * 5);
+
+            // Sistema de Modo Fuego: Incrementar racha
+            if (window.fireModeSystem) {
+                window.fireModeSystem.incrementStreak();
+            }
+
+            // Calcular puntos con multiplicador de fuego
+            const multiplier = window.fireModeSystem ? window.fireModeSystem.getMultiplier() : 1;
+            const basePoints = 10 + (this.gameState.streak * 5);
+            const points = basePoints * multiplier;
             this.gameState.score += points;
+
             this.player.stats.correctAnswers++;
             this.addXP(3);
-            this.createMiniConfetti();
+
+            // Sistema de feedback: Confeti y animación
+            if (window.feedbackSystem && clickedButton) {
+                await window.feedbackSystem.showCorrectFeedback(clickedButton, points);
+            } else {
+                this.createMiniConfetti();
+            }
+
+            // Sistema de monedas: Agregar estrellas
+            if (window.coinSystem && clickedButton) {
+                window.coinSystem.addStars(points, clickedButton);
+            }
 
             // Actualizar combo visual
             this.updateComboDisplay();
@@ -1233,8 +1286,18 @@ class MultiplicationGame {
                 this.showComboText('¡IMBATIBLE! 👑');
             }
         } else {
+            // Sistema de Modo Fuego: Resetear racha
+            if (window.fireModeSystem) {
+                window.fireModeSystem.resetStreak();
+            }
+
             this.gameState.streak = 0;
             this.player.stats.incorrectAnswers++;
+
+            // Sistema de feedback: Shake y mostrar correcta
+            if (window.feedbackSystem && clickedButton) {
+                await window.feedbackSystem.showIncorrectFeedback(clickedButton, this.currentQuestion.answer);
+            }
 
             // Ocultar combo
             this.updateComboDisplay();
@@ -1318,6 +1381,11 @@ class MultiplicationGame {
         // Mostrar botón de pausa
         if (window.pauseButton) {
             window.pauseButton.show();
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
         }
 
         // Configurar callbacks del menú de pausa
@@ -1473,6 +1541,11 @@ class MultiplicationGame {
         // Mostrar botón de pausa
         if (window.pauseButton) {
             window.pauseButton.show();
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
         }
 
         // Configurar callbacks del menú de pausa
@@ -1694,6 +1767,11 @@ class MultiplicationGame {
         // Mostrar botón de pausa
         if (window.pauseButton) {
             window.pauseButton.show();
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
         }
 
         // Configurar callbacks del menú de pausa
