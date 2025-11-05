@@ -313,6 +313,166 @@
         </div>
     </div>
 
+    <!-- Pantalla de Carrera Matemática -->
+    <div id="raceScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromRace">← Volver</button>
+            <h2>Carrera Matemática</h2>
+            <div class="race-progress-display">
+                <span>Pregunta <span id="raceQuestionNum">1</span>/10</span>
+            </div>
+        </div>
+
+        <div class="race-game">
+            <!-- Pista de Carrera -->
+            <div class="race-track">
+                <div class="race-lane">
+                    <div class="lane-label">
+                        <span class="racer-avatar" id="playerRaceAvatar">🦸</span>
+                        <span class="racer-name" id="playerRaceName">Tú</span>
+                    </div>
+                    <div class="lane-progress">
+                        <div class="lane-bar">
+                            <div class="racer-position" id="playerRacePosition" style="left: 0%">
+                                <span class="racer-icon">🦸</span>
+                            </div>
+                        </div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                </div>
+
+                <div class="race-lane">
+                    <div class="lane-label">
+                        <span class="racer-avatar">🐰</span>
+                        <span class="racer-name">Conejo Rápido</span>
+                    </div>
+                    <div class="lane-progress">
+                        <div class="lane-bar">
+                            <div class="racer-position" id="opponent1Position" style="left: 0%">
+                                <span class="racer-icon">🐰</span>
+                            </div>
+                        </div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                </div>
+
+                <div class="race-lane">
+                    <div class="lane-label">
+                        <span class="racer-avatar">🐢</span>
+                        <span class="racer-name">Tortuga Sabia</span>
+                    </div>
+                    <div class="lane-progress">
+                        <div class="lane-bar">
+                            <div class="racer-position" id="opponent2Position" style="left: 0%">
+                                <span class="racer-icon">🐢</span>
+                            </div>
+                        </div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                </div>
+
+                <div class="race-lane">
+                    <div class="lane-label">
+                        <span class="racer-avatar">🦊</span>
+                        <span class="racer-name">Zorro Astuto</span>
+                    </div>
+                    <div class="lane-progress">
+                        <div class="lane-bar">
+                            <div class="racer-position" id="opponent3Position" style="left: 0%">
+                                <span class="racer-icon">🦊</span>
+                            </div>
+                        </div>
+                        <div class="finish-line">🏁</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Pregunta -->
+            <div class="race-question-area">
+                <div class="race-question-display">
+                    <div class="race-question-text" id="raceQuestion">¡Prepárate!</div>
+                </div>
+
+                <div class="race-answer-section">
+                    <div class="race-answer-options" id="raceAnswerOptions">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="race-feedback" id="raceFeedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Batalla de Jefes -->
+    <div id="bossScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromBoss">← Volver</button>
+            <h2>Batalla de Jefes</h2>
+            <div class="boss-level-display">
+                <span>Jefe <span id="currentBossNum">1</span>/10</span>
+            </div>
+        </div>
+
+        <div class="boss-game">
+            <!-- Arena de Batalla -->
+            <div class="battle-arena">
+                <div class="boss-container">
+                    <div class="boss-info">
+                        <div class="boss-name" id="bossName">Jefe del 2</div>
+                        <div class="boss-avatar" id="bossAvatar">👹</div>
+                    </div>
+                    <div class="boss-health">
+                        <div class="health-label">Vida del Jefe</div>
+                        <div class="health-bar">
+                            <div class="health-fill boss-health-fill" id="bossHealthBar" style="width: 100%">
+                                <span id="bossHealthText">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="battle-vs">⚔️</div>
+
+                <div class="player-battle-container">
+                    <div class="player-battle-info">
+                        <div class="player-battle-name" id="playerBattleName">Tú</div>
+                        <div class="player-battle-avatar" id="playerBattleAvatar">🦸</div>
+                    </div>
+                    <div class="player-health">
+                        <div class="health-label">Tu Vida</div>
+                        <div class="health-bar">
+                            <div class="health-fill player-health-fill" id="playerHealthBar" style="width: 100%">
+                                <span id="playerHealthText">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Combate -->
+            <div class="battle-question-area">
+                <div class="battle-instructions" id="battleInstructions">
+                    ¡Responde correctamente para atacar al jefe! ⚔️
+                </div>
+
+                <div class="battle-question-display">
+                    <div class="battle-question-text" id="bossQuestion">¡Prepárate!</div>
+                </div>
+
+                <div class="battle-answer-section">
+                    <div class="battle-answer-options" id="bossAnswerOptions">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="battle-log" id="battleLog">
+                    <!-- Log de batalla -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Pantalla de Progreso -->
     <div id="progressScreen" class="screen">
         <div class="game-header">

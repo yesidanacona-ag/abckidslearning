@@ -213,12 +213,16 @@ class MultiplicationGame {
         document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
         document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
         document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
+        document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
+        document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
         document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromAdventure')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromRace')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromBoss')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromProgress')?.addEventListener('click', () => this.showMainScreen());
 
         // Modo Práctica
@@ -802,6 +806,489 @@ class MultiplicationGame {
     updateLivesDisplay() {
         const hearts = '❤️'.repeat(this.gameState.lives);
         document.getElementById('livesContainer').textContent = hearts;
+    }
+
+    // ================================
+    // MODO CARRERA MATEMÁTICA
+    // ================================
+
+    startRaceMode() {
+        this.currentMode = 'race';
+        this.showScreen('raceScreen');
+
+        // Configurar avatar del jugador
+        document.getElementById('playerRaceAvatar').textContent = this.player.avatar;
+        document.getElementById('playerRaceName').textContent = this.player.name;
+
+        this.gameState = {
+            mode: 'race',
+            totalQuestions: 10,
+            currentQuestion: 0,
+            playerProgress: 0,
+            opponent1Progress: 0,
+            opponent2Progress: 0,
+            opponent3Progress: 0,
+            score: 0,
+            correct: 0,
+            opponents: [
+                { name: 'Conejo Rápido', speed: 0.8, progress: 0 },
+                { name: 'Tortuga Sabia', speed: 0.5, progress: 0 },
+                { name: 'Zorro Astuto', speed: 0.7, progress: 0 }
+            ]
+        };
+
+        this.showRaceQuestion();
+    }
+
+    showRaceQuestion() {
+        if (this.gameState.currentQuestion >= this.gameState.totalQuestions) {
+            this.endRaceMode();
+            return;
+        }
+
+        this.gameState.currentQuestion++;
+        document.getElementById('raceQuestionNum').textContent = this.gameState.currentQuestion;
+
+        // Generar pregunta adaptativa
+        const tables = this.adaptiveSystem.getSuggestedTables();
+        const table = tables[Math.floor(Math.random() * tables.length)];
+        const multiplier = Math.floor(Math.random() * 10) + 1;
+
+        this.currentQuestion = {
+            table: table,
+            multiplier: multiplier,
+            answer: table * multiplier,
+            startTime: Date.now()
+        };
+
+        document.getElementById('raceQuestion').textContent = `${table} × ${multiplier} = ?`;
+        document.getElementById('raceFeedback').innerHTML = '';
+
+        this.generateRaceOptions(this.currentQuestion.answer);
+    }
+
+    generateRaceOptions(correctAnswer) {
+        const options = new Set([correctAnswer]);
+
+        while (options.size < 4) {
+            const offset = Math.floor(Math.random() * 20) - 10;
+            const wrongAnswer = correctAnswer + offset;
+            if (wrongAnswer > 0 && wrongAnswer !== correctAnswer) {
+                options.add(wrongAnswer);
+            }
+        }
+
+        const optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
+        const container = document.getElementById('raceAnswerOptions');
+        container.innerHTML = '';
+
+        optionsArray.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-option';
+            btn.textContent = option;
+            btn.addEventListener('click', () => this.handleRaceAnswer(option, btn));
+            container.appendChild(btn);
+        });
+    }
+
+    handleRaceAnswer(selectedAnswer, btnElement) {
+        const isCorrect = selectedAnswer === this.currentQuestion.answer;
+        const responseTime = Date.now() - this.currentQuestion.startTime;
+
+        // Deshabilitar botones
+        document.querySelectorAll('#raceAnswerOptions .answer-option').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            if (parseInt(btn.textContent) === this.currentQuestion.answer) {
+                btn.classList.add('correct');
+            }
+        });
+
+        // Registrar respuesta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, isCorrect, responseTime);
+        this.player.stats.totalQuestions++;
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            this.gameState.correct++;
+            this.player.stats.correctAnswers++;
+            this.addXP(5);
+
+            // Sonidos
+            if (window.soundSystem) {
+                window.soundSystem.playSuccess();
+            }
+
+            // Avance del jugador (más rápido si respondes rápido)
+            const speedBonus = responseTime < 3000 ? 1.5 : 1;
+            const advance = (10 * speedBonus);
+            this.gameState.playerProgress = Math.min(100, this.gameState.playerProgress + advance);
+
+            document.getElementById('raceFeedback').innerHTML = '<span style="color: #10b981;">¡Correcto! ⚡</span>';
+        } else {
+            btnElement.classList.add('incorrect');
+            this.player.stats.incorrectAnswers++;
+
+            if (window.soundSystem) {
+                window.soundSystem.playError();
+            }
+
+            // Solo avanzas un poco si fallas
+            this.gameState.playerProgress = Math.min(100, this.gameState.playerProgress + 2);
+
+            document.getElementById('raceFeedback').innerHTML = `<span style="color: #f59e0b;">Era ${this.currentQuestion.answer} 💡</span>`;
+        }
+
+        // Avance de oponentes (automático)
+        this.gameState.opponents.forEach((opp, index) => {
+            const advance = (10 * opp.speed) + (Math.random() * 3);
+            opp.progress = Math.min(100, opp.progress + advance);
+            document.getElementById(`opponent${index + 1}Position`).style.left = opp.progress + '%';
+        });
+
+        // Actualizar posición del jugador
+        document.getElementById('playerRacePosition').style.left = this.gameState.playerProgress + '%';
+
+        // Siguiente pregunta o fin
+        setTimeout(() => {
+            if (this.gameState.playerProgress >= 100) {
+                // Victoria anticipada!
+                this.endRaceMode(true);
+            } else {
+                this.showRaceQuestion();
+            }
+        }, 1500);
+    }
+
+    endRaceMode(earlyVictory = false) {
+        this.savePlayer();
+
+        // Determinar posición final
+        const positions = [
+            { name: this.player.name, progress: this.gameState.playerProgress, isPlayer: true },
+            ...this.gameState.opponents.map(opp => ({ name: opp.name, progress: opp.progress, isPlayer: false }))
+        ].sort((a, b) => b.progress - a.progress);
+
+        const playerPosition = positions.findIndex(p => p.isPlayer) + 1;
+
+        // Mostrar resultados
+        const modal = document.getElementById('resultsModal');
+        modal.classList.remove('hidden');
+
+        const resultsIcon = document.getElementById('resultsIcon');
+        const resultsTitle = document.getElementById('resultsTitle');
+
+        if (playerPosition === 1) {
+            resultsIcon.textContent = '🏆';
+            resultsTitle.textContent = '¡GANASTE LA CARRERA!';
+            this.player.medals.gold++;
+            if (window.soundSystem) window.soundSystem.playVictory();
+        } else if (playerPosition === 2) {
+            resultsIcon.textContent = '🥈';
+            resultsTitle.textContent = '¡2do Lugar!';
+            this.player.medals.silver++;
+        } else if (playerPosition === 3) {
+            resultsIcon.textContent = '🥉';
+            resultsTitle.textContent = '¡3er Lugar!';
+            this.player.medals.bronze++;
+        } else {
+            resultsIcon.textContent = '💪';
+            resultsTitle.textContent = '¡Sigue Practicando!';
+        }
+
+        document.getElementById('finalScore').textContent = this.gameState.playerProgress.toFixed(0) + '%';
+        document.getElementById('finalCorrect').textContent = this.gameState.correct;
+        document.getElementById('finalAccuracy').textContent = Math.round((this.gameState.correct / this.gameState.totalQuestions) * 100) + '%';
+
+        const rewards = document.getElementById('rewardsEarned');
+        rewards.innerHTML = `
+            <h3>Resultados:</h3>
+            <div class="reward-item">🏁 Posición: ${playerPosition}° lugar</div>
+            <div class="reward-item">📏 Distancia: ${this.gameState.playerProgress.toFixed(0)}%</div>
+        `;
+
+        if (playerPosition === 1) {
+            this.player.totalMedals++;
+            this.createConfetti();
+        }
+
+        this.savePlayer();
+    }
+
+    // ================================
+    // MODO BATALLA DE JEFES
+    // ================================
+
+    startBossMode() {
+        this.currentMode = 'boss';
+        this.showScreen('bossScreen');
+
+        // Configurar avatar del jugador
+        document.getElementById('playerBattleAvatar').textContent = this.player.avatar;
+        document.getElementById('playerBattleName').textContent = this.player.name;
+
+        this.gameState = {
+            mode: 'boss',
+            currentBoss: 1,
+            bossHealth: 100,
+            playerHealth: 100,
+            score: 0,
+            bossesDefeated: 0,
+            bosses: [
+                { table: 2, name: 'Jefe del 2', avatar: '👹', health: 100 },
+                { table: 3, name: 'Jefe del 3', avatar: '👺', health: 100 },
+                { table: 4, name: 'Jefe del 4', avatar: '🧟', health: 100 },
+                { table: 5, name: 'Jefe del 5', avatar: '👻', health: 100 },
+                { table: 6, name: 'Jefe del 6', avatar: '🤡', health: 100 },
+                { table: 7, name: 'Jefe del 7', avatar: '🧛', health: 100 },
+                { table: 8, name: 'Jefe del 8', avatar: '🧌', health: 100 },
+                { table: 9, name: 'Jefe del 9', avatar: '👽', health: 100 },
+                { table: 10, name: 'Jefe del 10', avatar: '🤖', health: 100 },
+                { table: 0, name: 'Jefe Final', avatar: '🐉', health: 150 } // Boss final: mix de todas
+            ]
+        };
+
+        this.startBossBattle();
+    }
+
+    startBossBattle() {
+        const boss = this.gameState.bosses[this.gameState.currentBoss - 1];
+
+        document.getElementById('currentBossNum').textContent = this.gameState.currentBoss;
+        document.getElementById('bossName').textContent = boss.name;
+        document.getElementById('bossAvatar').textContent = boss.avatar;
+        document.getElementById('bossHealthBar').style.width = '100%';
+        document.getElementById('bossHealthText').textContent = '100%';
+        document.getElementById('playerHealthBar').style.width = '100%';
+        document.getElementById('playerHealthText').textContent = '100%';
+
+        this.gameState.bossHealth = boss.health;
+        this.gameState.playerHealth = 100;
+
+        this.addBattleLog(`¡${boss.name} apareció!`, 'boss-attack');
+
+        if (window.soundSystem) {
+            window.soundSystem.playNotification();
+        }
+
+        this.showBossQuestion();
+    }
+
+    showBossQuestion() {
+        if (this.gameState.bossHealth <= 0) {
+            this.bossDefeated();
+            return;
+        }
+
+        if (this.gameState.playerHealth <= 0) {
+            this.playerDefeated();
+            return;
+        }
+
+        const boss = this.gameState.bosses[this.gameState.currentBoss - 1];
+        let table, multiplier;
+
+        if (boss.table === 0) {
+            // Jefe final: cualquier tabla
+            table = Math.floor(Math.random() * 10) + 1;
+        } else {
+            table = boss.table;
+        }
+
+        multiplier = Math.floor(Math.random() * 10) + 1;
+
+        this.currentQuestion = {
+            table: table,
+            multiplier: multiplier,
+            answer: table * multiplier,
+            startTime: Date.now()
+        };
+
+        document.getElementById('bossQuestion').textContent = `${table} × ${multiplier} = ?`;
+
+        this.generateBossOptions(this.currentQuestion.answer);
+    }
+
+    generateBossOptions(correctAnswer) {
+        const options = new Set([correctAnswer]);
+
+        while (options.size < 4) {
+            const offset = Math.floor(Math.random() * 20) - 10;
+            const wrongAnswer = correctAnswer + offset;
+            if (wrongAnswer > 0 && wrongAnswer !== correctAnswer) {
+                options.add(wrongAnswer);
+            }
+        }
+
+        const optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
+        const container = document.getElementById('bossAnswerOptions');
+        container.innerHTML = '';
+
+        optionsArray.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-option';
+            btn.textContent = option;
+            btn.addEventListener('click', () => this.handleBossAnswer(option, btn));
+            container.appendChild(btn);
+        });
+    }
+
+    handleBossAnswer(selectedAnswer, btnElement) {
+        const isCorrect = selectedAnswer === this.currentQuestion.answer;
+        const responseTime = Date.now() - this.currentQuestion.startTime;
+
+        // Deshabilitar botones
+        document.querySelectorAll('#bossAnswerOptions .answer-option').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            if (parseInt(btn.textContent) === this.currentQuestion.answer) {
+                btn.classList.add('correct');
+            }
+        });
+
+        // Registrar respuesta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, isCorrect, responseTime);
+        this.player.stats.totalQuestions++;
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            this.player.stats.correctAnswers++;
+            this.addXP(7);
+
+            // Ataque al jefe
+            const damage = 20;
+            this.gameState.bossHealth = Math.max(0, this.gameState.bossHealth - damage);
+
+            const bossHealthPercent = (this.gameState.bossHealth / this.gameState.bosses[this.gameState.currentBoss - 1].health) * 100;
+            document.getElementById('bossHealthBar').style.width = bossHealthPercent + '%';
+            document.getElementById('bossHealthText').textContent = Math.round(bossHealthPercent) + '%';
+
+            this.addBattleLog(`⚔️ ¡Atacaste al jefe! (-${damage} HP)`, 'player-attack');
+
+            if (window.soundSystem) {
+                window.soundSystem.playSuccess();
+                window.soundSystem.playStar();
+            }
+
+            // Animación de golpe
+            const bossAvatar = document.getElementById('bossAvatar');
+            bossAvatar.style.animation = 'none';
+            setTimeout(() => {
+                bossAvatar.style.animation = 'characterFloat 2s ease-in-out infinite';
+            }, 100);
+        } else {
+            btnElement.classList.add('incorrect');
+            this.player.stats.incorrectAnswers++;
+
+            // Contraataque del jefe
+            const damage = 15;
+            this.gameState.playerHealth = Math.max(0, this.gameState.playerHealth - damage);
+
+            const playerHealthPercent = this.gameState.playerHealth;
+            document.getElementById('playerHealthBar').style.width = playerHealthPercent + '%';
+            document.getElementById('playerHealthText').textContent = Math.round(playerHealthPercent) + '%';
+
+            this.addBattleLog(`💥 ¡El jefe contraatacó! (-${damage} HP)`, 'boss-attack');
+
+            if (window.soundSystem) {
+                window.soundSystem.playError();
+            }
+
+            // Animación de golpe al jugador
+            const playerAvatar = document.getElementById('playerBattleAvatar');
+            playerAvatar.style.animation = 'none';
+            setTimeout(() => {
+                playerAvatar.style.animation = 'characterFloat 2s ease-in-out infinite';
+            }, 100);
+        }
+
+        // Siguiente pregunta
+        setTimeout(() => {
+            this.showBossQuestion();
+        }, 1500);
+    }
+
+    addBattleLog(message, type = '') {
+        const log = document.getElementById('battleLog');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = message;
+        log.prepend(entry);
+
+        // Mantener solo últimas 10 entradas
+        while (log.children.length > 10) {
+            log.removeChild(log.lastChild);
+        }
+    }
+
+    bossDefeated() {
+        this.gameState.bossesDefeated++;
+        this.addBattleLog(`🎉 ¡Derrotaste a ${this.gameState.bosses[this.gameState.currentBoss - 1].name}!`, 'victory');
+
+        if (window.soundSystem) {
+            window.soundSystem.playVictory();
+        }
+
+        // Siguiente jefe o victoria final
+        if (this.gameState.currentBoss < 10) {
+            setTimeout(() => {
+                this.gameState.currentBoss++;
+                this.startBossBattle();
+            }, 2000);
+        } else {
+            // Victoria final!
+            setTimeout(() => {
+                this.endBossMode(true);
+            }, 2000);
+        }
+    }
+
+    playerDefeated() {
+        this.addBattleLog('💔 ¡Has sido derrotado!', 'boss-attack');
+
+        if (window.soundSystem) {
+            window.soundSystem.playError();
+        }
+
+        setTimeout(() => {
+            this.endBossMode(false);
+        }, 2000);
+    }
+
+    endBossMode(victory) {
+        this.savePlayer();
+
+        const modal = document.getElementById('resultsModal');
+        modal.classList.remove('hidden');
+
+        const resultsIcon = document.getElementById('resultsIcon');
+        const resultsTitle = document.getElementById('resultsTitle');
+
+        if (victory) {
+            resultsIcon.textContent = '👑';
+            resultsTitle.textContent = '¡VICTORIA ÉPICA!';
+            this.player.medals.gold += 3;
+            this.player.totalMedals += 3;
+            this.createConfetti();
+        } else {
+            resultsIcon.textContent = '⚔️';
+            resultsTitle.textContent = '¡Buen intento!';
+            if (this.gameState.bossesDefeated > 0) {
+                this.player.medals.bronze += this.gameState.bossesDefeated;
+                this.player.totalMedals += this.gameState.bossesDefeated;
+            }
+        }
+
+        document.getElementById('finalScore').textContent = this.gameState.bossesDefeated + '/10';
+        document.getElementById('finalCorrect').textContent = this.player.stats.correctAnswers;
+        document.getElementById('finalAccuracy').textContent = '-';
+
+        const rewards = document.getElementById('rewardsEarned');
+        rewards.innerHTML = `
+            <h3>Resultados:</h3>
+            <div class="reward-item">👾 Jefes Derrotados: ${this.gameState.bossesDefeated}/10</div>
+            ${victory ? '<div class="reward-item">👑 ¡Eres el Campeón Supremo!</div>' : ''}
+        `;
+
+        this.savePlayer();
     }
 
     // ================================

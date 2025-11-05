@@ -1180,3 +1180,431 @@ body::before {
 .sound-toggle.playing {
     animation: soundPulse 0.3s ease;
 }
+
+/* ================================
+   MODO CARRERA MATEMÁTICA
+   ================================ */
+
+.race-game {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.race-track {
+    background: linear-gradient(90deg, #4a5568 0%, #2d3748 50%, #1a202c 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.race-track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        white 0px,
+        white 20px,
+        transparent 20px,
+        transparent 40px
+    );
+    opacity: 0.3;
+}
+
+.race-lane {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.race-lane:last-child {
+    margin-bottom: 0;
+}
+
+.lane-label {
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.racer-avatar {
+    font-size: 2rem;
+}
+
+.racer-name {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.lane-progress {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.lane-bar {
+    flex: 1;
+    height: 50px;
+    background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+    border-radius: 10px;
+    position: relative;
+    overflow: visible;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.racer-position {
+    position: absolute;
+    top: -5px;
+    transform: translateX(-50%);
+    transition: left 0.5s ease-out;
+    z-index: 10;
+}
+
+.racer-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    animation: racerBounce 0.5s ease-in-out infinite;
+}
+
+@keyframes racerBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.finish-line {
+    font-size: 2.5rem;
+    animation: finishWave 1s ease-in-out infinite;
+}
+
+@keyframes finishWave {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.race-question-area {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.race-question-display {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.race-question-text {
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.race-answer-section {
+    margin-bottom: 20px;
+}
+
+.race-answer-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.race-feedback {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    min-height: 40px;
+}
+
+/* ================================
+   MODO BATALLA DE JEFES
+   ================================ */
+
+.boss-game {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.battle-arena {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.battle-arena::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.2) 0%, transparent 70%);
+    animation: battlePulse 3s ease-in-out infinite;
+}
+
+@keyframes battlePulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+.boss-container, .player-battle-container {
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+}
+
+.boss-info, .player-battle-info {
+    margin-bottom: 20px;
+}
+
+.boss-name, .player-battle-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.boss-avatar, .player-battle-avatar {
+    font-size: 6rem;
+    display: inline-block;
+    animation: characterFloat 2s ease-in-out infinite;
+}
+
+@keyframes characterFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.boss-avatar {
+    filter: drop-shadow(0 10px 30px rgba(239, 68, 68, 0.6));
+}
+
+.player-battle-avatar {
+    filter: drop-shadow(0 10px 30px rgba(16, 185, 129, 0.6));
+}
+
+.battle-vs {
+    font-size: 4rem;
+    z-index: 3;
+    animation: vsRotate 4s linear infinite;
+}
+
+@keyframes vsRotate {
+    0%, 100% { transform: rotate(-10deg) scale(1); }
+    50% { transform: rotate(10deg) scale(1.2); }
+}
+
+.boss-health, .player-health {
+    margin-top: 15px;
+}
+
+.health-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.health-bar {
+    width: 100%;
+    max-width: 300px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.health-fill {
+    height: 100%;
+    border-radius: 15px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.boss-health-fill {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+.player-health-fill {
+    background: linear-gradient(90deg, #10b981, #059669);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
+
+.health-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: healthShine 2s linear infinite;
+}
+
+@keyframes healthShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.battle-question-area {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.battle-instructions {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+.battle-question-display {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.battle-question-text {
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.battle-answer-section {
+    margin-bottom: 20px;
+}
+
+.battle-answer-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.battle-log {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.battle-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.battle-log::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.battle-log::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 5px;
+    animation: logSlideIn 0.3s ease;
+}
+
+@keyframes logSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.log-entry.player-attack {
+    background: rgba(16, 185, 129, 0.2);
+    border-left: 3px solid #10b981;
+}
+
+.log-entry.boss-attack {
+    background: rgba(239, 68, 68, 0.2);
+    border-left: 3px solid #ef4444;
+}
+
+.log-entry.victory {
+    background: rgba(255, 215, 0, 0.2);
+    border-left: 3px solid #ffd700;
+}
+
+/* Responsive para modos nuevos */
+@media (max-width: 768px) {
+    .race-lane {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lane-label {
+        justify-content: center;
+    }
+
+    .racer-icon {
+        font-size: 2rem;
+    }
+
+    .battle-arena {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .battle-vs {
+        margin: 20px 0;
+    }
+
+    .boss-avatar, .player-battle-avatar {
+        font-size: 4rem;
+    }
+
+    .race-question-text, .battle-question-text {
+        font-size: 2rem;
+    }
+
+    .race-answer-options, .battle-answer-options {
+        grid-template-columns: 1fr;
+    }
+}
