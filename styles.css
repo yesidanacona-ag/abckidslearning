@@ -3026,3 +3026,261 @@ body::before {
     border-color: var(--success) !important;
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.2) !important;
 }
+/* ================================
+   SISTEMA DE PAUSA GLOBAL
+   ================================ */
+
+/* Overlay de pausa */
+.pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    animation: pauseFadeIn 0.3s ease-out;
+}
+
+@keyframes pauseFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal de pausa */
+.pause-modal {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 30px;
+    padding: 40px;
+    min-width: 400px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pause-modal-show {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Header del menú de pausa */
+.pause-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.pause-header h2 {
+    color: white;
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 700;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Botones del menú de pausa */
+.pause-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.pause-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 24px;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Nunito', sans-serif;
+}
+
+.pause-btn-icon {
+    font-size: 1.3rem;
+}
+
+.pause-btn-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 6px 0 #047857, 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.pause-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 #047857, 0 12px 25px rgba(16, 185, 129, 0.5);
+}
+
+.pause-btn-primary:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #047857, 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.pause-btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pause-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pause-btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Controles de sonido/música */
+.pause-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.pause-control-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+.pause-control-label {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Toggle switches */
+.pause-toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pause-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.pause-toggle.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #10b981;
+}
+
+.pause-toggle.active .pause-toggle-slider {
+    left: 32px;
+    background: white;
+}
+
+.pause-toggle:hover {
+    transform: scale(1.05);
+}
+
+/* Botón flotante de pausa */
+.pause-button-float {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid white;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.pause-button-float:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+}
+
+.pause-button-float:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* Animación de pulsación sutil */
+@keyframes pauseButtonPulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+    }
+}
+
+.pause-button-float {
+    animation: pauseButtonPulse 3s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pause-modal {
+        min-width: 320px;
+        padding: 30px 20px;
+    }
+
+    .pause-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .pause-btn {
+        padding: 15px 20px;
+        font-size: 1rem;
+    }
+
+    .pause-button-float {
+        width: 45px;
+        height: 45px;
+        top: 15px;
+        left: 15px;
+    }
+}
+
+/* Tema claro - ajustes adicionales */
+body.light-theme .pause-modal {
+    background: linear-gradient(135deg, var(--baby-blue) 0%, var(--soft-pink) 100%);
+}
+
+body.light-theme .pause-control-label {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}

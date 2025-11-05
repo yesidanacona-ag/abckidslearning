@@ -137,6 +137,16 @@ class MultiplicationGame {
     showMainScreen() {
         this.updateHeader();
         this.showScreen('mainScreen');
+
+        // Ocultar botón de pausa en menú principal
+        if (window.pauseButton) {
+            window.pauseButton.hide();
+        }
+
+        // Cerrar menú de pausa si estaba abierto
+        if (window.pauseMenu && window.pauseMenu.isPaused) {
+            window.pauseMenu.hide();
+        }
     }
 
     updateHeader() {
@@ -299,6 +309,21 @@ class MultiplicationGame {
     startPracticeMode() {
         this.currentMode = 'practice';
         this.showScreen('practiceScreen');
+
+        // Mostrar botón de pausa
+        if (window.pauseButton) {
+            window.pauseButton.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startPracticeMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                this.showMainScreen();
+            });
+        }
 
         // Resetear selección
         document.querySelector('.practice-setup').classList.remove('hidden');
@@ -1073,6 +1098,21 @@ class MultiplicationGame {
             isActive: false
         };
 
+        // Mostrar botón de pausa
+        if (window.pauseButton) {
+            window.pauseButton.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startChallengeMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                this.showMainScreen();
+            });
+        }
+
         // Iniciar después de un countdown
         this.startChallengeCountdown();
     }
@@ -1275,6 +1315,21 @@ class MultiplicationGame {
             enemies: []
         };
 
+        // Mostrar botón de pausa
+        if (window.pauseButton) {
+            window.pauseButton.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startAdventureMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                this.showMainScreen();
+            });
+        }
+
         this.initSpaceGame();
     }
 
@@ -1414,6 +1469,21 @@ class MultiplicationGame {
     startRaceMode() {
         this.currentMode = 'race';
         this.showScreen('raceScreen');
+
+        // Mostrar botón de pausa
+        if (window.pauseButton) {
+            window.pauseButton.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startRaceMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                this.showMainScreen();
+            });
+        }
 
         // Configurar avatar del jugador
         document.getElementById('playerRaceAvatar').textContent = this.player.avatar;
@@ -1620,6 +1690,21 @@ class MultiplicationGame {
     startBossMode() {
         this.currentMode = 'boss';
         this.showScreen('bossScreen');
+
+        // Mostrar botón de pausa
+        if (window.pauseButton) {
+            window.pauseButton.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startBossMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                this.showMainScreen();
+            });
+        }
 
         // Configurar avatar del jugador
         document.getElementById('playerBattleAvatar').textContent = this.player.avatar;
