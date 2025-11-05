@@ -1807,16 +1807,10 @@ class MultiplicationGame {
             });
         }
 
-        // Configurar avatar del jugador
-        document.getElementById('playerBattleAvatar').textContent = this.player.avatar;
-        document.getElementById('playerBattleName').textContent = this.player.name;
-
+        // Estado de batalla
         this.gameState = {
             mode: 'boss',
             currentBoss: 1,
-            bossHealth: 100,
-            playerHealth: 100,
-            score: 0,
             bossesDefeated: 0,
             bosses: [
                 { table: 2, name: 'Jefe del 2', avatar: '👹', health: 100 },
@@ -1828,46 +1822,50 @@ class MultiplicationGame {
                 { table: 8, name: 'Jefe del 8', avatar: '🧌', health: 100 },
                 { table: 9, name: 'Jefe del 9', avatar: '👽', health: 100 },
                 { table: 10, name: 'Jefe del 10', avatar: '🤖', health: 100 },
-                { table: 0, name: 'Jefe Final', avatar: '🐉', health: 150 } // Boss final: mix de todas
+                { table: 0, name: 'Jefe Final', avatar: '🐉', health: 150 }
             ]
         };
 
+        // Iniciar motor de batalla
+        this.initBossGame();
+    }
+
+    initBossGame() {
+        // Crear instancia del motor de batalla épica
+        this.bossEngine = new BossGameEngine(
+            'bossGameContainer',
+            // Callback: jefe derrotado
+            () => this.handleBossDefeated(),
+            // Callback: jugador derrotado
+            () => this.handlePlayerDefeated()
+        );
+
+        // Configurar callbacks de respuestas
+        this.bossEngine.onCorrectAnswer = (points) => this.handleBossCorrect(points);
+        this.bossEngine.onWrongAnswer = () => this.handleBossWrong();
+
+        // Iniciar batalla con primer jefe
         this.startBossBattle();
     }
 
     startBossBattle() {
         const boss = this.gameState.bosses[this.gameState.currentBoss - 1];
 
+        // Actualizar número de jefe en header
         document.getElementById('currentBossNum').textContent = this.gameState.currentBoss;
-        document.getElementById('bossName').textContent = boss.name;
-        document.getElementById('bossAvatar').textContent = boss.avatar;
-        document.getElementById('bossHealthBar').style.width = '100%';
-        document.getElementById('bossHealthText').textContent = '100%';
-        document.getElementById('playerHealthBar').style.width = '100%';
-        document.getElementById('playerHealthText').textContent = '100%';
 
-        this.gameState.bossHealth = boss.health;
-        this.gameState.playerHealth = 100;
+        // Iniciar batalla en el motor
+        this.bossEngine.startBattle(boss, {
+            name: this.player.name,
+            avatar: this.player.avatar
+        });
 
-        this.addBattleLog(`¡${boss.name} apareció!`, 'boss-attack');
-
-        if (window.soundSystem) {
-            window.soundSystem.playNotification();
-        }
-
-        this.showBossQuestion();
+        // Generar primera pregunta
+        this.generateBossQuestion();
     }
 
-    showBossQuestion() {
-        if (this.gameState.bossHealth <= 0) {
-            this.bossDefeated();
-            return;
-        }
-
-        if (this.gameState.playerHealth <= 0) {
-            this.playerDefeated();
-            return;
-        }
+    generateBossQuestion() {
+        if (!this.bossEngine) return;
 
         const boss = this.gameState.bosses[this.gameState.currentBoss - 1];
         let table, multiplier;
@@ -1880,162 +1878,127 @@ class MultiplicationGame {
         }
 
         multiplier = Math.floor(Math.random() * 10) + 1;
+        const answer = table * multiplier;
 
-        this.currentQuestion = {
-            table: table,
-            multiplier: multiplier,
-            answer: table * multiplier,
-            startTime: Date.now()
-        };
-
-        document.getElementById('bossQuestion').textContent = `${table} × ${multiplier} = ?`;
-
-        this.generateBossOptions(this.currentQuestion.answer);
-    }
-
-    generateBossOptions(correctAnswer) {
-        const options = new Set([correctAnswer]);
-
+        // Generar opciones
+        const options = new Set([answer]);
         while (options.size < 4) {
-            const offset = Math.floor(Math.random() * 20) - 10;
-            const wrongAnswer = correctAnswer + offset;
-            if (wrongAnswer > 0 && wrongAnswer !== correctAnswer) {
+            const wrongAnswer = answer + Math.floor(Math.random() * 20) - 10;
+            if (wrongAnswer > 0 && wrongAnswer !== answer) {
                 options.add(wrongAnswer);
             }
         }
 
-        const optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
-        const container = document.getElementById('bossAnswerOptions');
-        container.innerHTML = '';
+        // Guardar pregunta actual
+        this.currentQuestion = {
+            table: table,
+            multiplier: multiplier,
+            answer: answer
+        };
 
-        optionsArray.forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-option';
-            btn.textContent = option;
-            btn.addEventListener('click', () => this.handleBossAnswer(option, btn));
-            container.appendChild(btn);
-        });
+        // Enviar pregunta al motor
+        this.bossEngine.setQuestion(table, multiplier, Array.from(options));
     }
 
-    handleBossAnswer(selectedAnswer, btnElement) {
-        const isCorrect = selectedAnswer === this.currentQuestion.answer;
-        const responseTime = Date.now() - this.currentQuestion.startTime;
-
-        // Deshabilitar botones
-        document.querySelectorAll('#bossAnswerOptions .answer-option').forEach(btn => {
-            btn.style.pointerEvents = 'none';
-            if (parseInt(btn.textContent) === this.currentQuestion.answer) {
-                btn.classList.add('correct');
-            }
-        });
-
-        // Registrar respuesta
-        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, isCorrect, responseTime);
+    handleBossCorrect(points) {
+        // Registrar respuesta correcta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, true, 0);
         this.player.stats.totalQuestions++;
+        this.player.stats.correctAnswers++;
 
-        if (isCorrect) {
-            btnElement.classList.add('correct');
-            this.player.stats.correctAnswers++;
-            this.addXP(7);
+        // Agregar XP
+        this.addXP(7);
 
-            // Ataque al jefe
-            const damage = 20;
-            this.gameState.bossHealth = Math.max(0, this.gameState.bossHealth - damage);
+        // Agregar estrellas
+        if (window.coinSystem) {
+            const baseStars = points;
+            const multiplier = window.fireModeSystem ? window.fireModeSystem.getMultiplier() : 1;
+            const starsToAdd = baseStars * multiplier;
 
-            const bossHealthPercent = (this.gameState.bossHealth / this.gameState.bosses[this.gameState.currentBoss - 1].health) * 100;
-            document.getElementById('bossHealthBar').style.width = bossHealthPercent + '%';
-            document.getElementById('bossHealthText').textContent = Math.round(bossHealthPercent) + '%';
-
-            this.addBattleLog(`⚔️ ¡Atacaste al jefe! (-${damage} HP)`, 'player-attack');
-
-            if (window.soundSystem) {
-                window.soundSystem.playSuccess();
-                window.soundSystem.playStar();
-            }
-
-            // Animación de golpe
-            const bossAvatar = document.getElementById('bossAvatar');
-            bossAvatar.style.animation = 'none';
-            setTimeout(() => {
-                bossAvatar.style.animation = 'characterFloat 2s ease-in-out infinite';
-            }, 100);
-        } else {
-            btnElement.classList.add('incorrect');
-            this.player.stats.incorrectAnswers++;
-
-            // Contraataque del jefe
-            const damage = 15;
-            this.gameState.playerHealth = Math.max(0, this.gameState.playerHealth - damage);
-
-            const playerHealthPercent = this.gameState.playerHealth;
-            document.getElementById('playerHealthBar').style.width = playerHealthPercent + '%';
-            document.getElementById('playerHealthText').textContent = Math.round(playerHealthPercent) + '%';
-
-            this.addBattleLog(`💥 ¡El jefe contraatacó! (-${damage} HP)`, 'boss-attack');
-
-            if (window.soundSystem) {
-                window.soundSystem.playError();
-            }
-
-            // Animación de golpe al jugador
-            const playerAvatar = document.getElementById('playerBattleAvatar');
-            playerAvatar.style.animation = 'none';
-            setTimeout(() => {
-                playerAvatar.style.animation = 'characterFloat 2s ease-in-out infinite';
-            }, 100);
+            window.coinSystem.addStars(starsToAdd, {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            });
         }
 
-        // Siguiente pregunta
+        // Tracking de misiones
+        this.trackMissionCorrectAnswer();
+
+        // Incrementar racha de fuego
+        if (window.fireModeSystem) {
+            window.fireModeSystem.incrementStreak();
+        }
+
+        // Feedback visual
+        if (window.feedbackSystem) {
+            window.feedbackSystem.showCorrectFeedback();
+        }
+
+        // Generar siguiente pregunta
         setTimeout(() => {
-            this.showBossQuestion();
-        }, 1500);
+            this.generateBossQuestion();
+        }, 500);
     }
 
-    addBattleLog(message, type = '') {
-        const log = document.getElementById('battleLog');
-        const entry = document.createElement('div');
-        entry.className = `log-entry ${type}`;
-        entry.textContent = message;
-        log.prepend(entry);
+    handleBossWrong() {
+        // Registrar respuesta incorrecta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, false, 0);
+        this.player.stats.totalQuestions++;
+        this.player.stats.incorrectAnswers++;
 
-        // Mantener solo últimas 10 entradas
-        while (log.children.length > 10) {
-            log.removeChild(log.lastChild);
+        // Resetear racha de fuego
+        if (window.fireModeSystem) {
+            window.fireModeSystem.resetStreak();
         }
+
+        // Feedback visual
+        if (window.feedbackSystem) {
+            window.feedbackSystem.showWrongFeedback();
+        }
+
+        // Mostrar truco mnemónico
+        if (window.mnemonicTricksSystem) {
+            const trick = window.mnemonicTricksSystem.getTrick(
+                this.currentQuestion.table,
+                this.currentQuestion.multiplier
+            );
+            if (trick) {
+                setTimeout(() => {
+                    window.mnemonicTricksSystem.showTrick(trick);
+                }, 1000);
+            }
+        }
+
+        // Generar siguiente pregunta
+        setTimeout(() => {
+            this.generateBossQuestion();
+        }, 500);
     }
 
-    bossDefeated() {
+    handleBossDefeated() {
+        // Incrementar contador
         this.gameState.bossesDefeated++;
-        this.addBattleLog(`🎉 ¡Derrotaste a ${this.gameState.bosses[this.gameState.currentBoss - 1].name}!`, 'victory');
 
-        // Tracking de misión: Jefe derrotado
+        // Tracking de misión
         this.trackMissionBossWin();
 
-        if (window.soundSystem) {
-            window.soundSystem.playVictory();
-        }
-
-        // Siguiente jefe o victoria final
+        // Verificar si hay más jefes
         if (this.gameState.currentBoss < 10) {
+            // Siguiente jefe
+            this.gameState.currentBoss++;
             setTimeout(() => {
-                this.gameState.currentBoss++;
                 this.startBossBattle();
-            }, 2000);
+            }, 3000);
         } else {
-            // Victoria final!
+            // Victoria final
             setTimeout(() => {
                 this.endBossMode(true);
-            }, 2000);
+            }, 3000);
         }
     }
 
-    playerDefeated() {
-        this.addBattleLog('💔 ¡Has sido derrotado!', 'boss-attack');
-
-        if (window.soundSystem) {
-            window.soundSystem.playError();
-        }
-
+    handlePlayerDefeated() {
+        // Esperar un poco y mostrar resultados
         setTimeout(() => {
             this.endBossMode(false);
         }, 2000);

@@ -456,60 +456,9 @@
         </div>
 
         <div class="boss-game">
-            <!-- Arena de Batalla -->
-            <div class="battle-arena">
-                <div class="boss-container">
-                    <div class="boss-info">
-                        <div class="boss-name" id="bossName">Jefe del 2</div>
-                        <div class="boss-avatar" id="bossAvatar">👹</div>
-                    </div>
-                    <div class="boss-health">
-                        <div class="health-label">Vida del Jefe</div>
-                        <div class="health-bar">
-                            <div class="health-fill boss-health-fill" id="bossHealthBar" style="width: 100%">
-                                <span id="bossHealthText">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="battle-vs">⚔️</div>
-
-                <div class="player-battle-container">
-                    <div class="player-battle-info">
-                        <div class="player-battle-name" id="playerBattleName">Tú</div>
-                        <div class="player-battle-avatar" id="playerBattleAvatar">🦸</div>
-                    </div>
-                    <div class="player-health">
-                        <div class="health-label">Tu Vida</div>
-                        <div class="health-bar">
-                            <div class="health-fill player-health-fill" id="playerHealthBar" style="width: 100%">
-                                <span id="playerHealthText">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Área de Combate -->
-            <div class="battle-question-area">
-                <div class="battle-instructions" id="battleInstructions">
-                    ¡Responde correctamente para atacar al jefe! ⚔️
-                </div>
-
-                <div class="battle-question-display">
-                    <div class="battle-question-text" id="bossQuestion">¡Prepárate!</div>
-                </div>
-
-                <div class="battle-answer-section">
-                    <div class="battle-answer-options" id="bossAnswerOptions">
-                        <!-- Generado dinámicamente -->
-                    </div>
-                </div>
-
-                <div class="battle-log" id="battleLog">
-                    <!-- Log de batalla -->
-                </div>
+            <!-- Contenedor del Motor de Batalla Épica -->
+            <div id="bossGameContainer" class="boss-game-container">
+                <!-- El BossGameEngine genera todo el contenido aquí -->
             </div>
         </div>
     </div>
@@ -663,6 +612,7 @@
     <script src="shopSystem.js"></script>
     <script src="dailyMissionsSystem.js"></script>
     <script src="spaceGameEngine.js"></script>
+    <script src="bossGameEngine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

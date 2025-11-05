@@ -4740,4 +4740,644 @@ body.light-theme .pause-control-label {
     .streak-reward-title {
         font-size: 1.5rem;
     }
+
+    /* Ajustes para batalla épica en móvil */
+    .boss-game-container {
+        padding: 10px;
+    }
+
+    .battle-entity {
+        transform: scale(0.85);
+    }
+
+    .battle-question {
+        font-size: 2rem;
+    }
+
+    .battle-option {
+        font-size: 1.3rem;
+        padding: 15px;
+    }
+}
+
+/* ================================
+   BATALLA DE JEFES ÉPICA
+   ================================ */
+
+.boss-game-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 600px;
+}
+
+/* Indicador de turno */
+.battle-turn-indicator {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 40px;
+    border-radius: 15px;
+    z-index: 10;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.battle-turn-indicator.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.battle-turn-indicator.boss-turn {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.battle-turn-indicator.player-turn {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.turn-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.turn-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+/* Entidades de batalla */
+.battle-entity {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.boss-entity {
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-entity {
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.entity-avatar {
+    font-size: 6rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    animation: characterFloat 3s ease-in-out infinite;
+    transition: all 0.3s ease;
+}
+
+.boss-avatar {
+    animation-delay: 0s;
+}
+
+.player-avatar {
+    animation-delay: 1.5s;
+}
+
+.entity-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Barras de vida */
+.entity-health-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 300px;
+}
+
+.health-bar {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.health-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boss-health-bar .health-fill {
+    background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+}
+
+.health-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Fase del jefe */
+.boss-phase {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.boss-phase.phase-1 {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.boss-phase.phase-2 {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.boss-phase.phase-3 {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    animation: pulse 0.5s ease-in-out infinite;
+}
+
+/* Capa de animación con canvas */
+.battle-animation-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+#battleCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Súper-ataque */
+.super-attack-container {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    min-width: 200px;
+    transition: all 0.3s ease;
+}
+
+.super-attack-bar {
+    position: relative;
+    width: 100%;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.super-attack-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    transition: width 0.5s ease;
+}
+
+.super-attack-text {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.super-attack-container.ready {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+    animation: glow 1s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.super-attack-container.ready .super-attack-text {
+    color: #FFD700;
+}
+
+.super-attack-button {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: none;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.super-attack-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+.super-attack-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Área de pregunta */
+.battle-question-area {
+    position: absolute;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    z-index: 6;
+}
+
+.battle-question {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #FFD700;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease;
+}
+
+.battle-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.battle-option {
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: rgba(99, 102, 241, 0.3);
+    border: 3px solid var(--primary);
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.battle-option:hover {
+    transform: scale(1.05);
+    background: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 5px 20px rgba(99, 102, 241, 0.5);
+}
+
+.battle-option.correct {
+    background: linear-gradient(135deg, #10B981, #059669);
+    border-color: #10B981;
+    animation: correctPulse 0.5s ease;
+}
+
+.battle-option.incorrect {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    border-color: #EF4444;
+    animation: shake 0.5s ease;
+}
+
+/* Log de batalla */
+.battle-log {
+    position: absolute;
+    top: 120px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    overflow-y: auto;
+    z-index: 7;
+}
+
+.battle-log-entry {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: white;
+    animation: slideInRight 0.3s ease;
+}
+
+.battle-log-entry.player {
+    background: rgba(16, 185, 129, 0.3);
+    border-left: 4px solid #10B981;
+}
+
+.battle-log-entry.boss {
+    background: rgba(239, 68, 68, 0.3);
+    border-left: 4px solid #EF4444;
+}
+
+.battle-log-entry.special {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+    border-left: 4px solid #FFD700;
+    font-weight: bold;
+}
+
+.battle-log-entry.victory {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3));
+    border-left: 4px solid #10B981;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* Modal de cofre */
+.chest-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.chest-modal.hidden {
+    display: none;
+}
+
+.chest-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.chest-animation {
+    font-size: 8rem;
+    margin-bottom: 20px;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.chest-animation.opening {
+    animation: spin 1s ease;
+}
+
+.chest-title {
+    font-size: 2rem;
+    color: #FFD700;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.chest-rewards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    animation: slideInUp 0.5s ease;
+}
+
+.reward-item.special {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+    border: 2px solid #FFD700;
+    animation: glow 1s ease-in-out infinite;
+}
+
+.reward-icon {
+    font-size: 2.5rem;
+}
+
+.reward-text {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: white;
+}
+
+.chest-open-btn,
+.chest-continue-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+.chest-open-btn {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.chest-open-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+}
+
+.chest-continue-btn {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.chest-continue-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+
+/* Animaciones de batalla */
+@keyframes characterFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.entity-avatar.attack {
+    animation: attackBounce 0.6s ease;
+}
+
+@keyframes attackBounce {
+    0% { transform: scale(1) translateY(0); }
+    30% { transform: scale(1.2) translateY(-20px); }
+    50% { transform: scale(1.1) translateY(-10px) rotate(10deg); }
+    70% { transform: scale(1.15) translateY(-15px) rotate(-10deg); }
+    100% { transform: scale(1) translateY(0) rotate(0); }
+}
+
+.entity-avatar.defend {
+    animation: defendPulse 0.6s ease;
+}
+
+@keyframes defendPulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(78, 205, 196, 0)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(78, 205, 196, 1)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(78, 205, 196, 0)); }
+}
+
+.entity-avatar.miss {
+    animation: missShake 0.4s ease;
+}
+
+@keyframes missShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.entity-avatar.victory {
+    animation: victoryJump 1s ease;
+}
+
+@keyframes victoryJump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-30px) scale(1.2); }
+    60% { transform: translateY(-15px) scale(1.1); }
+}
+
+.battle-entity.shake {
+    animation: entityShake 0.5s ease;
+}
+
+@keyframes entityShake {
+    0%, 100% { transform: translateX(-50%); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(calc(-50% - 10px)); }
+    20%, 40%, 60%, 80% { transform: translateX(calc(-50% + 10px)); }
+}
+
+.battle-entity.defeated {
+    animation: fadeOut 1s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(30px); }
+}
+
+/* Fase 2 del jefe */
+.boss-entity.phase-2 .boss-avatar {
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8));
+}
+
+/* Fase 3 del jefe */
+.boss-entity.phase-3 .boss-avatar {
+    filter: drop-shadow(0 0 20px rgba(239, 68, 68, 1));
+    animation: characterFloat 1s ease-in-out infinite, rage 0.3s ease-in-out infinite;
+}
+
+@keyframes rage {
+    0%, 100% { transform: translateY(-10px) scale(1); }
+    50% { transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(720deg) scale(1.2); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
