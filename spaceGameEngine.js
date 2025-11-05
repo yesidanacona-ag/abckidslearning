@@ -401,16 +401,15 @@ class SpaceGameEngine {
         this.ship.boost = true;
         this.ship.boostTimer = 30;
 
-        // Callback
-        this.onCorrectAnswer(points);
-
         // Limpiar asteroides restantes
         this.asteroids = [];
 
-        // Siguiente pregunta
-        setTimeout(() => {
-            this.nextQuestion();
-        }, 500);
+        // Callback que generará la siguiente pregunta en app.js
+        console.log('📞 Llamando callback onCorrectAnswer...');
+        this.onCorrectAnswer(points);
+
+        // NOTA: app.js se encargará de llamar a setQuestion() con la siguiente pregunta
+        // No llamamos a nextQuestion() aquí para evitar race conditions
     }
 
     handleWrongHit(asteroid) {
@@ -515,6 +514,7 @@ class SpaceGameEngine {
         };
 
         console.log(`❓ Nueva pregunta: ${table} × ${multiplier} = ${this.currentQuestion.answer}`);
+        console.log(`📋 Opciones:`, options);
 
         this.spawnAsteroids();
     }
@@ -704,28 +704,57 @@ class SpaceGameEngine {
     }
 
     renderUI() {
-        // Pregunta actual
-        if (this.currentQuestion) {
-            this.ctx.fillStyle = '#FFFFFF';
-            this.ctx.font = 'bold 32px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText(
-                `${this.currentQuestion.table} × ${this.currentQuestion.multiplier} = ?`,
-                this.width / 2,
-                40
-            );
-        }
-
         // Vidas (en la esquina superior izquierda)
         this.ctx.font = '24px Arial';
         this.ctx.textAlign = 'left';
         this.ctx.fillStyle = '#EF4444';
-        this.ctx.fillText('❤️'.repeat(this.lives), 20, 40);
+        this.ctx.fillText('❤️'.repeat(this.lives), 20, 30);
 
         // Score (esquina superior derecha)
         this.ctx.textAlign = 'right';
         this.ctx.fillStyle = '#FFD700';
-        this.ctx.fillText(`⭐ ${this.score}`, this.width - 20, 40);
+        this.ctx.fillText(`⭐ ${this.score}`, this.width - 20, 30);
+
+        // Pregunta actual (GRANDE Y CENTRADA)
+        if (this.currentQuestion) {
+            // Fondo semitransparente para la pregunta
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            this.ctx.fillRect(0, 50, this.width, 80);
+
+            // Borde decorativo
+            this.ctx.strokeStyle = '#8B5CF6';
+            this.ctx.lineWidth = 3;
+            this.ctx.strokeRect(0, 50, this.width, 80);
+
+            // Texto de la pregunta - MUY GRANDE
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+
+            // Sombra para el texto
+            this.ctx.shadowColor = '#000000';
+            this.ctx.shadowBlur = 10;
+            this.ctx.shadowOffsetX = 2;
+            this.ctx.shadowOffsetY = 2;
+
+            // Texto principal
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.font = 'bold 48px Arial';
+            this.ctx.fillText(
+                `${this.currentQuestion.table} × ${this.currentQuestion.multiplier} = ?`,
+                this.width / 2,
+                90
+            );
+
+            // Resetear sombra
+            this.ctx.shadowBlur = 0;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+
+            // Instrucción
+            this.ctx.fillStyle = '#A78BFA';
+            this.ctx.font = '16px Arial';
+            this.ctx.fillText('Toca el asteroide con la respuesta correcta', this.width / 2, 140);
+        }
     }
 
     // =============================
