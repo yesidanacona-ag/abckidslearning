@@ -2929,9 +2929,13 @@ body::before {
 
 /* Modal overlay con mejor contraste */
 .modal,
-.modal-overlay,
-.tutorial-overlay {
+.modal-overlay {
     background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Tutorial overlay sin background directo (usa backdrop interno) */
+.tutorial-overlay {
+    background: transparent !important;
 }
 
 .modal-content,

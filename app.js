@@ -2500,6 +2500,7 @@ class AdaptiveSystem {
 class TutorialSystem {
     constructor() {
         this.currentStep = 0;
+        this.listenersAdded = false;
         this.steps = [
             {
                 emoji: '👋',
@@ -2560,8 +2561,21 @@ class TutorialSystem {
     }
 
     setupEventListeners() {
-        document.getElementById('tutorialNext').addEventListener('click', () => this.nextStep());
-        document.getElementById('tutorialSkip').addEventListener('click', () => this.skip());
+        // Solo agregar listeners una vez para evitar duplicados
+        if (this.listenersAdded) return;
+
+        const nextBtn = document.getElementById('tutorialNext');
+        const skipBtn = document.getElementById('tutorialSkip');
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextStep());
+        }
+
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => this.skip());
+        }
+
+        this.listenersAdded = true;
     }
 
     showStep(stepIndex) {
@@ -2662,11 +2676,39 @@ class TutorialSystem {
     }
 
     complete() {
-        document.getElementById('tutorialOverlay').style.display = 'none';
+        // Ocultar y limpiar todo el tutorial
+        const overlay = document.getElementById('tutorialOverlay');
+        const spotlight = document.getElementById('tutorialSpotlight');
+        const content = document.getElementById('tutorialContent');
+
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+
+        if (spotlight) {
+            spotlight.classList.remove('active');
+            spotlight.style.width = '0';
+            spotlight.style.height = '0';
+        }
+
+        if (content) {
+            content.style.top = '';
+            content.style.left = '';
+            content.style.transform = '';
+        }
+
+        // Marcar como completado
         localStorage.setItem('tutorialCompleted', 'true');
 
+        // Sonido de éxito
         if (window.soundSystem) {
             window.soundSystem.playSuccess();
+        }
+
+        // Asegurar que la pantalla principal sea interactuable
+        const mainScreen = document.getElementById('mainScreen');
+        if (mainScreen) {
+            mainScreen.style.pointerEvents = 'auto';
         }
     }
 }
