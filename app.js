@@ -1730,6 +1730,9 @@ class MultiplicationGame {
             (finalScore, level) => this.handleSpaceGameOver(finalScore, level)
         );
 
+        // Iniciar el juego
+        this.spaceEngine.start();
+
         // Generar primera pregunta
         this.generateSpaceQuestion();
     }
