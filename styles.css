@@ -2295,14 +2295,14 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.5);  /* Reducido de 0.85 a 0.5 - mucho más suave */
     animation: tutorialFadeIn 0.3s ease-out;
 }
 
 .tutorial-spotlight {
     position: absolute;
     border-radius: 15px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);  /* Reducido de 0.85 a 0.5 */
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     pointer-events: none;
     z-index: 10001;
@@ -2314,11 +2314,11 @@ body::before {
 
 @keyframes spotlightPulse {
     0%, 100% {
-        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85),
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),  /* Reducido de 0.85 a 0.5 */
                     0 0 30px rgba(99, 102, 241, 0.6);
     }
     50% {
-        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85),
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),  /* Reducido de 0.85 a 0.5 */
                     0 0 50px rgba(99, 102, 241, 0.9);
     }
 }

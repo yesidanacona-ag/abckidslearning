@@ -2547,10 +2547,23 @@ class TutorialSystem {
     }
 
     start() {
-        if (!this.shouldShow()) return;
+        console.log('🚀 Tutorial: start() llamado');
 
+        if (!this.shouldShow()) {
+            console.log('⏭️ Tutorial: Ya fue visto, no mostrando');
+            return;
+        }
+
+        console.log('✅ Tutorial: Primera vez, mostrando tutorial');
         this.currentStep = 0;
-        document.getElementById('tutorialOverlay').style.display = 'block';
+
+        const overlay = document.getElementById('tutorialOverlay');
+        if (overlay) {
+            overlay.style.display = 'block';
+            console.log('✅ Tutorial: Overlay mostrado');
+        } else {
+            console.error('❌ Tutorial: No se encontró tutorialOverlay');
+        }
 
         if (window.soundSystem) {
             window.soundSystem.playClick();
@@ -2562,20 +2575,40 @@ class TutorialSystem {
 
     setupEventListeners() {
         // Solo agregar listeners una vez para evitar duplicados
-        if (this.listenersAdded) return;
+        if (this.listenersAdded) {
+            console.log('⚠️ Tutorial: Listeners ya agregados, saltando');
+            return;
+        }
 
+        console.log('🔧 Tutorial: Configurando event listeners...');
         const nextBtn = document.getElementById('tutorialNext');
         const skipBtn = document.getElementById('tutorialSkip');
 
+        console.log('🔍 Tutorial: nextBtn encontrado?', !!nextBtn);
+        console.log('🔍 Tutorial: skipBtn encontrado?', !!skipBtn);
+
         if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextStep());
+            nextBtn.addEventListener('click', () => {
+                console.log('▶️ Tutorial: Click en Next/Siguiente');
+                this.nextStep();
+            });
+            console.log('✅ Tutorial: Listener agregado a Next');
+        } else {
+            console.error('❌ Tutorial: No se encontró botón Next (#tutorialNext)');
         }
 
         if (skipBtn) {
-            skipBtn.addEventListener('click', () => this.skip());
+            skipBtn.addEventListener('click', () => {
+                console.log('⏭️ Tutorial: Click en Saltar');
+                this.skip();
+            });
+            console.log('✅ Tutorial: Listener agregado a Skip');
+        } else {
+            console.error('❌ Tutorial: No se encontró botón Skip (#tutorialSkip)');
         }
 
         this.listenersAdded = true;
+        console.log('✅ Tutorial: Event listeners configurados exitosamente');
     }
 
     showStep(stepIndex) {
@@ -2672,44 +2705,69 @@ class TutorialSystem {
     }
 
     skip() {
+        console.log('⏭️ Tutorial: Método skip() llamado');
         this.complete();
     }
 
     complete() {
+        console.log('🏁 Tutorial: Iniciando complete()...');
+
         // Ocultar y limpiar todo el tutorial
         const overlay = document.getElementById('tutorialOverlay');
         const spotlight = document.getElementById('tutorialSpotlight');
         const content = document.getElementById('tutorialContent');
 
+        console.log('🔍 Tutorial: Elementos encontrados:', {
+            overlay: !!overlay,
+            spotlight: !!spotlight,
+            content: !!content
+        });
+
         if (overlay) {
             overlay.style.display = 'none';
+            console.log('✅ Tutorial: Overlay ocultado');
+        } else {
+            console.error('❌ Tutorial: No se encontró overlay');
         }
 
         if (spotlight) {
             spotlight.classList.remove('active');
             spotlight.style.width = '0';
             spotlight.style.height = '0';
+            console.log('✅ Tutorial: Spotlight limpiado');
+        } else {
+            console.error('❌ Tutorial: No se encontró spotlight');
         }
 
         if (content) {
             content.style.top = '';
             content.style.left = '';
             content.style.transform = '';
+            console.log('✅ Tutorial: Content reseteado');
+        } else {
+            console.error('❌ Tutorial: No se encontró content');
         }
 
         // Marcar como completado
         localStorage.setItem('tutorialCompleted', 'true');
+        console.log('✅ Tutorial: Marcado como completado en localStorage');
 
         // Sonido de éxito
         if (window.soundSystem) {
             window.soundSystem.playSuccess();
+            console.log('🔊 Tutorial: Sonido de éxito reproducido');
         }
 
         // Asegurar que la pantalla principal sea interactuable
         const mainScreen = document.getElementById('mainScreen');
         if (mainScreen) {
             mainScreen.style.pointerEvents = 'auto';
+            console.log('✅ Tutorial: mainScreen pointer-events restaurado a auto');
+        } else {
+            console.error('❌ Tutorial: No se encontró mainScreen');
         }
+
+        console.log('🎉 Tutorial: Complete() finalizado exitosamente');
     }
 }
 

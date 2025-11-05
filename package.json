@@ -2,8 +2,8 @@
   "name": "abckidslearning",
   "version": "1.0.0",
   "description": "App educativa de multiplicación para niños con Mateo el Mago",
-  "type": "module",
   "scripts": {
+    "start": "node server.js",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
