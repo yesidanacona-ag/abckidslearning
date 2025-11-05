@@ -1,0 +1,168 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradiente de fondo suave -->
+  <defs>
+    <linearGradient id="libraryBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF9F0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFE6D5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bookSpine1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bookSpine2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bookSpine3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo base -->
+  <rect width="1200" height="800" fill="url(#libraryBg)"/>
+
+  <!-- Estantes de libros izquierda -->
+  <g id="leftShelf">
+    <!-- Estante superior -->
+    <rect x="50" y="100" width="250" height="15" fill="#8B4513" rx="3"/>
+    <!-- Libros fila 1 -->
+    <rect x="60" y="45" width="30" height="55" fill="url(#bookSpine1)" rx="2"/>
+    <rect x="60" y="40" width="30" height="5" fill="#4F46E5" rx="1"/>
+    <rect x="95" y="50" width="35" height="50" fill="url(#bookSpine2)" rx="2"/>
+    <rect x="95" y="45" width="35" height="5" fill="#059669" rx="1"/>
+    <rect x="135" y="55" width="28" height="45" fill="url(#bookSpine3)" rx="2"/>
+    <rect x="135" y="50" width="28" height="5" fill="#D97706" rx="1"/>
+    <rect x="168" y="48" width="32" height="52" fill="#EC4899" rx="2"/>
+    <rect x="168" y="43" width="32" height="5" fill="#DB2777" rx="1"/>
+    <rect x="205" y="52" width="30" height="48" fill="#06B6D4" rx="2"/>
+    <rect x="205" y="47" width="30" height="5" fill="#0891B2" rx="1"/>
+    <rect x="240" y="45" width="35" height="55" fill="#A855F7" rx="2"/>
+    <rect x="240" y="40" width="35" height="5" fill="#9333EA" rx="1"/>
+
+    <!-- Estante medio -->
+    <rect x="50" y="250" width="250" height="15" fill="#8B4513" rx="3"/>
+    <!-- Libros fila 2 -->
+    <rect x="60" y="195" width="33" height="55" fill="#EF4444" rx="2"/>
+    <rect x="60" y="190" width="33" height="5" fill="#DC2626" rx="1"/>
+    <rect x="98" y="200" width="30" height="50" fill="url(#bookSpine1)" rx="2"/>
+    <rect x="98" y="195" width="30" height="5" fill="#4F46E5" rx="1"/>
+    <rect x="133" y="193" width="35" height="57" fill="#14B8A6" rx="2"/>
+    <rect x="133" y="188" width="35" height="5" fill="#0D9488" rx="1"/>
+    <rect x="173" y="198" width="32" height="52" fill="url(#bookSpine3)" rx="2"/>
+    <rect x="173" y="193" width="32" height="5" fill="#D97706" rx="1"/>
+    <rect x="210" y="202" width="28" height="48" fill="#EC4899" rx="2"/>
+    <rect x="210" y="197" width="28" height="5" fill="#DB2777" rx="1"/>
+    <rect x="243" y="195" width="37" height="55" fill="#06B6D4" rx="2"/>
+    <rect x="243" y="190" width="37" height="5" fill="#0891B2" rx="1"/>
+  </g>
+
+  <!-- Estantes de libros derecha -->
+  <g id="rightShelf">
+    <!-- Estante superior derecho -->
+    <rect x="900" y="100" width="250" height="15" fill="#8B4513" rx="3"/>
+    <!-- Libros fila 1 -->
+    <rect x="910" y="48" width="32" height="52" fill="url(#bookSpine2)" rx="2"/>
+    <rect x="910" y="43" width="32" height="5" fill="#059669" rx="1"/>
+    <rect x="947" y="52" width="35" height="48" fill="#A855F7" rx="2"/>
+    <rect x="947" y="47" width="35" height="5" fill="#9333EA" rx="1"/>
+    <rect x="987" y="45" width="30" height="55" fill="url(#bookSpine3)" rx="2"/>
+    <rect x="987" y="40" width="30" height="5" fill="#D97706" rx="1"/>
+    <rect x="1022" y="50" width="33" height="50" fill="#EF4444" rx="2"/>
+    <rect x="1022" y="45" width="33" height="5" fill="#DC2626" rx="1"/>
+    <rect x="1060" y="47" width="38" height="53" fill="url(#bookSpine1)" rx="2"/>
+    <rect x="1060" y="42" width="38" height="5" fill="#4F46E5" rx="1"/>
+    <rect x="1103" y="52" width="30" height="48" fill="#10B981" rx="2"/>
+    <rect x="1103" y="47" width="30" height="5" fill="#059669" rx="1"/>
+
+    <!-- Estante medio derecho -->
+    <rect x="900" y="250" width="250" height="15" fill="#8B4513" rx="3"/>
+    <!-- Libros fila 2 -->
+    <rect x="910" y="197" width="35" height="53" fill="#06B6D4" rx="2"/>
+    <rect x="910" y="192" width="35" height="5" fill="#0891B2" rx="1"/>
+    <rect x="950" y="200" width="30" height="50" fill="url(#bookSpine3)" rx="2"/>
+    <rect x="950" y="195" width="30" height="5" fill="#D97706" rx="1"/>
+    <rect x="985" y="195" width="35" height="55" fill="#EC4899" rx="2"/>
+    <rect x="985" y="190" width="35" height="5" fill="#DB2777" rx="1"/>
+    <rect x="1025" y="198" width="32" height="52" fill="url(#bookSpine1)" rx="2"/>
+    <rect x="1025" y="193" width="32" height="5" fill="#4F46E5" rx="1"/>
+    <rect x="1062" y="202" width="28" height="48" fill="#14B8A6" rx="2"/>
+    <rect x="1062" y="197" width="28" height="5" fill="#0D9488" rx="1"/>
+    <rect x="1095" y="195" width="38" height="55" fill="#A855F7" rx="2"/>
+    <rect x="1095" y="190" width="38" height="5" fill="#9333EA" rx="1"/>
+  </g>
+
+  <!-- Libros flotantes mágicos -->
+  <g id="floatingBooks">
+    <!-- Libro flotante 1 -->
+    <g transform="rotate(-15 400 300)">
+      <rect x="380" y="280" width="40" height="50" fill="url(#bookSpine1)" rx="2" opacity="0.8">
+        <animate attributeName="y" values="280;270;280" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="380" y="275" width="40" height="5" fill="#4F46E5" rx="1" opacity="0.8">
+        <animate attributeName="y" values="275;265;275" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <!-- Chispas -->
+      <circle cx="390" cy="290" r="2" fill="#FFD700" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="cy" values="290;280;290" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- Libro flotante 2 -->
+    <g transform="rotate(12 800 350)">
+      <rect x="780" y="330" width="45" height="55" fill="url(#bookSpine2)" rx="2" opacity="0.8">
+        <animate attributeName="y" values="330;340;330" dur="3.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="780" y="325" width="45" height="5" fill="#059669" rx="1" opacity="0.8">
+        <animate attributeName="y" values="325;335;325" dur="3.5s" repeatCount="indefinite"/>
+      </rect>
+      <!-- Chispas -->
+      <circle cx="792" cy="345" r="2" fill="#A8DAFF" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0;0.6" dur="2.2s" repeatCount="indefinite"/>
+        <animate attributeName="cy" values="345;355;345" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- Libro flotante 3 -->
+    <g transform="rotate(-8 600 200)">
+      <rect x="580" y="180" width="38" height="48" fill="url(#bookSpine3)" rx="2" opacity="0.8">
+        <animate attributeName="y" values="180;175;180" dur="2.8s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="580" y="175" width="38" height="5" fill="#D97706" rx="1" opacity="0.8">
+        <animate attributeName="y" values="175;170;175" dur="2.8s" repeatCount="indefinite"/>
+      </rect>
+      <!-- Chispas -->
+      <circle cx="592" cy="192" r="2" fill="#FFB6D9" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0;0.6" dur="1.9s" repeatCount="indefinite"/>
+        <animate attributeName="cy" values="192;187;192" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+
+  <!-- Estrellas mágicas flotantes -->
+  <circle cx="200" cy="150" r="3" fill="#FFD700" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1000" cy="180" r="2.5" fill="#A8DAFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="350" cy="120" r="2" fill="#FFB6D9" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="850" cy="140" r="2.5" fill="#FFE66D" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;1;0.4" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Lámpara mágica central (opcional) -->
+  <g id="magicLamp" transform="translate(580 30)">
+    <ellipse cx="20" cy="5" rx="20" ry="5" fill="#D4AF37" opacity="0.3"/>
+    <line x1="20" y1="5" x2="20" y2="40" stroke="#D4AF37" stroke-width="2"/>
+    <circle cx="20" cy="50" r="18" fill="#FFE66D" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="20" cy="50" r="12" fill="#FFF9C4" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

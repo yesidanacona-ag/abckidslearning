@@ -1,0 +1,60 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="clockBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE6D5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD6A5;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="energyGlow">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#clockBg)"/>
+
+  <!-- Reloj gigante en el centro -->
+  <circle cx="600" cy="400" r="180" fill="#FFFFFF" opacity="0.9" stroke="#F59E0B" stroke-width="8"/>
+  <circle cx="600" cy="400" r="160" fill="none" stroke="#FBBF24" stroke-width="4" stroke-dasharray="10 5"/>
+
+  <!-- Números del reloj -->
+  <text x="600" y="250" text-anchor="middle" font-size="32" font-weight="bold" fill="#F59E0B">12</text>
+  <text x="740" y="410" text-anchor="middle" font-size="32" font-weight="bold" fill="#F59E0B">3</text>
+  <text x="600" y="560" text-anchor="middle" font-size="32" font-weight="bold" fill="#F59E0B">6</text>
+  <text x="460" y="410" text-anchor="middle" font-size="32" font-weight="bold" fill="#F59E0B">9</text>
+
+  <!-- Manecillas -->
+  <line x1="600" y1="400" x2="600" y2="280" stroke="#EF4444" stroke-width="6" stroke-linecap="round">
+    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 600 400" to="360 600 400" dur="4s" repeatCount="indefinite"/>
+  </line>
+  <line x1="600" y1="400" x2="680" y2="400" stroke="#6366F1" stroke-width="8" stroke-linecap="round">
+    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 600 400" to="360 600 400" dur="12s" repeatCount="indefinite"/>
+  </line>
+  <circle cx="600" cy="400" r="12" fill="#F59E0B"/>
+
+  <!-- Rayos de energía -->
+  <g opacity="0.6">
+    <line x1="600" y1="400" x2="450" y2="250" stroke="#FBBF24" stroke-width="4" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.5s" repeatCount="indefinite"/>
+    </line>
+    <line x1="600" y1="400" x2="750" y2="250" stroke="#F59E0B" stroke-width="4" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="1.8s" repeatCount="indefinite"/>
+    </line>
+    <line x1="600" y1="400" x2="800" y2="400" stroke="#FBBF24" stroke-width="4" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.3s" repeatCount="indefinite"/>
+    </line>
+    <line x1="600" y1="400" x2="750" y2="550" stroke="#F59E0B" stroke-width="4" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.6;0.3;0.6" dur="1.6s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- Chispas dinámicas -->
+  <circle cx="450" cy="300" r="8" fill="#FFE66D">
+    <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="750" cy="300" r="6" fill="#F59E0B">
+    <animate attributeName="r" values="6;10;6" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="750" cy="500" r="7" fill="#FBBF24">
+    <animate attributeName="r" values="7;11;7" dur="0.9s" repeatCount="indefinite"/>
+  </circle>
+</svg>

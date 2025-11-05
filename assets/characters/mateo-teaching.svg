@@ -1,0 +1,70 @@
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sombrero de mago -->
+  <path d="M100 20 L140 80 L60 80 Z" fill="#6366F1" stroke="#4F46E5" stroke-width="3"/>
+  <ellipse cx="100" cy="80" rx="45" ry="8" fill="#4F46E5"/>
+  <circle cx="75" cy="50" r="8" fill="#FFD700"/>
+  <circle cx="85" cy="35" r="6" fill="#FFC700"/>
+  <circle cx="110" cy="45" r="7" fill="#FFE66D"/>
+
+  <!-- Varita apuntando (enseñando) -->
+  <line x1="145" y1="150" x2="175" y2="125" stroke="#8B4513" stroke-width="4" stroke-linecap="round"/>
+  <path d="M175 120 L182 125 L172 127 L180 132 L175 126 L168 130 L175 120 Z" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+
+  <!-- Destello en punta de varita -->
+  <circle cx="177" cy="123" r="5" fill="#FFF" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Cara (círculo) -->
+  <circle cx="100" cy="120" r="40" fill="#FFD4A3" stroke="#E6B87A" stroke-width="3"/>
+
+  <!-- Ojos amigables y sabios -->
+  <circle cx="87" cy="115" r="6" fill="#000"/>
+  <circle cx="113" cy="115" r="6" fill="#000"/>
+  <circle cx="88" cy="113" r="2.5" fill="#FFF"/>
+  <circle cx="114" cy="113" r="2.5" fill="#FFF"/>
+
+  <!-- Cejas sabias -->
+  <path d="M78 105 Q84 103 90 105" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M110 105 Q116 103 122 105" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Sonrisa amable enseñando -->
+  <path d="M85 130 Q100 138 115 130" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Mejillas -->
+  <circle cx="75" cy="125" r="8" fill="#FFB6D9" opacity="0.6"/>
+  <circle cx="125" cy="125" r="8" fill="#FFB6D9" opacity="0.6"/>
+
+  <!-- Cuerpo (túnica) -->
+  <path d="M60 160 L140 160 L145 220 L55 220 Z" fill="#7C3AED" stroke="#6D28D9" stroke-width="3"/>
+
+  <!-- Cinturón -->
+  <rect x="60" y="160" width="80" height="8" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+  <circle cx="100" cy="164" r="5" fill="#FF6B9D" stroke="#FF4D8D" stroke-width="2"/>
+
+  <!-- Brazo izquierdo abajo -->
+  <ellipse cx="50" cy="175" rx="12" ry="25" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2"/>
+  <!-- Brazo derecho levantado con varita -->
+  <ellipse cx="145" cy="155" rx="12" ry="28" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2" transform="rotate(20 145 155)"/>
+
+  <!-- Estrellas túnica -->
+  <circle cx="80" cy="185" r="4" fill="#FFE66D" opacity="0.8"/>
+  <circle cx="100" cy="195" r="5" fill="#A8DAFF" opacity="0.8"/>
+  <circle cx="120" cy="185" r="4" fill="#FFB6D9" opacity="0.8"/>
+
+  <!-- Pizarra mágica flotante con números -->
+  <rect x="25" y="130" width="50" height="40" rx="5" fill="#1E293B" opacity="0.9" stroke="#475569" stroke-width="2"/>
+  <text x="35" y="152" font-size="18" fill="#10B981" font-weight="bold" font-family="monospace">2×5</text>
+  <text x="35" y="168" font-size="18" fill="#FFD700" font-weight="bold" font-family="monospace">=10</text>
+
+  <!-- Chispas de conocimiento -->
+  <circle cx="30" cy="125" r="3" fill="#FFE66D" opacity="0.7">
+    <animate attributeName="cy" values="125;115;125" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="70" cy="120" r="2.5" fill="#A8DAFF" opacity="0.6">
+    <animate attributeName="cy" values="120;110;120" dur="2.3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="25" cy="145" r="2" fill="#FFB6D9" opacity="0.5">
+    <animate attributeName="cy" values="145;135;145" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+</svg>

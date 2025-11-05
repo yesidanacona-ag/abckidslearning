@@ -1,0 +1,57 @@
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sombrero de mago -->
+  <path d="M100 20 L140 80 L60 80 Z" fill="#6366F1" stroke="#4F46E5" stroke-width="3"/>
+  <ellipse cx="100" cy="80" rx="45" ry="8" fill="#4F46E5"/>
+  <circle cx="75" cy="50" r="8" fill="#FFD700"/>
+  <circle cx="85" cy="35" r="6" fill="#FFC700"/>
+  <circle cx="110" cy="45" r="7" fill="#FFE66D"/>
+
+  <!-- Varita tocando la barbilla -->
+  <line x1="110" y1="145" x2="125" y2="155" stroke="#8B4513" stroke-width="4" stroke-linecap="round"/>
+  <path d="M125 150 L130 157 L120 156 L127 163 L124 155 L117 158 L125 150 Z" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+
+  <!-- Cara (círculo) -->
+  <circle cx="100" cy="120" r="40" fill="#FFD4A3" stroke="#E6B87A" stroke-width="3"/>
+
+  <!-- Ojos mirando hacia arriba pensando -->
+  <circle cx="87" cy="110" r="6" fill="#000"/>
+  <circle cx="113" cy="110" r="6" fill="#000"/>
+  <circle cx="88" cy="108" r="2" fill="#FFF"/>
+  <circle cx="114" cy="108" r="2" fill="#FFF"/>
+
+  <!-- Cejas pensativas -->
+  <path d="M78 100 Q84 97 90 100" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M110 100 Q116 97 122 100" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Boca pensativa (pequeña O) -->
+  <ellipse cx="100" cy="132" rx="6" ry="8" fill="none" stroke="#000" stroke-width="2.5"/>
+
+  <!-- Cuerpo (túnica) -->
+  <path d="M60 160 L140 160 L145 220 L55 220 Z" fill="#7C3AED" stroke="#6D28D9" stroke-width="3"/>
+
+  <!-- Cinturón -->
+  <rect x="60" y="160" width="80" height="8" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+  <circle cx="100" cy="164" r="5" fill="#FF6B9D" stroke="#FF4D8D" stroke-width="2"/>
+
+  <!-- Brazos -->
+  <ellipse cx="50" cy="175" rx="12" ry="25" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2"/>
+  <!-- Brazo derecho doblado pensando -->
+  <ellipse cx="135" cy="160" rx="12" ry="22" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2" transform="rotate(25 135 160)"/>
+
+  <!-- Estrellas túnica -->
+  <circle cx="80" cy="185" r="4" fill="#FFE66D" opacity="0.8"/>
+  <circle cx="100" cy="195" r="5" fill="#A8DAFF" opacity="0.8"/>
+  <circle cx="120" cy="185" r="4" fill="#FFB6D9" opacity="0.8"/>
+
+  <!-- Nube de pensamiento -->
+  <circle cx="140" cy="90" r="12" fill="#FFF" opacity="0.9" stroke="#CBD5E1" stroke-width="2"/>
+  <circle cx="150" cy="80" r="15" fill="#FFF" opacity="0.9" stroke="#CBD5E1" stroke-width="2"/>
+  <circle cx="165" cy="85" r="13" fill="#FFF" opacity="0.9" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Signos de interrogación en la nube -->
+  <text x="145" y="92" font-size="24" fill="#6366F1" font-weight="bold">?</text>
+
+  <!-- Burbujas pequeñas de pensamiento -->
+  <circle cx="125" cy="100" r="5" fill="#FFF" opacity="0.8" stroke="#CBD5E1" stroke-width="1.5"/>
+  <circle cx="132" cy="95" r="7" fill="#FFF" opacity="0.85" stroke="#CBD5E1" stroke-width="1.5"/>
+</svg>

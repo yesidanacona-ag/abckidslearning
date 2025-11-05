@@ -1,0 +1,8 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="55" fill="#EF4444" opacity="0.3"/>
+  <circle cx="60" cy="60" r="50" fill="#EF4444"/>
+  <text x="60" y="75" text-anchor="middle" font-size="48" fill="#FFF">⚡</text>
+  <path d="M20 60 L40 60" stroke="#FFD700" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <path d="M15 50 L35 50" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <path d="M15 70 L35 70" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="55" fill="#A8DAFF" opacity="0.3"/>
+  <circle cx="60" cy="60" r="50" fill="#6366F1"/>
+  <text x="60" y="75" text-anchor="middle" font-size="48" fill="#FFF">👶</text>
+  <path d="M35 85 Q40 90 45 85 Q50 80 55 85 Q60 90 65 85 Q70 80 75 85 Q80 90 85 85" stroke="#FFD700" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

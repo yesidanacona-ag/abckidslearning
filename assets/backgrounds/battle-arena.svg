@@ -1,0 +1,85 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="arenaBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#991B1B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C2D12;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="fireGlow">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#EF4444;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#arenaBg)"/>
+
+  <!-- Plataforma de arena -->
+  <ellipse cx="600" cy="600" rx="500" ry="150" fill="#A16207" opacity="0.5"/>
+  <ellipse cx="600" cy="595" rx="480" ry="140" fill="#B45309" opacity="0.6"/>
+
+  <!-- Pilares de lava -->
+  <g id="leftPillar" transform="translate(150 300)">
+    <rect x="0" y="0" width="60" height="300" fill="#78350F" opacity="0.8"/>
+    <rect x="5" y="5" width="50" height="290" fill="#92400E" opacity="0.7"/>
+    <!-- Antorcha -->
+    <ellipse cx="30" cy="-10" rx="25" ry="35" fill="url(#fireGlow)">
+      <animate attributeName="ry" values="35;45;35" dur="1s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="30" cy="-15" rx="18" ry="25" fill="#F59E0B">
+      <animate attributeName="ry" values="25;32;25" dur="1s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="30" cy="-20" rx="12" ry="18" fill="#FDE047">
+      <animate attributeName="ry" values="18;23;18" dur="1s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <g id="rightPillar" transform="translate(990 300)">
+    <rect x="0" y="0" width="60" height="300" fill="#78350F" opacity="0.8"/>
+    <rect x="5" y="5" width="50" height="290" fill="#92400E" opacity="0.7"/>
+    <!-- Antorcha -->
+    <ellipse cx="30" cy="-10" rx="25" ry="35" fill="url(#fireGlow)">
+      <animate attributeName="ry" values="35;45;35" dur="1.2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="30" cy="-15" rx="18" ry="25" fill="#F59E0B">
+      <animate attributeName="ry" values="25;32;25" dur="1.2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="30" cy="-20" rx="12" ry="18" fill="#FDE047">
+      <animate attributeName="ry" values="18;23;18" dur="1.2s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Círculo de batalla central -->
+  <circle cx="600" cy="400" r="200" fill="none" stroke="#F59E0B" stroke-width="6" opacity="0.7"/>
+  <circle cx="600" cy="400" r="220" fill="none" stroke="#EF4444" stroke-width="4" stroke-dasharray="20 10" opacity="0.5"/>
+
+  <!-- Símbolos mágicos en el círculo -->
+  <text x="600" y="230" text-anchor="middle" font-size="36" font-weight="bold" fill="#FBBF24" opacity="0.8">⚔️</text>
+  <text x="770" y="410" text-anchor="middle" font-size="36" font-weight="bold" fill="#FBBF24" opacity="0.8">⚡</text>
+  <text x="600" y="580" text-anchor="middle" font-size="36" font-weight="bold" fill="#FBBF24" opacity="0.8">🔥</text>
+  <text x="430" y="410" text-anchor="middle" font-size="36" font-weight="bold" fill="#FBBF24" opacity="0.8">✨</text>
+
+  <!-- Chispas flotantes -->
+  <circle cx="300" cy="250" r="4" fill="#F59E0B" opacity="0.8">
+    <animate attributeName="cy" values="250;230;250" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="900" cy="280" r="5" fill="#EF4444" opacity="0.7">
+    <animate attributeName="cy" values="280;260;280" dur="2.3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="500" cy="220" r="3" fill="#FDE047" opacity="0.9">
+    <animate attributeName="cy" values="220;205;220" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="700" cy="240" r="4" fill="#F59E0B" opacity="0.8">
+    <animate attributeName="cy" values="240;225;240" dur="2.1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Rayos de energía desde el centro -->
+  <line x1="600" y1="400" x2="500" y2="300" stroke="#FBBF24" stroke-width="3" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.5s" repeatCount="indefinite"/>
+  </line>
+  <line x1="600" y1="400" x2="700" y2="300" stroke="#EF4444" stroke-width="3" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.7s" repeatCount="indefinite"/>
+  </line>
+</svg>

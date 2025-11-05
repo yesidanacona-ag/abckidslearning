@@ -1,0 +1,58 @@
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sombrero de mago -->
+  <path d="M100 20 L140 80 L60 80 Z" fill="#6366F1" stroke="#4F46E5" stroke-width="3"/>
+  <ellipse cx="100" cy="80" rx="45" ry="8" fill="#4F46E5"/>
+  <circle cx="75" cy="50" r="8" fill="#FFD700"/>
+  <circle cx="85" cy="35" r="6" fill="#FFC700"/>
+  <circle cx="110" cy="45" r="7" fill="#FFE66D"/>
+
+  <!-- Varita mágica con estrella -->
+  <line x1="160" y1="140" x2="180" y2="170" stroke="#8B4513" stroke-width="4" stroke-linecap="round"/>
+  <path d="M180 160 L185 170 L175 168 L180 178 L178 168 L170 170 L180 160 Z" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+  <circle cx="182" cy="165" r="3" fill="#FFF" opacity="0.8"/>
+  <circle cx="175" cy="162" r="2" fill="#FFF" opacity="0.6"/>
+
+  <!-- Cara (círculo) -->
+  <circle cx="100" cy="120" r="40" fill="#FFD4A3" stroke="#E6B87A" stroke-width="3"/>
+
+  <!-- Ojos felices -->
+  <path d="M85 112 Q87 118 89 112" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M111 112 Q113 118 115 112" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Sonrisa grande -->
+  <path d="M85 130 Q100 140 115 130" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Mejillas sonrojadas -->
+  <circle cx="75" cy="125" r="8" fill="#FFB6D9" opacity="0.6"/>
+  <circle cx="125" cy="125" r="8" fill="#FFB6D9" opacity="0.6"/>
+
+  <!-- Cuerpo (túnica) -->
+  <path d="M60 160 L140 160 L145 220 L55 220 Z" fill="#7C3AED" stroke="#6D28D9" stroke-width="3"/>
+
+  <!-- Cinturón -->
+  <rect x="60" y="160" width="80" height="8" fill="#FFD700" stroke="#FFC700" stroke-width="2"/>
+  <circle cx="100" cy="164" r="5" fill="#FF6B9D" stroke="#FF4D8D" stroke-width="2"/>
+
+  <!-- Brazos -->
+  <ellipse cx="50" cy="175" rx="12" ry="25" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2"/>
+  <ellipse cx="150" cy="175" rx="12" ry="25" fill="#FFD4A3" stroke="#E6B87A" stroke-width="2"/>
+
+  <!-- Detalles de la túnica (estrellas) -->
+  <circle cx="80" cy="185" r="4" fill="#FFE66D" opacity="0.8"/>
+  <circle cx="100" cy="195" r="5" fill="#A8DAFF" opacity="0.8"/>
+  <circle cx="120" cy="185" r="4" fill="#FFB6D9" opacity="0.8"/>
+
+  <!-- Partículas mágicas flotantes -->
+  <circle cx="45" cy="100" r="3" fill="#FFD700" opacity="0.7">
+    <animate attributeName="cy" values="100;95;100" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="155" cy="110" r="2.5" fill="#A8DAFF" opacity="0.6">
+    <animate attributeName="cy" values="110;105;110" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="40" cy="130" r="2" fill="#FFB6D9" opacity="0.5">
+    <animate attributeName="cy" values="130;125;130" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+</svg>

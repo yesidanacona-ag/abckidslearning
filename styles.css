@@ -6,6 +6,7 @@
 }
 
 :root {
+    /* Colores primarios - más infantiles */
     --primary: #6366f1;
     --primary-dark: #4f46e5;
     --secondary: #ec4899;
@@ -16,19 +17,40 @@
     --cyan: #06b6d4;
     --orange: #f97316;
 
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-card: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
+    /* Colores infantiles pastel */
+    --baby-blue: #A8DAFF;
+    --soft-pink: #FFB6D9;
+    --mint-green: #B4F8C8;
+    --sunny-yellow: #FFE66D;
+    --lavender: #C9A9E9;
+    --peach: #FFD4A3;
+    --cream: #FFF9F0;
 
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
+    /* Tema CLARO infantil */
+    --bg-primary: #FFF9F0; /* Crema suave */
+    --bg-secondary: #FFFAEB; /* Amarillo pálido */
+    --bg-card: #FFFFFF; /* Blanco puro */
+    --text-primary: #1F2937; /* Gris oscuro legible */
+    --text-secondary: #6B7280; /* Gris medio */
+
+    /* Sombras suaves para tema claro */
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+    --shadow-3d: 0 8px 0 rgba(0, 0, 0, 0.15);
+
+    /* Sistema de espaciado */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
 }
 
 body {
-    font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Nunito', 'Quicksand', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, var(--baby-blue) 0%, var(--soft-pink) 100%);
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -36,9 +58,20 @@ body {
 }
 
 /* Fuentes especiales para títulos y elementos destacados */
-h1, h2, h3, .title-main, .question-text, .question-text-large {
-    font-family: 'Fredoka', 'Quicksand', sans-serif !important;
+h1, h2, h3, .title-main {
+    font-family: 'Fredoka', 'Nunito', sans-serif !important;
     font-weight: 600;
+}
+
+/* Números grandes con efecto cartoon */
+.question-text, .question-text-large, .answer-option {
+    font-family: 'Poppins', 'Fredoka', 'Nunito', sans-serif !important;
+    font-weight: 800;
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8);
+    paint-order: stroke fill;
+    text-shadow:
+        3px 3px 0px rgba(0, 0, 0, 0.1),
+        5px 5px 10px rgba(0, 0, 0, 0.08);
 }
 
 /* Mejorar legibilidad para niños */
@@ -299,7 +332,7 @@ body::before {
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
 }
 
-/* Botones */
+/* Botones con efecto 3D */
 .btn-primary, .btn-secondary, .btn-back {
     padding: 15px 40px;
     font-size: 1.2rem;
@@ -308,21 +341,72 @@ body::before {
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
+    box-shadow:
+        var(--shadow-3d),
+        var(--shadow);
+    transform: translateY(0);
+}
+
+/* Animación de brillo */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+        0 10px 0 rgba(0, 0, 0, 0.15),
+        0 15px 40px rgba(99, 102, 241, 0.4);
 }
 
 .btn-primary:active {
-    transform: translateY(-1px);
+    transform: translateY(4px) scale(0.98);
+    box-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.15),
+        0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Estado de carga */
+.btn-primary.loading {
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn-primary.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 3px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .btn-secondary {
