@@ -344,18 +344,12 @@
         </div>
 
         <div class="adventure-game">
-            <canvas id="spaceCanvas" width="800" height="400"></canvas>
+            <canvas id="spaceCanvas" width="800" height="600"></canvas>
 
-            <div class="space-question-overlay">
-                <div class="space-question" id="spaceQuestion">5 × 7 = ?</div>
-                <div class="space-options" id="spaceOptions">
-                    <!-- Opciones generadas dinámicamente -->
-                </div>
-            </div>
-
-            <div class="space-stats">
-                <div>Planeta: <span id="planetLevel">1</span>/10</div>
-                <div>Puntos: <span id="spaceScore">0</span></div>
+            <!-- Instrucciones -->
+            <div class="space-instructions">
+                <p>🎯 Toca los asteroides con la respuesta correcta</p>
+                <p>💎 Recoge power-ups para obtener ventajas</p>
             </div>
         </div>
     </div>
@@ -668,6 +662,7 @@
     <script src="fireModeSystem.js"></script>
     <script src="shopSystem.js"></script>
     <script src="dailyMissionsSystem.js"></script>
+    <script src="spaceGameEngine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

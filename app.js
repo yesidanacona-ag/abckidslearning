@@ -1414,132 +1414,143 @@ class MultiplicationGame {
     }
 
     initSpaceGame() {
-        const canvas = document.getElementById('spaceCanvas');
-        const ctx = canvas.getContext('2d');
+        // Crear instancia del motor de juego espacial
+        this.spaceEngine = new SpaceGameEngine(
+            'spaceCanvas',
+            // Callback: respuesta correcta
+            (points) => this.handleSpaceCorrect(points),
+            // Callback: respuesta incorrecta
+            (selectedValue, correctValue) => this.handleSpaceWrong(selectedValue, correctValue),
+            // Callback: game over
+            (finalScore, level) => this.handleSpaceGameOver(finalScore, level)
+        );
 
-        // Animación de fondo espacial con estrellas
-        this.spaceAnimation = {
-            stars: [],
-            rocket: { x: canvas.width / 2, y: canvas.height - 100 }
-        };
-
-        // Generar estrellas
-        for (let i = 0; i < 100; i++) {
-            this.spaceAnimation.stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2
-            });
-        }
-
-        this.animateSpace(ctx, canvas);
-        this.showSpaceQuestion();
+        // Generar primera pregunta
+        this.generateSpaceQuestion();
     }
 
-    animateSpace(ctx, canvas) {
-        ctx.fillStyle = '#000428';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    generateSpaceQuestion() {
+        if (!this.spaceEngine) return;
 
-        // Dibujar estrellas
-        this.spaceAnimation.stars.forEach(star => {
-            ctx.fillStyle = 'white';
-            ctx.fillRect(star.x, star.y, star.size, star.size);
-            star.y += 0.5;
-            if (star.y > canvas.height) star.y = 0;
-        });
-
-        // Dibujar cohete
-        ctx.font = '40px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('🚀', this.spaceAnimation.rocket.x, this.spaceAnimation.rocket.y);
-
-        if (this.gameState.mode === 'adventure') {
-            requestAnimationFrame(() => this.animateSpace(ctx, canvas));
-        }
-    }
-
-    showSpaceQuestion() {
+        // Obtener tablas sugeridas por el sistema adaptativo
         const tables = this.adaptiveSystem.getSuggestedTables();
         const table = tables[Math.floor(Math.random() * tables.length)];
         const multiplier = Math.floor(Math.random() * 10) + 1;
+        const answer = table * multiplier;
 
+        // Generar opciones incorrectas
+        const options = new Set([answer]);
+        while (options.size < 4) {
+            const wrongAnswer = answer + Math.floor(Math.random() * 20) - 10;
+            if (wrongAnswer > 0 && wrongAnswer !== answer) {
+                options.add(wrongAnswer);
+            }
+        }
+
+        // Guardar pregunta actual
         this.currentQuestion = {
             table: table,
             multiplier: multiplier,
-            answer: table * multiplier
+            answer: answer
         };
 
-        document.getElementById('spaceQuestion').textContent = `${table} × ${multiplier} = ?`;
-        document.getElementById('planetLevel').textContent = this.gameState.planet;
-        document.getElementById('spaceScore').textContent = this.gameState.score;
-
-        this.updateLivesDisplay();
-        this.generateSpaceOptions(this.currentQuestion.answer);
+        // Enviar pregunta al motor
+        this.spaceEngine.setQuestion(table, multiplier, Array.from(options));
     }
 
-    generateSpaceOptions(correctAnswer) {
-        const options = new Set([correctAnswer]);
-
-        while (options.size < 4) {
-            const wrongAnswer = correctAnswer + Math.floor(Math.random() * 20) - 10;
-            if (wrongAnswer > 0) options.add(wrongAnswer);
-        }
-
-        const container = document.getElementById('spaceOptions');
-        container.innerHTML = '';
-
-        Array.from(options).sort(() => Math.random() - 0.5).forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = 'space-option';
-            btn.textContent = option;
-            btn.addEventListener('click', () => this.handleSpaceAnswer(option));
-            container.appendChild(btn);
-        });
-    }
-
-    handleSpaceAnswer(selectedAnswer) {
-        const isCorrect = selectedAnswer === this.currentQuestion.answer;
-
-        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, isCorrect, 0);
+    handleSpaceCorrect(points) {
+        // Registrar respuesta correcta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, true, 0);
         this.player.stats.totalQuestions++;
+        this.player.stats.correctAnswers++;
 
-        if (isCorrect) {
-            this.gameState.score += 20;
-            this.gameState.planet++;
-            this.player.stats.correctAnswers++;
-            this.addXP(5);
-            this.createMiniConfetti();
+        // Agregar puntos y XP
+        this.gameState.score += points;
+        this.gameState.planet++;
+        this.addXP(5);
 
-            if (this.gameState.planet > 10) {
-                this.showNotification('¡Has completado la aventura espacial! 🚀', 'success');
+        // Agregar estrellas del sistema de monedas
+        if (window.coinSystem) {
+            const baseStars = 10;
+            const multiplier = window.fireModeSystem ? window.fireModeSystem.getMultiplier() : 1;
+            const starsToAdd = baseStars * multiplier;
+
+            window.coinSystem.addStars(starsToAdd, {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            });
+        }
+
+        // Tracking de misiones
+        this.trackMissionCorrectAnswer();
+
+        // Incrementar racha de fuego
+        if (window.fireModeSystem) {
+            window.fireModeSystem.incrementStreak();
+        }
+
+        // Feedback visual
+        if (window.feedbackSystem) {
+            window.feedbackSystem.showCorrectFeedback();
+        }
+
+        // Generar siguiente pregunta
+        setTimeout(() => {
+            this.generateSpaceQuestion();
+        }, 500);
+    }
+
+    handleSpaceWrong(selectedValue, correctValue) {
+        // Registrar respuesta incorrecta
+        this.adaptiveSystem.recordAnswer(this.currentQuestion.table, false, 0);
+        this.player.stats.totalQuestions++;
+        this.player.stats.incorrectAnswers++;
+
+        // Resetear racha de fuego
+        if (window.fireModeSystem) {
+            window.fireModeSystem.resetStreak();
+        }
+
+        // Feedback visual
+        if (window.feedbackSystem) {
+            window.feedbackSystem.showWrongFeedback();
+        }
+
+        // Mostrar truco mnemónico si está disponible
+        if (window.mnemonicTricksSystem) {
+            const trick = window.mnemonicTricksSystem.getTrick(
+                this.currentQuestion.table,
+                this.currentQuestion.multiplier
+            );
+            if (trick) {
                 setTimeout(() => {
-                    this.savePlayer();
-                    this.checkAchievements();
-                    this.showResultsModal();
-                }, 1500);
-                return;
-            }
-        } else {
-            this.gameState.lives--;
-            this.player.stats.incorrectAnswers++;
-            this.updateLivesDisplay();
-
-            if (this.gameState.lives <= 0) {
-                this.showNotification('¡Se acabaron las vidas! 😔', 'danger');
-                setTimeout(() => {
-                    this.savePlayer();
-                    this.showResultsModal();
-                }, 1500);
-                return;
+                    window.mnemonicTricksSystem.showTrick(trick);
+                }, 1000);
             }
         }
 
-        setTimeout(() => this.showSpaceQuestion(), 1000);
+        // Generar siguiente pregunta después de mostrar el error
+        setTimeout(() => {
+            this.generateSpaceQuestion();
+        }, 2500);
     }
 
-    updateLivesDisplay() {
-        const hearts = '❤️'.repeat(this.gameState.lives);
-        document.getElementById('livesContainer').textContent = hearts;
+    handleSpaceGameOver(finalScore, level) {
+        // Guardar progreso
+        this.gameState.score = finalScore;
+        this.gameState.planet = level;
+        this.savePlayer();
+
+        // Verificar logros
+        this.checkAchievements();
+
+        // Mostrar modal de resultados
+        setTimeout(() => {
+            this.showNotification('¡Juego Terminado! 🚀', 'info');
+            setTimeout(() => {
+                this.showResultsModal();
+            }, 1000);
+        }, 1500);
     }
 
     // ================================
