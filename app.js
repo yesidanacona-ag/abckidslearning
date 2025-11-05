@@ -17,12 +17,71 @@ class MultiplicationGame {
     init() {
         this.setupEventListeners();
         this.initParticles();
+        this.setupSoundToggle();
 
         if (this.player.name) {
             this.showMainScreen();
         } else {
             this.showWelcomeScreen();
         }
+    }
+
+    setupSoundToggle() {
+        const soundBtn = document.getElementById('soundToggle');
+        if (soundBtn) {
+            // Actualizar estado inicial
+            if (!window.soundSystem || !window.soundSystem.enabled) {
+                soundBtn.classList.add('muted');
+            }
+
+            soundBtn.addEventListener('click', () => {
+                if (window.soundSystem) {
+                    const enabled = window.soundSystem.toggle();
+                    if (enabled) {
+                        soundBtn.classList.remove('muted');
+                        soundBtn.classList.add('playing');
+                        setTimeout(() => soundBtn.classList.remove('playing'), 300);
+                    } else {
+                        soundBtn.classList.add('muted');
+                    }
+                }
+            });
+        }
+    }
+
+    setupAvatarTabs() {
+        const tabs = document.querySelectorAll('.avatar-tab');
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+
+        // Mostrar solo primera categoría inicialmente
+        avatarOptions.forEach(avatar => {
+            if (avatar.dataset.category !== 'personajes') {
+                avatar.style.display = 'none';
+            }
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.dataset.category;
+
+                if (window.soundSystem) {
+                    window.soundSystem.playClick();
+                }
+
+                // Actualizar tabs activas
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Filtrar avatares
+                avatarOptions.forEach(avatar => {
+                    if (avatar.dataset.category === category) {
+                        avatar.style.display = 'flex';
+                    } else {
+                        avatar.style.display = 'none';
+                    }
+                });
+            });
+        });
     }
 
     createNewPlayer() {
@@ -111,6 +170,12 @@ class MultiplicationGame {
     }
 
     showLevelUpAnimation() {
+        // Sonido épico de nivel up
+        if (window.soundSystem) {
+            window.soundSystem.playLevelUp();
+            setTimeout(() => window.soundSystem.playConfetti(), 300);
+        }
+
         this.createConfetti();
         this.showNotification(`¡Nivel ${this.player.level}! 🎉`, 'success');
     }
@@ -135,8 +200,14 @@ class MultiplicationGame {
         });
 
         // Seleccionar primer avatar por defecto
-        const firstAvatar = document.querySelector('.avatar-option');
-        if (firstAvatar) firstAvatar.classList.add('selected');
+        const firstAvatar = document.querySelector('.avatar-option[data-category="personajes"]');
+        if (firstAvatar) {
+            firstAvatar.classList.add('selected');
+            this.player.avatar = firstAvatar.dataset.avatar;
+        }
+
+        // Sistema de tabs para filtrar avatares
+        this.setupAvatarTabs();
 
         // Modos de juego
         document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
@@ -184,6 +255,7 @@ class MultiplicationGame {
 
         if (!name) {
             this.showNotification('¡Por favor escribe tu nombre!', 'warning');
+            if (window.soundSystem) window.soundSystem.playNotification();
             return;
         }
 
@@ -192,6 +264,12 @@ class MultiplicationGame {
         this.showMainScreen();
         this.createConfetti();
         this.showNotification(`¡Bienvenido ${name}! 🎉`, 'success');
+
+        // Sonidos de bienvenida
+        if (window.soundSystem) {
+            window.soundSystem.playVictory();
+            setTimeout(() => window.soundSystem.playConfetti(), 500);
+        }
     }
 
     // ================================
@@ -386,8 +464,21 @@ class MultiplicationGame {
         this.player.stats.correctAnswers++;
         this.player.totalStars += 1;
 
+        // Sonidos
+        if (window.soundSystem) {
+            window.soundSystem.playSuccess();
+            window.soundSystem.playStar();
+
+            // Sonido de racha si tiene 3+
+            if (this.gameState.streak >= 3) {
+                setTimeout(() => {
+                    window.soundSystem.playStreak(this.gameState.streak);
+                }, 200);
+            }
+        }
+
         const feedback = document.getElementById('feedbackContainer');
-        const messages = ['¡Excelente! ⭐', '¡Perfecto! 🌟', '¡Increíble! ✨', '¡Genial! 🎉'];
+        const messages = ['¡Excelente! ⭐', '¡Perfecto! 🌟', '¡Increíble! ✨', '¡Genial! 🎉', '¡WOW! 🤩', '¡BOOM! 💥', '¡SÚPER! 🦸'];
         feedback.innerHTML = `<div style="color: #10b981; font-size: 1.5rem;">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
 
         this.createMiniConfetti();
@@ -400,8 +491,18 @@ class MultiplicationGame {
 
         this.player.stats.incorrectAnswers++;
 
+        // Sonido suave de error
+        if (window.soundSystem) {
+            window.soundSystem.playError();
+        }
+
         const feedback = document.getElementById('feedbackContainer');
-        feedback.innerHTML = `<div style="color: #f59e0b;">La respuesta correcta es ${this.currentQuestion.answer} 💡</div>`;
+        const messages = [
+            `La respuesta correcta es ${this.currentQuestion.answer} 💡`,
+            `Era ${this.currentQuestion.answer}. ¡Casi! 🤔`,
+            `¡Inténtalo de nuevo! La respuesta es ${this.currentQuestion.answer} 💪`
+        ];
+        feedback.innerHTML = `<div style="color: #f59e0b;">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
     }
 
     endPracticeMode() {
@@ -442,6 +543,11 @@ class MultiplicationGame {
 
         const countdown = setInterval(() => {
             questionEl.textContent = count > 0 ? count : '¡YA!';
+
+            // Sonido de countdown
+            if (window.soundSystem) {
+                window.soundSystem.playCountdown(count);
+            }
 
             if (count === 0) {
                 clearInterval(countdown);
