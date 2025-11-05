@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="La mejor app del mundo para aprender tablas de multiplicar - Divertida, adaptativa e inteligente">
+    <meta name="theme-color" content="#6366f1">
+    <title>Multiplicar Mágico - Aprende Jugando</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+</head>
+<body>
+    <!-- Pantalla de Bienvenida -->
+    <div id="welcomeScreen" class="screen active">
+        <div class="welcome-container">
+            <div class="logo-container">
+                <div class="magic-star">✨</div>
+                <h1 class="title-main">Multiplicar Mágico</h1>
+                <div class="magic-star">✨</div>
+            </div>
+            <p class="subtitle">¡La aventura más divertida para aprender las tablas de multiplicar!</p>
+
+            <div class="welcome-form">
+                <div class="input-group">
+                    <label for="playerName">¿Cómo te llamas?</label>
+                    <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="15">
+                </div>
+
+                <div class="avatar-selector">
+                    <label>Elige tu avatar:</label>
+                    <div class="avatar-grid">
+                        <div class="avatar-option" data-avatar="🦸">🦸</div>
+                        <div class="avatar-option" data-avatar="🧙">🧙</div>
+                        <div class="avatar-option" data-avatar="🦄">🦄</div>
+                        <div class="avatar-option" data-avatar="🐉">🐉</div>
+                        <div class="avatar-option" data-avatar="🚀">🚀</div>
+                        <div class="avatar-option" data-avatar="🎨">🎨</div>
+                        <div class="avatar-option" data-avatar="⚡">⚡</div>
+                        <div class="avatar-option" data-avatar="🌟">🌟</div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="startAdventure">¡Comenzar Aventura!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla Principal -->
+    <div id="mainScreen" class="screen">
+        <header class="main-header">
+            <div class="player-info">
+                <div class="player-avatar" id="playerAvatar">🦸</div>
+                <div class="player-details">
+                    <div class="player-name" id="headerPlayerName">Jugador</div>
+                    <div class="player-level">
+                        <span class="level-badge">Nivel <span id="playerLevel">1</span></span>
+                        <div class="xp-bar">
+                            <div class="xp-fill" id="xpBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-stats">
+                <div class="stat">
+                    <span class="stat-icon">⭐</span>
+                    <span id="totalStars">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🏆</span>
+                    <span id="totalMedals">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🔥</span>
+                    <span id="streak">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="game-modes">
+                <div class="mode-card" id="practiceMode">
+                    <div class="mode-icon">📚</div>
+                    <h3>Modo Práctica</h3>
+                    <p>Practica las tablas a tu ritmo</p>
+                    <div class="mode-badge">Relajado</div>
+                </div>
+
+                <div class="mode-card" id="challengeMode">
+                    <div class="mode-icon">⚡</div>
+                    <h3>Desafío Rápido</h3>
+                    <p>¡Contra el reloj! ¿Cuántas puedes?</p>
+                    <div class="mode-badge">Emocionante</div>
+                </div>
+
+                <div class="mode-card" id="adventureMode">
+                    <div class="mode-icon">🚀</div>
+                    <h3>Aventura Espacial</h3>
+                    <p>Viaja por el espacio resolviendo multiplicaciones</p>
+                    <div class="mode-badge">Épico</div>
+                </div>
+
+                <div class="mode-card" id="raceMode">
+                    <div class="mode-icon">🏁</div>
+                    <h3>Carrera Matemática</h3>
+                    <p>Compite contra oponentes virtuales</p>
+                    <div class="mode-badge">Competitivo</div>
+                </div>
+
+                <div class="mode-card" id="bossMode">
+                    <div class="mode-icon">👾</div>
+                    <h3>Batalla de Jefes</h3>
+                    <p>Derrota a los jefes matemáticos</p>
+                    <div class="mode-badge">Difícil</div>
+                </div>
+
+                <div class="mode-card" id="progressMode">
+                    <div class="mode-icon">📊</div>
+                    <h3>Mi Progreso</h3>
+                    <p>Ver estadísticas y logros</p>
+                    <div class="mode-badge">Info</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Modo Práctica -->
+    <div id="practiceScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromPractice">← Volver</button>
+            <h2>Modo Práctica</h2>
+            <div class="score-display">Puntos: <span id="practiceScore">0</span></div>
+        </div>
+
+        <div class="practice-setup">
+            <h3>Selecciona las tablas para practicar:</h3>
+            <div class="tables-grid">
+                <button class="table-btn" data-table="1">1</button>
+                <button class="table-btn" data-table="2">2</button>
+                <button class="table-btn" data-table="3">3</button>
+                <button class="table-btn" data-table="4">4</button>
+                <button class="table-btn" data-table="5">5</button>
+                <button class="table-btn" data-table="6">6</button>
+                <button class="table-btn" data-table="7">7</button>
+                <button class="table-btn" data-table="8">8</button>
+                <button class="table-btn" data-table="9">9</button>
+                <button class="table-btn" data-table="10">10</button>
+            </div>
+            <button class="btn-primary" id="startPractice">Comenzar Práctica</button>
+        </div>
+
+        <div class="practice-game hidden">
+            <div class="question-container">
+                <div class="progress-indicator">
+                    <span>Pregunta <span id="questionNumber">1</span> de <span id="totalQuestions">10</span></span>
+                </div>
+
+                <div class="question-display">
+                    <div class="question-text" id="questionText">5 × 7 = ?</div>
+                </div>
+
+                <div class="answer-section">
+                    <div class="answer-options" id="answerOptions">
+                        <!-- Opciones generadas dinámicamente -->
+                    </div>
+
+                    <div class="answer-input-mode hidden">
+                        <input type="number" id="answerInput" placeholder="Tu respuesta...">
+                        <button class="btn-primary" id="submitAnswer">Responder</button>
+                    </div>
+                </div>
+
+                <div class="feedback-container" id="feedbackContainer"></div>
+            </div>
+
+            <div class="practice-stats">
+                <div class="mini-stat">
+                    <div class="mini-stat-label">Correctas</div>
+                    <div class="mini-stat-value correct" id="correctCount">0</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">Incorrectas</div>
+                    <div class="mini-stat-value incorrect" id="incorrectCount">0</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">Racha</div>
+                    <div class="mini-stat-value streak" id="currentStreak">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Desafío Rápido -->
+    <div id="challengeScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromChallenge">← Volver</button>
+            <h2>Desafío Rápido</h2>
+            <div class="timer-display">
+                <span class="timer-icon">⏱️</span>
+                <span id="challengeTimer">60</span>s
+            </div>
+        </div>
+
+        <div class="challenge-game">
+            <div class="challenge-score-big" id="challengeScoreBig">0</div>
+
+            <div class="question-container">
+                <div class="question-display-large">
+                    <div class="question-text-large" id="challengeQuestion">¡Prepárate!</div>
+                </div>
+
+                <div class="answer-section">
+                    <div class="answer-options-large" id="challengeOptions">
+                        <!-- Opciones generadas dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-stats-live">
+                <div class="stat-item">
+                    <span class="stat-label">Correctas:</span>
+                    <span class="stat-value" id="challengeCorrect">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Racha:</span>
+                    <span class="stat-value" id="challengeStreak">0</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary hidden" id="startChallenge">¡Comenzar Desafío!</button>
+    </div>
+
+    <!-- Pantalla de Aventura Espacial -->
+    <div id="adventureScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromAdventure">← Volver</button>
+            <h2>Aventura Espacial</h2>
+            <div class="lives-display">
+                <span id="livesContainer">❤️❤️❤️</span>
+            </div>
+        </div>
+
+        <div class="adventure-game">
+            <canvas id="spaceCanvas" width="800" height="400"></canvas>
+
+            <div class="space-question-overlay">
+                <div class="space-question" id="spaceQuestion">5 × 7 = ?</div>
+                <div class="space-options" id="spaceOptions">
+                    <!-- Opciones generadas dinámicamente -->
+                </div>
+            </div>
+
+            <div class="space-stats">
+                <div>Planeta: <span id="planetLevel">1</span>/10</div>
+                <div>Puntos: <span id="spaceScore">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Progreso -->
+    <div id="progressScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromProgress">← Volver</button>
+            <h2>Mi Progreso</h2>
+        </div>
+
+        <div class="progress-content">
+            <div class="stats-section">
+                <h3>Estadísticas Generales</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">📝</div>
+                        <div class="stat-card-value" id="totalQuestionsAnswered">0</div>
+                        <div class="stat-card-label">Preguntas Respondidas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">✅</div>
+                        <div class="stat-card-value" id="totalCorrectAnswers">0</div>
+                        <div class="stat-card-label">Respuestas Correctas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🎯</div>
+                        <div class="stat-card-value" id="accuracyRate">0%</div>
+                        <div class="stat-card-label">Precisión</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⚡</div>
+                        <div class="stat-card-value" id="bestStreak">0</div>
+                        <div class="stat-card-label">Mejor Racha</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tables-progress-section">
+                <h3>Dominio de las Tablas</h3>
+                <div class="tables-mastery">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+            <div class="achievements-section">
+                <h3>Logros Desbloqueados</h3>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+            <div class="medals-section">
+                <h3>Medallas Obtenidas</h3>
+                <div class="medals-display" id="medalsDisplay">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resultados -->
+    <div id="resultsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="results-header">
+                <div class="results-icon" id="resultsIcon">🎉</div>
+                <h2 id="resultsTitle">¡Increíble!</h2>
+            </div>
+
+            <div class="results-stats">
+                <div class="result-stat">
+                    <span class="result-label">Puntuación</span>
+                    <span class="result-value" id="finalScore">0</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-label">Correctas</span>
+                    <span class="result-value" id="finalCorrect">0</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-label">Precisión</span>
+                    <span class="result-value" id="finalAccuracy">0%</span>
+                </div>
+            </div>
+
+            <div class="rewards-earned" id="rewardsEarned">
+                <!-- Recompensas generadas dinámicamente -->
+            </div>
+
+            <div class="results-actions">
+                <button class="btn-secondary" id="returnToMain">Menú Principal</button>
+                <button class="btn-primary" id="playAgain">¡Jugar de Nuevo!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de Partículas -->
+    <canvas id="particlesCanvas"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>
