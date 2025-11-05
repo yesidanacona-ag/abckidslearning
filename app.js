@@ -14,6 +14,9 @@ class MultiplicationGame {
         // Sistema de práctica adaptativo
         this.practiceSystem = window.PracticeSystemEngine ? new PracticeSystemEngine() : null;
 
+        // Sistema de galaxia (FASE 6)
+        this.galaxyEngine = null;
+
         this.init();
     }
 
@@ -21,11 +24,28 @@ class MultiplicationGame {
         this.setupEventListeners();
         this.initParticles();
         this.setupSoundToggle();
+        this.initGalaxy();
 
         if (this.player.name) {
             this.showMainScreen();
         } else {
             this.showWelcomeScreen();
+        }
+    }
+
+    initGalaxy() {
+        // Inicializar motor de galaxia (FASE 6)
+        if (window.GalaxySystemEngine) {
+            this.galaxyEngine = new GalaxySystemEngine('galaxyCanvas');
+
+            // Conectar callback de click en planetas
+            this.galaxyEngine.onPlanetClick = (planet) => {
+                this.openPlanetModal(planet.table);
+            };
+
+            console.log('🌌 Sistema de galaxia inicializado');
+        } else {
+            console.warn('⚠️ GalaxySystemEngine no disponible');
         }
     }
 
@@ -283,6 +303,10 @@ class MultiplicationGame {
                 this.startChallengeMode();
             }
         });
+
+        // FASE 6: Planet Modal
+        document.getElementById('planetModalClose')?.addEventListener('click', () => this.closePlanetModal());
+        document.getElementById('practicePlanetBtn')?.addEventListener('click', () => this.practicePlanetTable());
 
         // Modal de trucos mnemotécnicos
         document.getElementById('showTricksBtn')?.addEventListener('click', () => this.showTricksModal());
@@ -2378,24 +2402,48 @@ class MultiplicationGame {
     }
 
     updateProgressStats() {
-        // Estadísticas generales
-        document.getElementById('totalQuestionsAnswered').textContent = this.player.stats.totalQuestions;
-        document.getElementById('totalCorrectAnswers').textContent = this.player.stats.correctAnswers;
+        // FASE 6: Actualizar Galaxy System
+        if (this.galaxyEngine) {
+            // Actualizar datos de mastery de las tablas
+            const tableMastery = {};
+            if (this.practiceSystem) {
+                tableMastery = this.practiceSystem.tableMastery;
+            } else {
+                // Fallback al sistema adaptativo antiguo
+                for (let i = 2; i <= 10; i++) {
+                    const mastery = this.adaptiveSystem.getTableMastery(i);
+                    tableMastery[i] = Math.round(mastery * 100);
+                }
+            }
+            this.galaxyEngine.updateMasteryData(tableMastery);
 
-        const accuracy = this.player.stats.totalQuestions > 0
-            ? Math.round((this.player.stats.correctAnswers / this.player.stats.totalQuestions) * 100)
-            : 0;
-        document.getElementById('accuracyRate').textContent = accuracy + '%';
-        document.getElementById('bestStreak').textContent = this.player.bestStreak;
+            // Actualizar stats de la Nave Madre
+            const stars = window.coinSystem ? window.coinSystem.stars : 0;
+            const trophies = window.coinSystem ? window.coinSystem.trophies : 0;
+            const streak = window.coinSystem ? window.coinSystem.getStreak() : 0;
+            const accuracy = this.player.stats.totalQuestions > 0
+                ? Math.round((this.player.stats.correctAnswers / this.player.stats.totalQuestions) * 100)
+                : 0;
 
-        // Maestría de tablas
-        this.displayTableMastery();
+            this.galaxyEngine.updateStats({
+                stars: stars,
+                trophies: trophies,
+                accuracy: accuracy,
+                streak: streak
+            });
 
-        // Logros
-        this.displayAchievements();
+            // Actualizar Mother Ship UI
+            document.getElementById('galaxyStars').textContent = stars.toLocaleString();
+            document.getElementById('galaxyTrophies').textContent = trophies;
+            document.getElementById('galaxyAccuracy').textContent = accuracy + '%';
+            document.getElementById('galaxyStreak').textContent = streak + ' días';
+        }
 
-        // Medallas
-        this.displayMedals();
+        // Generar Trophy Hall (trofeos de logros)
+        this.displayTrophyHall();
+
+        // Generar War Loot (medallas por modo de juego)
+        this.displayWarLoot();
     }
 
     displayTableMastery() {
@@ -2456,6 +2504,8 @@ class MultiplicationGame {
 
     displayMedals() {
         const container = document.getElementById('medalsDisplay');
+        if (!container) return; // Old system compatibility
+
         container.innerHTML = `
             <div class="medal-item">
                 <span class="medal-icon">🥇</span>
@@ -2473,6 +2523,363 @@ class MultiplicationGame {
                 <div class="medal-label">Bronce</div>
             </div>
         `;
+    }
+
+    // ================================
+    // FASE 6: GALAXY SYSTEMS
+    // ================================
+
+    displayTrophyHall() {
+        const container = document.getElementById('trophyPedestals');
+        if (!container) return;
+
+        // Definir trofeos basados en logros
+        const trophies = [
+            {
+                id: 'first_100',
+                icon: '🏆',
+                name: 'Centenario',
+                description: '100 respuestas correctas',
+                unlocked: this.player.stats.correctAnswers >= 100,
+                date: null
+            },
+            {
+                id: 'streak_master',
+                icon: '🔥',
+                name: 'Maestro del Fuego',
+                description: 'Racha de 50 respuestas',
+                unlocked: this.player.bestStreak >= 50,
+                date: null
+            },
+            {
+                id: 'level_10',
+                icon: '⭐',
+                name: 'Estrella Suprema',
+                description: 'Alcanza nivel 10',
+                unlocked: this.player.level >= 10,
+                date: null
+            },
+            {
+                id: 'table_master',
+                icon: '🎖️',
+                name: 'Dominio Total',
+                description: 'Domina 5 tablas al 100%',
+                unlocked: this.checkTablesDominated() >= 5,
+                date: null
+            },
+            {
+                id: 'boss_slayer',
+                icon: '⚔️',
+                name: 'Cazador de Jefes',
+                description: 'Derrota 10 jefes',
+                unlocked: (this.player.stats.bossesDefeated || 0) >= 10,
+                date: null
+            },
+            {
+                id: 'speed_demon',
+                icon: '⚡',
+                name: 'Rayo Veloz',
+                description: '50 puntos en desafío',
+                unlocked: (this.player.stats.bestChallengeScore || 0) >= 50,
+                date: null
+            }
+        ];
+
+        container.innerHTML = '';
+
+        trophies.forEach(trophy => {
+            const pedestalEl = document.createElement('div');
+            pedestalEl.className = `trophy-pedestal ${trophy.unlocked ? '' : 'locked'}`;
+
+            if (trophy.unlocked) {
+                pedestalEl.innerHTML = `
+                    <div class="trophy-display">${trophy.icon}</div>
+                    <div class="pedestal-base"></div>
+                    <div class="trophy-name">${trophy.name}</div>
+                    <div class="trophy-description">${trophy.description}</div>
+                    ${trophy.date ? `<div class="trophy-date">Obtenido: ${trophy.date}</div>` : ''}
+                `;
+            } else {
+                pedestalEl.innerHTML = `
+                    <div class="trophy-display">🔒</div>
+                    <div class="pedestal-base"></div>
+                    <div class="trophy-name">${trophy.name}</div>
+                    <div class="trophy-locked-text">${trophy.description}</div>
+                `;
+            }
+
+            container.appendChild(pedestalEl);
+        });
+    }
+
+    displayWarLoot() {
+        const container = document.getElementById('warLootGrid');
+        if (!container) return;
+
+        // Definir medallas por modo de juego
+        const lootItems = [
+            {
+                id: 'adventure_hero',
+                icon: '🚀',
+                name: 'Héroe Espacial',
+                type: 'Aventura Espacial',
+                description: 'Completa 10 niveles de aventura',
+                earned: (this.player.stats.adventureLevelsCompleted || 0),
+                requirement: 10,
+                unlocked: (this.player.stats.adventureLevelsCompleted || 0) >= 10
+            },
+            {
+                id: 'race_champion',
+                icon: '🏁',
+                name: 'Campeón de Carrera',
+                type: 'Carrera Matemática',
+                description: 'Gana 20 carreras',
+                earned: (this.player.stats.racesWon || 0),
+                requirement: 20,
+                unlocked: (this.player.stats.racesWon || 0) >= 20
+            },
+            {
+                id: 'challenge_king',
+                icon: '⏱️',
+                name: 'Rey del Desafío',
+                type: 'Desafío Rápido',
+                description: '100 puntos totales en desafíos',
+                earned: (this.player.stats.challengeTotalScore || 0),
+                requirement: 100,
+                unlocked: (this.player.stats.challengeTotalScore || 0) >= 100
+            },
+            {
+                id: 'boss_dominator',
+                icon: '👑',
+                name: 'Dominador de Jefes',
+                type: 'Batalla de Jefes',
+                description: 'Derrota 25 jefes',
+                earned: (this.player.stats.bossesDefeated || 0),
+                requirement: 25,
+                unlocked: (this.player.stats.bossesDefeated || 0) >= 25
+            },
+            {
+                id: 'practice_sage',
+                icon: '📚',
+                name: 'Sabio Practicante',
+                type: 'Modo Práctica',
+                description: 'Completa 50 sesiones de práctica',
+                earned: (this.player.stats.practiceSessions || 0),
+                requirement: 50,
+                unlocked: (this.player.stats.practiceSessions || 0) >= 50
+            },
+            {
+                id: 'multiplayer_legend',
+                icon: '🎮',
+                name: 'Leyenda Multijugador',
+                type: 'Modo Multijugador',
+                description: 'Gana 15 partidas multijugador',
+                earned: (this.player.stats.multiplayerWins || 0),
+                requirement: 15,
+                unlocked: (this.player.stats.multiplayerWins || 0) >= 15
+            }
+        ];
+
+        container.innerHTML = '';
+
+        lootItems.forEach(loot => {
+            const lootEl = document.createElement('div');
+            lootEl.className = `loot-item ${loot.unlocked ? '' : 'locked'}`;
+
+            lootEl.innerHTML = `
+                <div class="loot-header">
+                    <div class="loot-icon">${loot.icon}</div>
+                    <div class="loot-info">
+                        <div class="loot-name">${loot.name}</div>
+                        <div class="loot-type">${loot.type}</div>
+                    </div>
+                </div>
+                <div class="loot-description">${loot.description}</div>
+                <div class="loot-earned">
+                    <div class="loot-count">
+                        Progreso: <span class="loot-count-value">${loot.earned}/${loot.requirement}</span>
+                    </div>
+                    ${loot.unlocked ? '<div class="loot-badge">✓ DESBLOQUEADO</div>' : ''}
+                </div>
+            `;
+
+            container.appendChild(lootEl);
+        });
+    }
+
+    checkTablesDominated() {
+        let count = 0;
+        if (this.practiceSystem) {
+            for (let table = 2; table <= 10; table++) {
+                if (this.practiceSystem.tableMastery[table] >= 100) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    // ================================
+    // PLANET MODAL SYSTEM
+    // ================================
+
+    openPlanetModal(table) {
+        const modal = document.getElementById('planetModal');
+        if (!modal) return;
+
+        // Obtener datos de dominio de la tabla
+        const mastery = this.practiceSystem
+            ? (this.practiceSystem.tableMastery[table] || 0)
+            : Math.round(this.adaptiveSystem.getTableMastery(table) * 100);
+
+        // Determinar estado
+        let status = 'Inexplorado';
+        let statusClass = 'asteroid';
+        if (mastery >= 100) {
+            status = 'Dominado';
+            statusClass = 'crystal';
+        } else if (mastery >= 91) {
+            status = 'Casi Dominado';
+            statusClass = 'ringed';
+        } else if (mastery >= 51) {
+            status = 'En Progreso';
+            statusClass = 'vibrant';
+        } else if (mastery >= 21) {
+            status = 'En Desarrollo';
+            statusClass = 'young';
+        }
+
+        // Actualizar contenido del modal
+        document.getElementById('planetModalIcon').textContent = this.getPlanetEmoji(mastery);
+        document.getElementById('planetModalTitle').textContent = `Planeta del ${table}`;
+        document.getElementById('planetModalStatusText').textContent = `${status} (${mastery}%)`;
+        document.getElementById('planetModalMastery').textContent = `${mastery}%`;
+        document.getElementById('planetModalProgress').style.width = `${mastery}%`;
+
+        // Datos de inteligencia (análisis de errores)
+        const weakestMultiplier = this.getWeakestMultiplier(table);
+        document.getElementById('planetModalWeakest').textContent = `${table} × ${weakestMultiplier}`;
+
+        const tableStats = this.getTableStats(table);
+        document.getElementById('planetModalSuccess').textContent = tableStats.successRate + '%';
+        document.getElementById('planetModalWins').textContent = tableStats.wins;
+
+        // Recompensa
+        const reward = this.getTableReward(table, mastery);
+        document.getElementById('planetModalReward').innerHTML = `
+            <div class="reward-icon">${reward.icon}</div>
+            <div class="reward-name">${reward.name}</div>
+        `;
+
+        // Botón de práctica
+        document.getElementById('practicePlanetTable').textContent = table;
+
+        // Guardar tabla actual
+        this.currentPlanetTable = table;
+
+        // Mostrar modal
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+
+        console.log(`🪐 Modal abierto para Planeta del ${table}`);
+    }
+
+    closePlanetModal() {
+        const modal = document.getElementById('planetModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    practicePlanetTable() {
+        if (!this.currentPlanetTable) return;
+
+        // Cerrar modal
+        this.closePlanetModal();
+
+        // Iniciar modo práctica con esa tabla específica
+        const table = this.currentPlanetTable;
+
+        // Si tenemos practiceSystem, usarlo
+        if (this.practiceSystem) {
+            this.showScreen('practiceGameScreen');
+            this.startPracticeModeWithTable(table);
+        } else {
+            // Fallback al sistema antiguo
+            this.showScreen('practiceScreen');
+            document.querySelectorAll('.table-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.table == table) {
+                    btn.classList.add('selected');
+                }
+            });
+            setTimeout(() => this.handleStartPractice(), 100);
+        }
+
+        console.log(`🎯 Iniciando práctica de tabla del ${table}`);
+    }
+
+    startPracticeModeWithTable(table) {
+        this.currentMode = 'practice';
+        this.gameState = {
+            selectedTables: [table],
+            questionsAnswered: 0,
+            correctAnswers: 0,
+            wrongAnswers: 0,
+            streak: 0,
+            startTime: Date.now()
+        };
+
+        this.generatePracticeQuestion();
+    }
+
+    getPlanetEmoji(mastery) {
+        if (mastery >= 100) return '⭐';
+        if (mastery >= 91) return '🪐';
+        if (mastery >= 51) return '🌍';
+        if (mastery >= 21) return '🌑';
+        return '☄️';
+    }
+
+    getWeakestMultiplier(table) {
+        // Analizar histórico de errores para encontrar el multiplicador más difícil
+        // Por ahora retornar uno aleatorio (se puede mejorar con tracking real)
+        const difficult = [6, 7, 8, 9]; // Los multiplicadores más comunes de fallar
+        return difficult[Math.floor(Math.random() * difficult.length)];
+    }
+
+    getTableStats(table) {
+        // Obtener estadísticas específicas de la tabla
+        const tableData = this.player.tableMastery[table] || { correct: 0, total: 0 };
+        const successRate = tableData.total > 0
+            ? Math.round((tableData.correct / tableData.total) * 100)
+            : 0;
+        const wins = tableData.correct || 0;
+
+        return {
+            successRate: successRate,
+            wins: wins
+        };
+    }
+
+    getTableReward(table, mastery) {
+        // Recompensas por dominar cada tabla
+        const rewards = {
+            2: { icon: '🎖️', name: 'Medalla de Bronce' },
+            3: { icon: '🏅', name: 'Medalla de Honor' },
+            4: { icon: '💎', name: 'Gema Cuádruple' },
+            5: { icon: '⭐', name: 'Estrella Pentagonal' },
+            6: { icon: '🔷', name: 'Cristal Hexagonal' },
+            7: { icon: '👑', name: 'Corona del Siete' },
+            8: { icon: '🌟', name: 'Estrella Octogonal' },
+            9: { icon: '🏆', name: 'Trofeo Supremo' },
+            10: { icon: '💫', name: 'Estrella Legendaria' }
+        };
+
+        return rewards[table] || { icon: '🎁', name: 'Recompensa Especial' };
     }
 
     // ================================

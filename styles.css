@@ -5771,3 +5771,687 @@ body.light-theme .pause-control-label {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ================================ */
+/* FASE 6: LA GALAXIA DEL DOMINIO */
+/* ================================ */
+
+/* Layout Principal */
+.galaxy-content {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.galaxy-title-box {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.galaxy-section-title {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.galaxy-subtitle {
+    font-size: 1.1em;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+/* Canvas de la Galaxia */
+.galaxy-section {
+    background: linear-gradient(135deg, rgba(88, 28, 135, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(139, 92, 246, 0.2);
+}
+
+.galaxy-canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#galaxyCanvas {
+    border-radius: 15px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
+    box-shadow:
+        inset 0 0 50px rgba(0, 0, 0, 0.5),
+        0 4px 20px rgba(139, 92, 246, 0.3);
+    cursor: pointer;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Leyenda de la Galaxia */
+.galaxy-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.legend-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.legend-dot.asteroid {
+    background: #6B7280;
+    box-shadow: 0 0 8px #6B7280;
+}
+
+.legend-dot.young {
+    background: #F59E0B;
+    box-shadow: 0 0 8px #F59E0B;
+}
+
+.legend-dot.vibrant {
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+}
+
+.legend-dot.ringed {
+    background: #4ECDC4;
+    box-shadow: 0 0 8px #4ECDC4;
+}
+
+.legend-dot.crystal {
+    background: #FFD700;
+    box-shadow: 0 0 12px #FFD700;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 12px #FFD700;
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px #FFD700;
+        transform: scale(1.1);
+    }
+}
+
+/* Nave Madre */
+.mother-ship-section {
+    display: flex;
+    justify-content: center;
+}
+
+.mother-ship-card {
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(88, 28, 135, 0.3) 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    width: 100%;
+    max-width: 900px;
+    transition: all 0.3s ease;
+}
+
+.mother-ship-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+}
+
+.mother-ship-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.ship-icon {
+    font-size: 3em;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+.mother-ship-header h3 {
+    flex: 1;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+}
+
+.ship-status {
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    border-radius: 20px;
+    color: #10B981;
+    font-weight: 600;
+    font-size: 0.9em;
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        border-color: rgba(16, 185, 129, 0.5);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        border-color: rgba(16, 185, 129, 0.8);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+    }
+}
+
+.ship-honors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.honor-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.honor-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.honor-icon {
+    font-size: 2.5em;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.honor-info {
+    flex: 1;
+}
+
+.honor-label {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+}
+
+.honor-value {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Salón de Trofeos */
+.trophy-hall-section {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.15) 0%, rgba(161, 98, 7, 0.15) 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(217, 119, 6, 0.3);
+}
+
+.trophy-hall {
+    perspective: 1000px;
+}
+
+.trophy-pedestals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.trophy-pedestal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(161, 98, 7, 0.1) 100%);
+    border-radius: 15px;
+    border: 2px solid rgba(217, 119, 6, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+}
+
+.trophy-pedestal:hover {
+    transform: translateY(-10px) rotateY(5deg);
+    box-shadow: 0 15px 40px rgba(217, 119, 6, 0.4);
+    border-color: rgba(217, 119, 6, 0.6);
+}
+
+.trophy-pedestal.locked {
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+.trophy-pedestal.locked:hover {
+    transform: none;
+}
+
+.pedestal-base {
+    width: 100%;
+    height: 30px;
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.3) 0%, rgba(161, 98, 7, 0.3) 100%);
+    border-radius: 8px;
+    position: relative;
+    box-shadow:
+        0 4px 0 rgba(120, 53, 15, 0.5),
+        0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pedestal-base::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+.trophy-display {
+    font-size: 4em;
+    animation: trophy-shine 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px currentColor);
+}
+
+@keyframes trophy-shine {
+    0%, 100% {
+        transform: scale(1) rotateY(0deg);
+        filter: drop-shadow(0 0 20px currentColor);
+    }
+    50% {
+        transform: scale(1.1) rotateY(10deg);
+        filter: drop-shadow(0 0 30px currentColor) brightness(1.2);
+    }
+}
+
+.trophy-name {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(217, 119, 6, 0.5);
+}
+
+.trophy-description {
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
+.trophy-date {
+    font-size: 0.75em;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
+.trophy-locked-text {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+/* Botín de Guerra */
+.war-loot-section {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(220, 38, 38, 0.3);
+}
+
+.war-loot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.loot-item {
+    position: relative;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 2px solid rgba(220, 38, 38, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.loot-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.loot-item:hover::before {
+    left: 100%;
+}
+
+.loot-item:hover {
+    transform: translateY(-5px);
+    border-color: rgba(220, 38, 38, 0.6);
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+}
+
+.loot-item.locked {
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+.loot-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.loot-icon {
+    font-size: 3em;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.loot-info {
+    flex: 1;
+}
+
+.loot-name {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.loot-type {
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.loot-description {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.loot-earned {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loot-count {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.loot-count-value {
+    font-weight: 700;
+    color: #10B981;
+}
+
+/* Modal de Planeta */
+.galaxy-modal {
+    z-index: 10000;
+}
+
+.galaxy-modal-content {
+    max-width: 700px;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(88, 28, 135, 0.95) 100%);
+    border: 3px solid rgba(139, 92, 246, 0.5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.planet-modal-header {
+    text-align: center;
+    padding: 30px 30px 20px 30px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.planet-modal-icon {
+    font-size: 5em;
+    margin-bottom: 15px;
+    animation: planet-rotate 10s linear infinite;
+}
+
+@keyframes planet-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#planetModalTitle {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 15px 0;
+    text-shadow: 0 2px 20px rgba(139, 92, 246, 0.7);
+}
+
+.planet-modal-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.1em;
+}
+
+.status-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-value {
+    font-weight: 700;
+    color: #10B981;
+}
+
+.planet-modal-body {
+    padding: 30px;
+}
+
+.planet-intel-section {
+    margin-bottom: 30px;
+}
+
+.planet-intel-section h3 {
+    font-size: 1.3em;
+    color: var(--primary);
+    margin-bottom: 20px;
+    text-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+}
+
+.intel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.intel-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.intel-label {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+}
+
+.intel-value {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.intel-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.intel-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #10B981);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.planet-reward-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.planet-reward-section h3 {
+    font-size: 1.2em;
+    color: #FFD700;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+}
+
+.reward-preview {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 10px;
+}
+
+.reward-icon {
+    font-size: 3em;
+    filter: drop-shadow(0 0 15px #FFD700);
+}
+
+.reward-name {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+.planet-modal-footer {
+    padding: 20px 30px 30px 30px;
+    text-align: center;
+}
+
+.btn-large {
+    font-size: 1.2em;
+    padding: 15px 40px;
+}
+
+/* Responsive para Galaxy */
+@media (max-width: 1024px) {
+    #galaxyCanvas {
+        width: 100%;
+        height: auto;
+    }
+
+    .ship-honors {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .trophy-pedestals {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .war-loot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .intel-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .galaxy-section-title {
+        font-size: 1.5em;
+    }
+
+    .galaxy-subtitle {
+        font-size: 0.95em;
+    }
+
+    .ship-honors {
+        grid-template-columns: 1fr;
+    }
+
+    .trophy-pedestals {
+        grid-template-columns: 1fr;
+    }
+
+    .galaxy-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mother-ship-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #planetModalTitle {
+        font-size: 1.6em;
+    }
+
+    .intel-grid {
+        grid-template-columns: 1fr;
+    }
+}

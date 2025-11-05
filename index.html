@@ -593,55 +593,149 @@
     <div id="progressScreen" class="screen">
         <div class="game-header">
             <button class="btn-back" id="backFromProgress">← Volver</button>
-            <h2>Mi Progreso</h2>
+            <h2>🌌 La Galaxia del Dominio</h2>
         </div>
 
-        <div class="progress-content">
-            <div class="stats-section">
-                <h3>Estadísticas Generales</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-card-icon">📝</div>
-                        <div class="stat-card-value" id="totalQuestionsAnswered">0</div>
-                        <div class="stat-card-label">Preguntas Respondidas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-card-icon">✅</div>
-                        <div class="stat-card-value" id="totalCorrectAnswers">0</div>
-                        <div class="stat-card-label">Respuestas Correctas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-card-icon">🎯</div>
-                        <div class="stat-card-value" id="accuracyRate">0%</div>
-                        <div class="stat-card-label">Precisión</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-card-icon">⚡</div>
-                        <div class="stat-card-value" id="bestStreak">0</div>
-                        <div class="stat-card-label">Mejor Racha</div>
+        <div class="galaxy-content">
+            <!-- Sistema Solar de las Tablas -->
+            <div class="galaxy-section">
+                <div class="galaxy-title-box">
+                    <h3 class="galaxy-section-title">🪐 SISTEMA SOLAR DE LAS TABLAS</h3>
+                    <p class="galaxy-subtitle">Cada planeta representa una tabla. Explóralas para dominarlas todas.</p>
+                </div>
+                <div class="galaxy-canvas-container">
+                    <canvas id="galaxyCanvas" width="800" height="600"></canvas>
+                    <div class="galaxy-legend">
+                        <div class="legend-item"><span class="legend-dot asteroid"></span> Inexplorado (0-20%)</div>
+                        <div class="legend-item"><span class="legend-dot young"></span> En Desarrollo (21-50%)</div>
+                        <div class="legend-item"><span class="legend-dot vibrant"></span> En Progreso (51-90%)</div>
+                        <div class="legend-item"><span class="legend-dot ringed"></span> Casi Dominado (91-99%)</div>
+                        <div class="legend-item"><span class="legend-dot crystal"></span> Dominado (100%)</div>
                     </div>
                 </div>
             </div>
 
-            <div class="tables-progress-section">
-                <h3>Dominio de las Tablas</h3>
-                <div class="tables-mastery">
-                    <!-- Generado dinámicamente -->
+            <!-- Nave Madre (Stats as "Honors") -->
+            <div class="mother-ship-section">
+                <div class="mother-ship-card">
+                    <div class="mother-ship-header">
+                        <div class="ship-icon">🚀</div>
+                        <h3>NAVE MADRE</h3>
+                        <div class="ship-status">En Órbita</div>
+                    </div>
+                    <div class="ship-honors">
+                        <div class="honor-item">
+                            <div class="honor-icon">⭐</div>
+                            <div class="honor-info">
+                                <div class="honor-label">Estrellas Recolectadas</div>
+                                <div class="honor-value" id="galaxyStars">0</div>
+                            </div>
+                        </div>
+                        <div class="honor-item">
+                            <div class="honor-icon">🏆</div>
+                            <div class="honor-info">
+                                <div class="honor-label">Trofeos de Guerra</div>
+                                <div class="honor-value" id="galaxyTrophies">0</div>
+                            </div>
+                        </div>
+                        <div class="honor-item">
+                            <div class="honor-icon">📊</div>
+                            <div class="honor-info">
+                                <div class="honor-label">Tasa de Victoria</div>
+                                <div class="honor-value" id="galaxyAccuracy">0%</div>
+                            </div>
+                        </div>
+                        <div class="honor-item">
+                            <div class="honor-icon">🔥</div>
+                            <div class="honor-info">
+                                <div class="honor-label">Racha de Fuego</div>
+                                <div class="honor-value" id="galaxyStreak">0 días</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="achievements-section">
-                <h3>Logros Desbloqueados</h3>
-                <div class="achievements-grid" id="achievementsGrid">
-                    <!-- Generado dinámicamente -->
+            <!-- Salón de Trofeos -->
+            <div class="trophy-hall-section">
+                <div class="galaxy-title-box">
+                    <h3 class="galaxy-section-title">🏆 SALÓN DE TROFEOS</h3>
+                    <p class="galaxy-subtitle">Trofeos forjados con sudor y victoria.</p>
+                </div>
+                <div class="trophy-hall">
+                    <div class="trophy-pedestals" id="trophyPedestals">
+                        <!-- Generado dinámicamente -->
+                    </div>
                 </div>
             </div>
 
-            <div class="medals-section">
-                <h3>Medallas Obtenidas</h3>
-                <div class="medals-display" id="medalsDisplay">
+            <!-- Botín de Guerra -->
+            <div class="war-loot-section">
+                <div class="galaxy-title-box">
+                    <h3 class="galaxy-section-title">⚔️ BOTÍN DE GUERRA</h3>
+                    <p class="galaxy-subtitle">Medallas ganadas en el campo de batalla.</p>
+                </div>
+                <div class="war-loot-grid" id="warLootGrid">
                     <!-- Generado dinámicamente -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Datos de Planeta -->
+    <div id="planetModal" class="modal galaxy-modal hidden">
+        <div class="modal-content galaxy-modal-content">
+            <button class="modal-close" id="planetModalClose">✕</button>
+            <div class="planet-modal-header">
+                <div class="planet-modal-icon" id="planetModalIcon">🪐</div>
+                <h2 id="planetModalTitle">Planeta del 7</h2>
+                <div class="planet-modal-status" id="planetModalStatus">
+                    <span class="status-label">Estado:</span>
+                    <span class="status-value" id="planetModalStatusText">Inexplorado (10%)</span>
+                </div>
+            </div>
+
+            <div class="planet-modal-body">
+                <div class="planet-intel-section">
+                    <h3>📊 DATOS DE INTELIGENCIA</h3>
+                    <div class="intel-grid">
+                        <div class="intel-item">
+                            <div class="intel-label">Dominio Actual</div>
+                            <div class="intel-value">
+                                <div class="intel-bar">
+                                    <div class="intel-bar-fill" id="planetModalProgress" style="width: 0%"></div>
+                                </div>
+                                <span id="planetModalMastery">0%</span>
+                            </div>
+                        </div>
+                        <div class="intel-item">
+                            <div class="intel-label">Problema Más Difícil</div>
+                            <div class="intel-value" id="planetModalWeakest">7 × 8</div>
+                        </div>
+                        <div class="intel-item">
+                            <div class="intel-label">Tasa de Éxito</div>
+                            <div class="intel-value" id="planetModalSuccess">65%</div>
+                        </div>
+                        <div class="intel-item">
+                            <div class="intel-label">Batallas Ganadas</div>
+                            <div class="intel-value" id="planetModalWins">23</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="planet-reward-section">
+                    <h3>🎁 RECOMPENSA POR DOMINIO</h3>
+                    <div class="reward-preview" id="planetModalReward">
+                        <div class="reward-icon">🎖️</div>
+                        <div class="reward-name">Casco de Cristal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="planet-modal-footer">
+                <button class="btn-primary btn-large" id="practicePlanetBtn">
+                    ¡Practicar la Tabla del <span id="practicePlanetTable">7</span>!
+                </button>
             </div>
         </div>
     </div>
@@ -740,6 +834,7 @@
     <script src="spaceGameEngine.js"></script>
     <script src="bossGameEngine.js"></script>
     <script src="practiceSystemEngine.js"></script>
+    <script src="galaxySystemEngine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
