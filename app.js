@@ -449,7 +449,7 @@ class MultiplicationGame {
             this.handleCorrectAnswer();
         } else {
             btnElement.classList.add('incorrect');
-            this.handleIncorrectAnswer();
+            this.handleIncorrectAnswer(selectedAnswer);
         }
 
         // Registrar respuesta en sistema adaptativo
@@ -502,7 +502,7 @@ class MultiplicationGame {
         this.createMiniConfetti();
     }
 
-    handleIncorrectAnswer() {
+    handleIncorrectAnswer(selectedAnswer) {
         // Verificar si tiene escudo activo
         if (this.player.activePowerups.includes('shield')) {
             this.showNotification('¡El escudo te protegió! 🛡️', 'success');
@@ -532,13 +532,123 @@ class MultiplicationGame {
             window.soundSystem.playError();
         }
 
+        // Análisis pedagógico del error
+        const explanation = this.analyzeError(selectedAnswer);
+
         const feedback = document.getElementById('feedbackContainer');
-        const messages = [
-            `La respuesta correcta es ${this.currentQuestion.answer} 💡`,
-            `Era ${this.currentQuestion.answer}. ¡Casi! 🤔`,
-            `¡Inténtalo de nuevo! La respuesta es ${this.currentQuestion.answer} 💪`
-        ];
-        feedback.innerHTML = `<div style="color: #f59e0b;">${messages[Math.floor(Math.random() * messages.length)]}</div>`;
+        feedback.innerHTML = `
+            <div style="color: #f59e0b; text-align: left; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border-left: 4px solid #f59e0b;">
+                <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;">
+                    ${explanation.icon} ${explanation.title}
+                </div>
+                <div style="font-size: 1rem; margin-bottom: 8px;">
+                    ${explanation.message}
+                </div>
+                <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-style: italic;">
+                    💡 ${explanation.tip}
+                </div>
+            </div>
+        `;
+    }
+
+    analyzeError(selectedAnswer) {
+        const { table, multiplier, answer } = this.currentQuestion;
+        const question = `${table} × ${multiplier}`;
+
+        // Tipo 1: Confundió con suma
+        if (selectedAnswer === table + multiplier) {
+            return {
+                icon: '➕',
+                title: '¡Casi! Pero es multiplicación, no suma',
+                message: `Respondiste ${selectedAnswer}, que es ${table} + ${multiplier}. Pero ${question} = ${answer}`,
+                tip: `Multiplicar es sumar ${multiplier} veces: ${table} + ${table}${multiplier > 2 ? ` + ${table}...` : ''} = ${answer}`
+            };
+        }
+
+        // Tipo 2: Tabla vecina (confundió con tabla anterior/siguiente)
+        if (selectedAnswer === (table - 1) * multiplier) {
+            return {
+                icon: '🔢',
+                title: 'Usaste la tabla equivocada',
+                message: `Respondiste ${selectedAnswer}, que es ${table-1} × ${multiplier}. Pero buscamos ${question} = ${answer}`,
+                tip: this.getMnemonicTip(table, multiplier) || `Recuerda: tabla del ${table}, no del ${table-1}`
+            };
+        }
+
+        if (selectedAnswer === (table + 1) * multiplier) {
+            return {
+                icon: '🔢',
+                title: 'Usaste la tabla equivocada',
+                message: `Respondiste ${selectedAnswer}, que es ${table+1} × ${multiplier}. Pero buscamos ${question} = ${answer}`,
+                tip: this.getMnemonicTip(table, multiplier) || `Recuerda: tabla del ${table}, no del ${table+1}`
+            };
+        }
+
+        // Tipo 3: Error de cálculo cercano (±1, ±2)
+        const difference = Math.abs(selectedAnswer - answer);
+        if (difference <= 2) {
+            return {
+                icon: '🎯',
+                title: '¡Muy cerca!',
+                message: `Respondiste ${selectedAnswer}, pero ${question} = ${answer}. Solo te faltaron/sobraron ${difference}`,
+                tip: this.getMnemonicTip(table, multiplier) || `¡Casi lo logras! Sigue practicando la tabla del ${table}`
+            };
+        }
+
+        // Tipo 4: Puede ser tabla invertida (6×7 vs 7×6)
+        if (selectedAnswer === multiplier * table && multiplier !== table) {
+            return {
+                icon: '🔄',
+                title: 'Invertiste los números',
+                message: `Respondiste ${selectedAnswer}, que puede ser correcto para otra multiplicación. ${question} = ${answer}`,
+                tip: 'Recuerda: el orden no cambia el resultado, pero asegúrate de usar los números correctos'
+            };
+        }
+
+        // Tipo 5: Error general - buscar patrón
+        const possibleTables = [];
+        for (let i = 2; i <= 10; i++) {
+            for (let j = 1; j <= 10; j++) {
+                if (i * j === selectedAnswer) {
+                    possibleTables.push(`${i}×${j}`);
+                }
+            }
+        }
+
+        if (possibleTables.length > 0) {
+            return {
+                icon: '🤔',
+                title: 'Te confundiste con otra multiplicación',
+                message: `Respondiste ${selectedAnswer}, que es ${possibleTables[0]}. Pero ${question} = ${answer}`,
+                tip: this.getMnemonicTip(table, multiplier) || `Enfócate en la tabla del ${table}`
+            };
+        }
+
+        // Error general sin patrón claro
+        return {
+            icon: '💭',
+            title: 'La respuesta correcta es diferente',
+            message: `${question} = ${answer}. ¡No te preocupes, todos cometemos errores!`,
+            tip: this.getMnemonicTip(table, multiplier) || `Presiona el botón "📚 Trucos" para ver consejos de la tabla del ${table}`
+        };
+    }
+
+    getMnemonicTip(table, multiplier) {
+        // Obtener un truco específico para esta combinación si existe
+        if (window.mnemonicSystem) {
+            const trick = window.mnemonicSystem.getTrickForQuestion(table, multiplier);
+            if (trick) {
+                return trick.tip;
+            }
+
+            // Si no hay truco específico, dar un tip general de la tabla
+            const tableInfo = window.mnemonicSystem.getTableInfo(table);
+            if (tableInfo && tableInfo.tips && tableInfo.tips.length > 0) {
+                return tableInfo.tips[0];
+            }
+        }
+
+        return null;
     }
 
     // ================================
@@ -561,6 +671,93 @@ class MultiplicationGame {
         document.getElementById('powerupShield')?.addEventListener('click', () => this.activatePowerup('shield'));
         document.getElementById('powerupHint')?.addEventListener('click', () => this.activatePowerup('hint'));
         document.getElementById('powerupSkip')?.addEventListener('click', () => this.activatePowerup('skip'));
+
+        // Mostrar tooltips contextuales las primeras 3 veces
+        this.showContextualTooltips();
+    }
+
+    showContextualTooltips() {
+        // Verificar cuántas veces ha jugado
+        let sessionCount = parseInt(localStorage.getItem('practiceSessionCount') || '0');
+        sessionCount++;
+        localStorage.setItem('practiceSessionCount', sessionCount.toString());
+
+        // Mostrar tooltips solo primeras 3 sesiones
+        if (sessionCount <= 3) {
+            setTimeout(() => {
+                // Tooltip para power-ups
+                this.createTooltip(
+                    '#powerupsBar',
+                    '💡 Usa los power-ups para ayudarte cuando lo necesites',
+                    'bottom',
+                    7000
+                );
+            }, 2000);
+
+            setTimeout(() => {
+                // Tooltip para botón de trucos
+                const tricksBtn = document.getElementById('showTricksBtn');
+                if (tricksBtn) {
+                    this.createTooltip(
+                        '#showTricksBtn',
+                        '📚 ¿Atascado? ¡Presiona aquí para ver trucos!',
+                        'left',
+                        7000
+                    );
+                }
+            }, 4000);
+        }
+    }
+
+    createTooltip(targetSelector, message, position = 'top', duration = 5000) {
+        const targetElement = document.querySelector(targetSelector);
+        if (!targetElement) return;
+
+        // Crear tooltip
+        const tooltip = document.createElement('div');
+        tooltip.className = `tooltip-hint ${position} dismissable`;
+        tooltip.textContent = message;
+        document.body.appendChild(tooltip);
+
+        // Posicionar según el target
+        const rect = targetElement.getBoundingClientRect();
+
+        switch(position) {
+            case 'top':
+                tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = (rect.top - tooltip.offsetHeight - 15) + 'px';
+                break;
+            case 'bottom':
+                tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = (rect.bottom + 15) + 'px';
+                break;
+            case 'left':
+                tooltip.style.left = (rect.left - tooltip.offsetWidth - 15) + 'px';
+                tooltip.style.top = (rect.top + rect.height / 2 - tooltip.offsetHeight / 2) + 'px';
+                break;
+            case 'right':
+                tooltip.style.left = (rect.right + 15) + 'px';
+                tooltip.style.top = (rect.top + rect.height / 2 - tooltip.offsetHeight / 2) + 'px';
+                break;
+        }
+
+        // Sonido
+        if (window.soundSystem) {
+            window.soundSystem.playNotification();
+        }
+
+        // Remover al hacer click
+        tooltip.addEventListener('click', () => {
+            tooltip.remove();
+        });
+
+        // Auto-remover después de duration
+        setTimeout(() => {
+            if (document.body.contains(tooltip)) {
+                tooltip.style.animation = 'tooltipFadeOut 0.3s ease-out forwards';
+                setTimeout(() => tooltip.remove(), 300);
+            }
+        }, duration);
     }
 
     updatePowerupCounts() {
@@ -2277,11 +2474,203 @@ class AdaptiveSystem {
 }
 
 // ================================
+// SISTEMA DE TUTORIAL INTERACTIVO
+// ================================
+
+class TutorialSystem {
+    constructor() {
+        this.currentStep = 0;
+        this.steps = [
+            {
+                emoji: '👋',
+                title: '¡Bienvenido a Multiplicar Mágico!',
+                text: 'Te mostraré cómo usar la app en solo 30 segundos. ¿Listo?',
+                target: null,
+                position: 'center'
+            },
+            {
+                emoji: '🎮',
+                title: 'Elige tu Modo de Juego',
+                text: '¡Tenemos 5 modos diferentes! Práctica, Desafío, Aventura, Carrera y Batalla. Cada uno es único y divertido.',
+                target: '#practiceMode',
+                position: 'bottom'
+            },
+            {
+                emoji: '🛡️',
+                title: 'Power-ups Mágicos',
+                text: 'Usa Escudo 🛡️ para protegerte de errores, Pista 💡 para ver la respuesta, y Saltar ⏭️ para omitir preguntas difíciles.',
+                target: '#powerupsBar',
+                position: 'bottom'
+            },
+            {
+                emoji: '📚',
+                title: 'Trucos para Recordar',
+                text: 'Si te atoras, presiona el botón "📚 Trucos" para ver consejos que te ayudarán a memorizar cada tabla.',
+                target: '#showTricksBtn',
+                position: 'left'
+            },
+            {
+                emoji: '🎉',
+                title: '¡Listo para Comenzar!',
+                text: 'Ahora sabes todo lo necesario. ¡Diviértete aprendiendo y desbloqueando logros! 🏆',
+                target: null,
+                position: 'center'
+            }
+        ];
+    }
+
+    shouldShow() {
+        // Mostrar solo si es primera vez (no hay player guardado o nunca vió tutorial)
+        const hasSeenTutorial = localStorage.getItem('tutorialCompleted');
+        return !hasSeenTutorial;
+    }
+
+    start() {
+        if (!this.shouldShow()) return;
+
+        this.currentStep = 0;
+        document.getElementById('tutorialOverlay').style.display = 'block';
+
+        if (window.soundSystem) {
+            window.soundSystem.playClick();
+        }
+
+        this.showStep(0);
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        document.getElementById('tutorialNext').addEventListener('click', () => this.nextStep());
+        document.getElementById('tutorialSkip').addEventListener('click', () => this.skip());
+    }
+
+    showStep(stepIndex) {
+        const step = this.steps[stepIndex];
+        this.currentStep = stepIndex;
+
+        // Actualizar contenido
+        document.getElementById('tutorialEmoji').textContent = step.emoji;
+        document.getElementById('tutorialTitle').textContent = step.title;
+        document.getElementById('tutorialText').textContent = step.text;
+        document.getElementById('tutorialStep').textContent = stepIndex + 1;
+        document.getElementById('tutorialTotal').textContent = this.steps.length;
+
+        // Actualizar botón siguiente
+        const nextBtn = document.getElementById('tutorialNext');
+        if (stepIndex === this.steps.length - 1) {
+            nextBtn.textContent = '¡Entendido!';
+        } else {
+            nextBtn.textContent = 'Siguiente';
+        }
+
+        // Posicionar spotlight y tutorial box
+        this.positionTutorial(step);
+
+        // Sonido
+        if (window.soundSystem) {
+            window.soundSystem.playClick();
+        }
+    }
+
+    positionTutorial(step) {
+        const spotlight = document.getElementById('tutorialSpotlight');
+        const content = document.getElementById('tutorialContent');
+        const box = content.querySelector('.tutorial-box');
+
+        // Limpiar clases de flecha anteriores
+        box.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right');
+
+        if (step.target) {
+            const targetElement = document.querySelector(step.target);
+
+            if (targetElement) {
+                const rect = targetElement.getBoundingClientRect();
+
+                // Posicionar spotlight
+                spotlight.style.top = (rect.top - 10) + 'px';
+                spotlight.style.left = (rect.left - 10) + 'px';
+                spotlight.style.width = (rect.width + 20) + 'px';
+                spotlight.style.height = (rect.height + 20) + 'px';
+                spotlight.classList.add('active');
+
+                // Posicionar tutorial box según posición deseada
+                switch(step.position) {
+                    case 'bottom':
+                        content.style.top = (rect.bottom + 30) + 'px';
+                        content.style.left = (rect.left + rect.width / 2 - 200) + 'px';
+                        box.classList.add('arrow-top');
+                        break;
+                    case 'top':
+                        content.style.top = (rect.top - 250) + 'px';
+                        content.style.left = (rect.left + rect.width / 2 - 200) + 'px';
+                        box.classList.add('arrow-bottom');
+                        break;
+                    case 'left':
+                        content.style.top = (rect.top + rect.height / 2 - 150) + 'px';
+                        content.style.left = (rect.left - 430) + 'px';
+                        box.classList.add('arrow-right');
+                        break;
+                    case 'right':
+                        content.style.top = (rect.top + rect.height / 2 - 150) + 'px';
+                        content.style.left = (rect.right + 30) + 'px';
+                        box.classList.add('arrow-left');
+                        break;
+                }
+            }
+        } else {
+            // Centro de pantalla para pasos sin target
+            spotlight.classList.remove('active');
+            spotlight.style.width = '0';
+            spotlight.style.height = '0';
+
+            content.style.top = '50%';
+            content.style.left = '50%';
+            content.style.transform = 'translate(-50%, -50%)';
+        }
+    }
+
+    nextStep() {
+        if (this.currentStep < this.steps.length - 1) {
+            this.showStep(this.currentStep + 1);
+        } else {
+            this.complete();
+        }
+    }
+
+    skip() {
+        this.complete();
+    }
+
+    complete() {
+        document.getElementById('tutorialOverlay').style.display = 'none';
+        localStorage.setItem('tutorialCompleted', 'true');
+
+        if (window.soundSystem) {
+            window.soundSystem.playSuccess();
+        }
+    }
+}
+
+// ================================
 // INICIALIZAR APLICACIÓN
 // ================================
 
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new MultiplicationGame();
+
+    // Iniciar tutorial si es primera vez y usuario está en pantalla principal
+    setTimeout(() => {
+        const tutorial = new TutorialSystem();
+
+        // Esperar a que el usuario complete el onboarding
+        const checkMainScreen = setInterval(() => {
+            const mainScreen = document.getElementById('mainScreen');
+            if (mainScreen && mainScreen.classList.contains('active')) {
+                clearInterval(checkMainScreen);
+                tutorial.start();
+            }
+        }, 500);
+    }, 1000);
 });
 
 // Agregar estilos de animación dinámicamente

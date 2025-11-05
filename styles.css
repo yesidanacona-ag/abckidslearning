@@ -2191,6 +2191,368 @@ body::before {
     }
 }
 
+/* ================================
+   TUTORIAL INTERACTIVO
+   ================================ */
+
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    pointer-events: all;
+}
+
+.tutorial-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    animation: tutorialFadeIn 0.3s ease-out;
+}
+
+.tutorial-spotlight {
+    position: absolute;
+    border-radius: 15px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none;
+    z-index: 10001;
+}
+
+.tutorial-spotlight.active {
+    animation: spotlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85),
+                    0 0 30px rgba(99, 102, 241, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85),
+                    0 0 50px rgba(99, 102, 241, 0.9);
+    }
+}
+
+.tutorial-content {
+    position: absolute;
+    z-index: 10002;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.tutorial-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    animation: tutorialBoxEntry 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+}
+
+.tutorial-box::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.tutorial-box.arrow-top::before {
+    top: -10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.tutorial-box.arrow-bottom::before {
+    bottom: -10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.tutorial-box.arrow-left::before {
+    left: -10px;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.tutorial-box.arrow-right::before {
+    right: -10px;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.tutorial-emoji {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 15px;
+    animation: tutorialEmojiFloat 2s ease-in-out infinite;
+}
+
+@keyframes tutorialEmojiFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.tutorial-title {
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.tutorial-text {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tutorial-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.btn-tutorial-skip {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-tutorial-skip:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-tutorial-next {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-tutorial-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+.btn-tutorial-next:active {
+    transform: translateY(0);
+}
+
+.tutorial-progress {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.tutorial-progress span {
+    font-weight: bold;
+    color: white;
+}
+
+@keyframes tutorialFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tutorialBoxEntry {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Efecto de mano apuntando */
+.tutorial-pointer {
+    position: absolute;
+    font-size: 3rem;
+    animation: pointerBounce 1s ease-in-out infinite;
+    z-index: 10003;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes pointerBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(-20deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(-20deg);
+    }
+}
+
+/* Responsive para tutorial */
+@media (max-width: 768px) {
+    .tutorial-box {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    .tutorial-emoji {
+        font-size: 3rem;
+    }
+
+    .tutorial-title {
+        font-size: 1.4rem;
+    }
+
+    .tutorial-text {
+        font-size: 1rem;
+    }
+
+    .btn-tutorial-skip,
+    .btn-tutorial-next {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .tutorial-pointer {
+        font-size: 2rem;
+    }
+}
+
+/* ================================
+   TOOLTIPS CONTEXTUALES
+   ================================ */
+
+.tooltip-hint {
+    position: absolute;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.6);
+    z-index: 5000;
+    pointer-events: none;
+    animation: tooltipPulse 2s ease-in-out infinite;
+    max-width: 250px;
+    line-height: 1.4;
+}
+
+.tooltip-hint::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: rotate(45deg);
+}
+
+.tooltip-hint.top::before {
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+}
+
+.tooltip-hint.bottom::before {
+    top: -6px;
+    left: 50%;
+    margin-left: -6px;
+}
+
+.tooltip-hint.left::before {
+    right: -6px;
+    top: 50%;
+    margin-top: -6px;
+}
+
+.tooltip-hint.right::before {
+    left: -6px;
+    top: 50%;
+    margin-top: -6px;
+}
+
+.tooltip-hint.dismissable {
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.tooltip-hint.dismissable:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 35px rgba(245, 158, 11, 0.8);
+}
+
+@keyframes tooltipPulse {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.6);
+    }
+    50% {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.8);
+    }
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tooltip-hint {
+    animation: tooltipFadeIn 0.3s ease-out, tooltipPulse 2s ease-in-out 0.3s infinite;
+}
+
+@keyframes tooltipFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive para tooltips */
+@media (max-width: 768px) {
+    .tooltip-hint {
+        font-size: 0.85rem;
+        padding: 10px 15px;
+        max-width: 200px;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .combo-counter {
