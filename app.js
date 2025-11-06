@@ -233,7 +233,10 @@ class MultiplicationGame {
 
         // Obtener nombres de los items
         const getItemName = (category, icon) => {
-            const items = window.shopSystem.items[category];
+            if (!window.shopSystem || !window.shopSystem.shopData) {
+                return 'Básico';
+            }
+            const items = window.shopSystem.shopData[category];
             const item = items?.find(i => i.icon === icon);
             return item ? item.name : 'Básico';
         };
