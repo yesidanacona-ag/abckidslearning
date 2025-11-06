@@ -5021,6 +5021,58 @@ body.light-theme .pause-control-label {
     margin-right: 10px;
 }
 
+/* Indicador de súper-ataque activado */
+.super-attack-indicator {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    opacity: 1;
+    transition: all 0.5s ease;
+}
+
+.super-attack-glow {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 165, 0, 0.4) 50%, transparent 100%);
+    border-radius: 20px;
+    padding: 20px 40px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    animation: superGlow 0.5s ease-in-out infinite;
+}
+
+.super-attack-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-align: center;
+    text-shadow:
+        0 0 10px #FFD700,
+        0 0 20px #FFD700,
+        0 0 30px #FFA500,
+        0 4px 8px rgba(0, 0, 0, 0.5);
+    animation: textPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes superGlow {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 60px rgba(255, 215, 0, 1);
+    }
+}
+
+@keyframes textPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 /* Área de pregunta */
 .battle-question-area {
     position: absolute;
@@ -5083,16 +5135,31 @@ body.light-theme .pause-control-label {
 /* Log de batalla */
 .battle-log {
     position: absolute;
-    top: 120px;
+    top: 60px;
     right: 20px;
-    width: 300px;
-    max-height: 400px;
+    width: 280px;
+    max-height: 250px;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 15px;
     padding: 15px;
     backdrop-filter: blur(10px);
     overflow-y: auto;
     z-index: 7;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.battle-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.battle-log::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.battle-log::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
 }
 
 .battle-log-entry {

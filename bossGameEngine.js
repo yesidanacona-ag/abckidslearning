@@ -412,17 +412,53 @@ class BossGameEngine {
     activateSuperAttack() {
         if (!this.superAttackReady || this.turn !== 'player') return;
 
+        console.log('⚡ SÚPER-ATAQUE ACTIVADO!');
+
         this.superAttackReady = false;
         this.refs.superAttackButton.classList.add('hidden');
         this.refs.superAttackContainer.classList.remove('ready');
         this.refs.superAttackContainer.classList.add('used');
 
-        // Marcar pregunta como súper-ataque
+        // Marcar pregunta como súper-ataque (TRIPLE DAÑO)
         this.currentQuestion.isSuperAttack = true;
 
-        // Efecto visual
+        // EFECTOS VISUALES ÉPICOS
         this.addLog('⚡⚡⚡ ¡SÚPER-ATAQUE ACTIVADO! ⚡⚡⚡', 'special');
         this.flashScreen('#FFD700');
+
+        // Cambiar color de todas las opciones a dorado
+        const buttons = this.refs.battleOptions.querySelectorAll('.battle-option');
+        buttons.forEach(btn => {
+            btn.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
+            btn.style.borderColor = '#FFD700';
+            btn.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
+            btn.style.animation = 'pulse 0.5s ease infinite';
+        });
+
+        // Cambiar color de la pregunta
+        this.refs.battleQuestion.style.color = '#FFD700';
+        this.refs.battleQuestion.style.textShadow = '0 0 20px #FFD700';
+        this.refs.battleQuestion.style.animation = 'pulse 0.5s ease infinite';
+
+        // Mostrar indicador visual grande
+        const indicator = document.createElement('div');
+        indicator.className = 'super-attack-indicator';
+        indicator.innerHTML = `
+            <div class="super-attack-glow">
+                <div class="super-attack-text">
+                    ⚡ SÚPER-ATAQUE ⚡<br>
+                    <span style="font-size: 0.6em;">TRIPLE DAÑO (45 HP)</span>
+                </div>
+            </div>
+        `;
+        this.refs.questionArea.appendChild(indicator);
+
+        // Animar indicador
+        setTimeout(() => {
+            indicator.style.opacity = '0';
+            indicator.style.transform = 'scale(0.5)';
+            setTimeout(() => indicator.remove(), 500);
+        }, 2000);
 
         // Resetear después de usar
         setTimeout(() => {
@@ -430,6 +466,11 @@ class BossGameEngine {
             this.correctStreak = 0;
             this.refs.superAttackFill.style.width = '0%';
             this.refs.superAttackContainer.classList.remove('used');
+
+            // Restaurar estilos normales de pregunta
+            this.refs.battleQuestion.style.color = '#FFD700';
+            this.refs.battleQuestion.style.textShadow = '0 4px 8px rgba(0, 0, 0, 0.5)';
+            this.refs.battleQuestion.style.animation = '';
         }, 1000);
     }
 
