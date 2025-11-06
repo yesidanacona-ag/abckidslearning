@@ -183,7 +183,18 @@ class MultiplicationGame {
     }
 
     updateHeader() {
-        document.getElementById('headerPlayerName').textContent = this.player.name;
+        const headerPlayerName = document.getElementById('headerPlayerName');
+        const playerAvatar = document.getElementById('playerAvatar');
+        const playerLevel = document.getElementById('playerLevel');
+        const totalStars = document.getElementById('totalStars');
+        const totalMedals = document.getElementById('totalMedals');
+        const streak = document.getElementById('streak');
+        const xpBar = document.getElementById('xpBar');
+
+        // Si los elementos no existen (estamos en welcomeScreen), salir
+        if (!headerPlayerName || !playerAvatar) return;
+
+        headerPlayerName.textContent = this.player.name;
 
         // Sincronizar avatar con shopSystem
         if (window.shopSystem) {
@@ -193,17 +204,19 @@ class MultiplicationGame {
             }
         }
 
-        document.getElementById('playerAvatar').textContent = this.player.avatar;
-        document.getElementById('playerLevel').textContent = this.player.level;
-        document.getElementById('totalStars').textContent = this.player.totalStars;
-        document.getElementById('totalMedals').textContent = this.player.totalMedals;
-        document.getElementById('streak').textContent = this.player.streak;
+        playerAvatar.textContent = this.player.avatar;
+        if (playerLevel) playerLevel.textContent = this.player.level;
+        if (totalStars) totalStars.textContent = this.player.totalStars;
+        if (totalMedals) totalMedals.textContent = this.player.totalMedals;
+        if (streak) streak.textContent = this.player.streak;
 
-        const xpNeeded = this.player.level * 100;
-        const xpProgress = (this.player.xp / xpNeeded) * 100;
-        document.getElementById('xpBar').style.width = xpProgress + '%';
+        if (xpBar) {
+            const xpNeeded = this.player.level * 100;
+            const xpProgress = (this.player.xp / xpNeeded) * 100;
+            xpBar.style.width = xpProgress + '%';
+        }
 
-        // Actualizar equipamiento
+        // Actualizar equipamiento (solo si los elementos existen)
         this.updateEquipmentDisplay();
     }
 
