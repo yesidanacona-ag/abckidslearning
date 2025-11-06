@@ -392,6 +392,17 @@ class ShopSystem {
             this.equipped[category] = itemIcon;
             this.saveInventory();
             console.log(`✅ Equipado: ${itemIcon} en ${category}`);
+
+            // Actualizar UI de equipamiento si existe
+            if (window.app && window.app.updateEquipmentDisplay) {
+                window.app.updateEquipmentDisplay();
+            }
+
+            // Actualizar header para sincronizar avatar
+            if (window.app && window.app.updateHeader) {
+                window.app.updateHeader();
+            }
+
             return true;
         }
         return false;

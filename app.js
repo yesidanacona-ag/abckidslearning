@@ -184,6 +184,15 @@ class MultiplicationGame {
 
     updateHeader() {
         document.getElementById('headerPlayerName').textContent = this.player.name;
+
+        // Sincronizar avatar con shopSystem
+        if (window.shopSystem) {
+            const equippedAvatar = window.shopSystem.getEquipped('avatars');
+            if (equippedAvatar) {
+                this.player.avatar = equippedAvatar;
+            }
+        }
+
         document.getElementById('playerAvatar').textContent = this.player.avatar;
         document.getElementById('playerLevel').textContent = this.player.level;
         document.getElementById('totalStars').textContent = this.player.totalStars;
@@ -193,6 +202,52 @@ class MultiplicationGame {
         const xpNeeded = this.player.level * 100;
         const xpProgress = (this.player.xp / xpNeeded) * 100;
         document.getElementById('xpBar').style.width = xpProgress + '%';
+
+        // Actualizar equipamiento
+        this.updateEquipmentDisplay();
+    }
+
+    updateEquipmentDisplay() {
+        if (!window.shopSystem) return;
+
+        // Obtener items equipados
+        const equipped = {
+            avatar: window.shopSystem.getEquipped('avatars') || '🦸',
+            ship: window.shopSystem.getEquipped('ships') || '🚀',
+            car: window.shopSystem.getEquipped('cars') || '🏎️',
+            weapon: window.shopSystem.getEquipped('weapons') || '⚔️'
+        };
+
+        // Obtener nombres de los items
+        const getItemName = (category, icon) => {
+            const items = window.shopSystem.items[category];
+            const item = items?.find(i => i.icon === icon);
+            return item ? item.name : 'Básico';
+        };
+
+        // Actualizar iconos
+        const avatarEl = document.getElementById('equippedAvatar');
+        const shipEl = document.getElementById('equippedShip');
+        const carEl = document.getElementById('equippedCar');
+        const weaponEl = document.getElementById('equippedWeapon');
+
+        if (avatarEl) avatarEl.textContent = equipped.avatar;
+        if (shipEl) shipEl.textContent = equipped.ship;
+        if (carEl) carEl.textContent = equipped.car;
+        if (weaponEl) weaponEl.textContent = equipped.weapon;
+
+        // Actualizar nombres
+        const avatarNameEl = document.getElementById('equippedAvatarName');
+        const shipNameEl = document.getElementById('equippedShipName');
+        const carNameEl = document.getElementById('equippedCarName');
+        const weaponNameEl = document.getElementById('equippedWeaponName');
+
+        if (avatarNameEl) avatarNameEl.textContent = getItemName('avatars', equipped.avatar);
+        if (shipNameEl) shipNameEl.textContent = getItemName('ships', equipped.ship);
+        if (carNameEl) carNameEl.textContent = getItemName('cars', equipped.car);
+        if (weaponNameEl) weaponNameEl.textContent = getItemName('weapons', equipped.weapon);
+
+        console.log('🎒 Equipamiento actualizado:', equipped);
     }
 
     // ================================
