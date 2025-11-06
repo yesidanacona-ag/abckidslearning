@@ -1,70 +1,46 @@
-/**
- * Setup file for Vitest tests
- * Mocks y configuración global para testing
- */
+// tests/setup.js
+// Setup global para todos los tests
+
+import { vi } from 'vitest';
 
 // Mock de localStorage
 const localStorageMock = {
-  store: {},
-  getItem(key) {
-    return this.store[key] || null;
-  },
-  setItem(key, value) {
-    this.store[key] = String(value);
-  },
-  removeItem(key) {
-    delete this.store[key];
-  },
-  clear() {
-    this.store = {};
-  }
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  key: vi.fn(),
+  length: 0
 };
 
 global.localStorage = localStorageMock;
 
-// Mock de Audio API
-global.Audio = class Audio {
-  constructor(src) {
-    this.src = src;
-    this.volume = 1;
-    this.currentTime = 0;
-    this.paused = true;
-  }
-  play() {
-    this.paused = false;
-    return Promise.resolve();
-  }
-  pause() {
-    this.paused = true;
-  }
-  load() {}
+// Mock de console para tests más limpios (opcional)
+global.console = {
+  ...console,
+  // Mantener error y warn, silenciar log en tests
+  log: vi.fn(),
+  debug: vi.fn(),
+  info: vi.fn()
 };
 
-// Mock de SpeechSynthesisUtterance
-global.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
-  constructor(text) {
-    this.text = text;
-    this.lang = 'es-ES';
-    this.rate = 1;
-    this.pitch = 1;
-    this.volume = 1;
-  }
+// Mock básico de window
+global.window = {
+  localStorage: localStorageMock,
+  soundSystem: null,
+  eventBus: null
 };
 
-// Mock de speechSynthesis
-global.speechSynthesis = {
-  speak: vi.fn(),
-  cancel: vi.fn(),
-  pause: vi.fn(),
-  resume: vi.fn(),
-  getVoices: vi.fn(() => [])
-};
+// Helper para resetear todos los mocks entre tests
+export function resetAllMocks() {
+  vi.clearAllMocks();
+  localStorageMock.getItem.mockClear();
+  localStorageMock.setItem.mockClear();
+  localStorageMock.removeItem.mockClear();
+  localStorageMock.clear.mockClear();
+}
 
-// Mock de requestAnimationFrame
-global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
-global.cancelAnimationFrame = (id) => clearTimeout(id);
-
-// Limpiar localStorage antes de cada test
+// Ejecutar antes de cada test
 beforeEach(() => {
-  localStorage.clear();
+  resetAllMocks();
 });
