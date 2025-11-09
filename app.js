@@ -208,7 +208,11 @@ class MultiplicationGame {
     }
 
     updateEquipmentDisplay() {
-        if (!window.shopSystem) return;
+        // Validar que shopSystem existe y tiene items
+        if (!window.shopSystem || !window.shopSystem.items) {
+            console.warn('⚠️ ShopSystem no disponible, saltando actualización de equipamiento');
+            return;
+        }
 
         // Obtener items equipados
         const equipped = {
@@ -220,8 +224,9 @@ class MultiplicationGame {
 
         // Obtener nombres de los items
         const getItemName = (category, icon) => {
-            const items = window.shopSystem.items[category];
-            const item = items?.find(i => i.icon === icon);
+            const items = window.shopSystem.items?.[category];
+            if (!items) return 'Básico';
+            const item = items.find(i => i.icon === icon);
             return item ? item.name : 'Básico';
         };
 
