@@ -382,6 +382,7 @@ class MultiplicationGame {
         document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
         document.getElementById('shopMode')?.addEventListener('click', () => this.openShop());
         document.getElementById('missionsMode')?.addEventListener('click', () => this.openMissions());
+        document.getElementById('heroShowcaseMode')?.addEventListener('click', () => this.openHeroShowcase());
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
@@ -2595,6 +2596,14 @@ class MultiplicationGame {
             window.dailyMissionsSystem.open();
         } else {
             console.error('❌ Sistema de misiones no disponible');
+        }
+    }
+
+    openHeroShowcase() {
+        if (window.heroShowcase) {
+            window.heroShowcase.open(this.player);
+        } else {
+            console.error('❌ Sistema de Escaparate del Héroe no disponible');
         }
     }
 
