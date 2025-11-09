@@ -6971,3 +6971,285 @@ body.light-theme .pause-control-label {
         font-size: 2em;
     }
 }
+
+/* ================================
+   DEFENSA DE LA NAVE - SHIP DEFENSE
+   ================================ */
+
+.defense-stats-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.stat-pill {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    font-size: 1.2em;
+}
+
+.defense-game-area {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.defense-instruction {
+    text-align: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.defense-instruction h3 {
+    font-size: 2em;
+    margin: 0 0 10px 0;
+    color: var(--primary);
+    text-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+}
+
+.defense-hint {
+    font-size: 1.1em;
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.defense-wave-progress {
+    margin-bottom: 20px;
+}
+
+.defense-progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.defense-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #06b6d4, #10b981);
+    transition: width 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.defense-space {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    background: linear-gradient(180deg, #0f0f23 0%, #1a1a3e 50%, #2a2a5e 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+        inset 0 0 100px rgba(99, 102, 241, 0.2),
+        0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Efecto de estrellas en el fondo */
+.defense-space::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, white, transparent),
+        radial-gradient(2px 2px at 60px 70px, white, transparent),
+        radial-gradient(1px 1px at 50px 50px, white, transparent),
+        radial-gradient(1px 1px at 130px 80px, white, transparent),
+        radial-gradient(2px 2px at 90px 10px, white, transparent);
+    background-size: 200px 200px;
+    background-repeat: repeat;
+    opacity: 0.5;
+    animation: twinkle 3s infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+}
+
+/* Asteroides */
+.asteroid {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    z-index: 10;
+}
+
+.asteroid:hover {
+    transform: scale(1.1);
+}
+
+.asteroid-icon {
+    font-size: 3em;
+    text-align: center;
+    filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.6));
+    animation: rotate-asteroid 4s linear infinite;
+}
+
+@keyframes rotate-asteroid {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.asteroid-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    font-weight: 900;
+    color: white;
+    text-shadow:
+        0 0 5px rgba(0, 0, 0, 0.8),
+        0 2px 10px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+/* Explosiones */
+.asteroid.explode-correct {
+    animation: explode-correct 0.5s forwards;
+}
+
+.asteroid.explode-wrong {
+    animation: explode-wrong 0.5s forwards;
+}
+
+@keyframes explode-correct {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes explode-wrong {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: scale(1.2) rotate(-10deg);
+    }
+    75% {
+        transform: scale(1.2) rotate(10deg);
+    }
+    100% {
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+}
+
+/* Nave del jugador */
+.defense-ship-area {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.1) 100%);
+}
+
+.defense-ship {
+    font-size: 4em;
+    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.8));
+    animation: ship-hover 2s ease-in-out infinite;
+}
+
+@keyframes ship-hover {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.defense-ship.ship-damage {
+    animation: ship-damage 0.5s;
+}
+
+@keyframes ship-damage {
+    0%, 100% {
+        transform: translateX(0);
+        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.8));
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px);
+        filter: drop-shadow(0 0 20px rgba(239, 68, 68, 1));
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px);
+        filter: drop-shadow(0 0 20px rgba(239, 68, 68, 1));
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .defense-stats-header {
+        gap: 10px;
+    }
+
+    .stat-pill {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    .defense-space {
+        height: 500px;
+    }
+
+    .asteroid {
+        width: 60px;
+        height: 60px;
+    }
+
+    .asteroid-icon {
+        font-size: 2em;
+    }
+
+    .asteroid-number {
+        font-size: 1.2em;
+    }
+
+    .defense-ship {
+        font-size: 3em;
+    }
+
+    .defense-instruction h3 {
+        font-size: 1.5em;
+    }
+
+    .defense-hint {
+        font-size: 1em;
+    }
+}

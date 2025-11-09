@@ -159,6 +159,13 @@
                     <div class="mode-badge hot">Dominio Real</div>
                 </div>
 
+                <div class="mode-card" id="shipDefenseMode">
+                    <div class="mode-icon">🛸</div>
+                    <h3>Defensa de la Nave</h3>
+                    <p>Identifica múltiplos y protege tu nave</p>
+                    <div class="mode-badge hot">Pensar Diferente</div>
+                </div>
+
                 <div class="mode-card" id="adventureMode">
                     <div class="mode-icon">🚀</div>
                     <h3>Aventura Espacial</h3>
@@ -854,6 +861,53 @@
         </div>
     </div>
 
+    <!-- Pantalla de Defensa de la Nave -->
+    <div id="shipDefenseScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromShipDefense">← Volver</button>
+            <h2>🛸 Defensa de la Nave</h2>
+            <div class="defense-stats-header">
+                <div class="stat-pill">
+                    <span class="stat-icon">❤️</span>
+                    <span id="defenseLives">❤️❤️❤️</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">⭐</span>
+                    <span id="defenseScore">0</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">🌊</span>
+                    Oleada <span id="defenseWave">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="defense-game-area">
+            <!-- Instrucción -->
+            <div class="defense-instruction">
+                <h3 id="defenseTable">Tabla del 7</h3>
+                <p class="defense-hint">💡 Haz clic en los múltiplos. Deja pasar los demás.</p>
+            </div>
+
+            <!-- Barra de progreso de oleada -->
+            <div class="defense-wave-progress">
+                <div class="defense-progress-bar">
+                    <div class="defense-progress-fill" id="defenseProgress"></div>
+                </div>
+            </div>
+
+            <!-- Área de juego (asteroides caen aquí) -->
+            <div class="defense-space" id="asteroidsContainer">
+                <!-- Los asteroides se generan dinámicamente -->
+            </div>
+
+            <!-- Nave del jugador (parte inferior) -->
+            <div class="defense-ship-area">
+                <div class="defense-ship" id="defenseShip">🛸</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 
@@ -913,6 +967,7 @@
     <script src="dailyMissionsSystem.js"></script>
     <script src="numericKeyboard.js"></script>
     <script src="speedDrillEngine.js"></script>
+    <script src="shipDefenseEngine.js"></script>
     <script src="spaceGameEngine.js"></script>
     <script src="bossGameEngine.js"></script>
     <script src="practiceSystemEngine.js"></script>

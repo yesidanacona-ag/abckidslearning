@@ -375,6 +375,7 @@ class MultiplicationGame {
         document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
         document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
         document.getElementById('speedDrillMode')?.addEventListener('click', () => this.startSpeedDrillMode());
+        document.getElementById('shipDefenseMode')?.addEventListener('click', () => this.startShipDefenseMode());
         document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
         document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
         document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
@@ -388,6 +389,12 @@ class MultiplicationGame {
         document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
             if (window.speedDrillEngine) {
                 window.speedDrillEngine.stop();
+            }
+            this.showMainScreen();
+        });
+        document.getElementById('backFromShipDefense')?.addEventListener('click', () => {
+            if (window.shipDefense) {
+                window.shipDefense.stop();
             }
             this.showMainScreen();
         });
@@ -1838,6 +1845,49 @@ class MultiplicationGame {
         } else {
             console.error('⚠️ speedDrillEngine no está disponible');
         }
+    }
+
+    // ================================
+    // MODO DEFENSA DE LA NAVE
+    // ================================
+
+    startShipDefenseMode() {
+        this.currentMode = 'shipDefense';
+        this.showScreen('shipDefenseScreen');
+
+        // Mateo da instrucciones
+        if (window.mateoMascot) {
+            window.mateoMascot.show('excited');
+            window.mateoMascot.speak('¡Defiende tu nave! Haz clic en los múltiplos 🛸', 4000);
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startShipDefenseMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                if (window.shipDefense) {
+                    window.shipDefense.stop();
+                }
+                this.showMainScreen();
+            });
+        }
+
+        // Mostrar modal de selección de tabla
+        this.showTableSelection((selectedTable) => {
+            // Iniciar el motor de Defensa de la Nave
+            if (window.shipDefense) {
+                window.shipDefense.start(selectedTable);
+            } else {
+                console.error('⚠️ shipDefense no está disponible');
+            }
+        });
     }
 
     // ================================
