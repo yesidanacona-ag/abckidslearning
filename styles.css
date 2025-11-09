@@ -265,17 +265,18 @@ body::before {
     padding: 10px 20px;
     font-size: 1rem;
     font-weight: 600;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.9);
+    color: #1F2937; /* ✅ WCAG AAA: Texto oscuro sobre fondo claro */
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .avatar-tab:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 1.0); /* ✅ Fondo opaco para mejor contraste */
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .avatar-tab.active {
@@ -410,21 +411,22 @@ body::before {
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
+    color: #1F2937; /* ✅ WCAG AAA: Texto oscuro sobre fondo claro */
+    border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .btn-back {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1F2937; /* ✅ WCAG AAA: Texto oscuro sobre fondo claro */
     padding: 10px 20px;
     font-size: 1rem;
 }
 
 .btn-back:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 1.0); /* ✅ Fondo completamente opaco */
     transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Header Principal */
@@ -759,9 +761,9 @@ body::before {
     padding: 20px;
     font-size: 1.5rem;
     font-weight: bold;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
+    color: #1F2937; /* ✅ WCAG AAA: Texto oscuro sobre fondo claro */
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -769,7 +771,8 @@ body::before {
 
 .table-btn:hover {
     transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 1.0); /* ✅ Fondo más opaco para mejor contraste */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .table-btn.selected {
@@ -3267,15 +3270,15 @@ body::before {
 }
 
 .pause-btn-secondary {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    color: #1F2937; /* ✅ WCAG AAA: Texto oscuro sobre fondo claro */
+    border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .pause-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 1.0); /* ✅ Fondo completamente opaco */
+    border-color: rgba(255, 255, 255, 1.0);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
