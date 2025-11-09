@@ -8805,3 +8805,270 @@ body.light-theme .pause-control-label {
         width: 100%;
     }
 }
+
+/* ================================
+   MODAL: APRENDER VS PRACTICAR
+   UI de decisión para niños 7-9 años
+   ================================ */
+
+.learn-practice-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 10000;
+}
+
+.learn-practice-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 30px;
+    padding: 40px;
+    max-width: 700px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: modalSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes modalSlideIn {
+    0% {
+        transform: scale(0.7) translateY(-50px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mateo en el modal */
+.modal-mateo {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.mateo-avatar-large {
+    font-size: 4rem;
+    flex-shrink: 0;
+    animation: mateoBounce 2s ease-in-out infinite;
+}
+
+@keyframes mateoBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.mateo-speech-bubble {
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.mateo-speech-bubble p {
+    margin: 8px 0;
+}
+
+.mateo-speech-bubble strong {
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* Opciones de decisión */
+.learn-practice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.learn-practice-btn {
+    background: white;
+    border: none;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.learn-practice-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.learn-practice-btn:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+/* Efecto de brillo al hover */
+.learn-practice-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.learn-practice-btn:hover::before {
+    left: 100%;
+}
+
+/* Icono del botón */
+.learn-practice-btn .btn-icon {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.learn-btn .btn-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.practice-btn .btn-icon {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+/* Contenido del botón */
+.learn-practice-btn .btn-content {
+    flex: 1;
+    text-align: left;
+}
+
+.learn-practice-btn .btn-content h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.learn-btn .btn-content h3 {
+    color: #0077cc;
+}
+
+.practice-btn .btn-content h3 {
+    color: #ff6b6b;
+}
+
+.learn-practice-btn .btn-content p {
+    font-size: 1rem;
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Badge "NUEVO" */
+.btn-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Botón cerrar */
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close-btn:hover {
+    background: #ff6b6b;
+    color: white;
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .learn-practice-content {
+        padding: 25px;
+        max-width: 95%;
+    }
+
+    .modal-mateo {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .mateo-avatar-large {
+        font-size: 3rem;
+    }
+
+    .mateo-speech-bubble {
+        font-size: 1rem;
+    }
+
+    .learn-practice-btn {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .learn-practice-btn .btn-icon {
+        font-size: 2.5rem;
+        width: 60px;
+        height: 60px;
+    }
+
+    .learn-practice-btn .btn-content h3 {
+        font-size: 1.4rem;
+    }
+
+    .learn-practice-btn .btn-content p {
+        font-size: 0.9rem;
+    }
+
+    .btn-badge {
+        top: 10px;
+        right: 10px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+    }
+}

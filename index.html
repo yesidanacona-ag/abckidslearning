@@ -1116,6 +1116,45 @@
         <span class="sound-icon">🔊</span>
     </button>
 
+    <!-- Modal de Decisión: Aprender vs Practicar -->
+    <div id="learnOrPracticeModal" class="modal-overlay learn-practice-modal" style="display: none;">
+        <div class="modal-content learn-practice-content">
+            <!-- Mateo animado -->
+            <div class="modal-mateo">
+                <div class="mateo-avatar-large">🧙‍♂️</div>
+                <div class="mateo-speech-bubble">
+                    <p id="learnPracticeModalMessage">¡Hola! Veo que quieres trabajar con la <strong>Tabla del <span id="modalTableNumber">2</span></strong>.</p>
+                    <p>¿Qué te gustaría hacer?</p>
+                </div>
+            </div>
+
+            <!-- Opciones grandes -->
+            <div class="learn-practice-options">
+                <!-- Opción 1: Aprender (Descubrir) -->
+                <button class="learn-practice-btn learn-btn" id="btnLearnTable">
+                    <div class="btn-icon">🎓</div>
+                    <div class="btn-content">
+                        <h3>¡APRENDER!</h3>
+                        <p>Descubre el truco secreto y practica paso a paso</p>
+                    </div>
+                    <div class="btn-badge">🌟 NUEVO</div>
+                </button>
+
+                <!-- Opción 2: Practicar -->
+                <button class="learn-practice-btn practice-btn" id="btnPracticeTable">
+                    <div class="btn-icon">⚡</div>
+                    <div class="btn-content">
+                        <h3>¡PRACTICAR!</h3>
+                        <p>Responde preguntas y mejora tu velocidad</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Botón cerrar -->
+            <button class="modal-close-btn" id="closeLearnPracticeModal">✕</button>
+        </div>
+    </div>
+
     <!-- Modal de Trucos Mnemotécnicos -->
     <div id="trickModal" class="modal-overlay" style="display: none;">
         <div class="trick-modal-content">

@@ -533,29 +533,155 @@ class ModeController {
      * @param {number} table - Número de tabla (2-10)
      */
     showDiscoveryOptions(table) {
-        // Mostrar modal o pantalla de decisión
-        // Por ahora, usar confirm simple (mejorar en Fase 2 con UI apropiada)
+        console.log(`🎯 Mostrando opciones para Tabla del ${table}`);
 
-        // Mateo aparece con pregunta
-        if (typeof window !== 'undefined' && window.mateoMascot) {
-            window.mateoMascot.show(
-                'teaching',
-                `¡Hola! Veo que quieres trabajar con la Tabla del ${table}. ¿Quieres que te enseñe el truco secreto o prefieres practicar directamente?`,
-                0 // No auto-hide
+        // Obtener referencias al modal
+        const modal = document.getElementById('learnOrPracticeModal');
+        const tableNumberSpan = document.getElementById('modalTableNumber');
+        const btnLearn = document.getElementById('btnLearnTable');
+        const btnPractice = document.getElementById('btnPracticeTable');
+        const btnClose = document.getElementById('closeLearnPracticeModal');
+
+        if (!modal) {
+            console.error('❌ Modal de decisión no encontrado');
+            // Fallback: ir directo a descubrimiento
+            this.startTableDiscovery(table);
+            return;
+        }
+
+        // Actualizar número de tabla en el modal
+        if (tableNumberSpan) {
+            tableNumberSpan.textContent = table;
+        }
+
+        // Limpiar event listeners previos
+        const newBtnLearn = btnLearn.cloneNode(true);
+        const newBtnPractice = btnPractice.cloneNode(true);
+        const newBtnClose = btnClose.cloneNode(true);
+
+        btnLearn.replaceWith(newBtnLearn);
+        btnPractice.replaceWith(newBtnPractice);
+        btnClose.replaceWith(newBtnClose);
+
+        // Handler para "APRENDER"
+        newBtnLearn.addEventListener('click', () => {
+            console.log(`📚 Usuario eligió APRENDER tabla ${table}`);
+
+            // Ocultar modal
+            modal.style.display = 'none';
+
+            // Reproducir sonido de selección
+            if (window.soundSystem) {
+                window.soundSystem.playClick();
+            }
+
+            // Track en analytics
+            if (window.bootstrap?.uxResearch?.analytics) {
+                window.bootstrap.uxResearch.analytics.trackEvent('mode_selected', {
+                    table,
+                    mode: 'discover',
+                    source: 'learn_practice_modal'
+                });
+            }
+
+            // Emitir evento
+            if (this.eventBus) {
+                this.eventBus.emit('mode:selected', {
+                    table,
+                    mode: 'discover'
+                });
+            }
+
+            // Iniciar descubrimiento
+            this.startTableDiscovery(table);
+        });
+
+        // Handler para "PRACTICAR"
+        newBtnPractice.addEventListener('click', () => {
+            console.log(`⚡ Usuario eligió PRACTICAR tabla ${table}`);
+
+            // Ocultar modal
+            modal.style.display = 'none';
+
+            // Reproducir sonido de selección
+            if (window.soundSystem) {
+                window.soundSystem.playClick();
+            }
+
+            // Track en analytics
+            if (window.bootstrap?.uxResearch?.analytics) {
+                window.bootstrap.uxResearch.analytics.trackEvent('mode_selected', {
+                    table,
+                    mode: 'practice',
+                    source: 'learn_practice_modal'
+                });
+            }
+
+            // Emitir evento
+            if (this.eventBus) {
+                this.eventBus.emit('mode:selected', {
+                    table,
+                    mode: 'practice'
+                });
+            }
+
+            // Iniciar práctica
+            this.startPracticeMode([table]);
+        });
+
+        // Handler para cerrar modal (equivalente a cancelar)
+        newBtnClose.addEventListener('click', () => {
+            console.log('❌ Usuario cerró modal de decisión');
+            modal.style.display = 'none';
+
+            // Reproducir sonido
+            if (window.soundSystem) {
+                window.soundSystem.playTransition();
+            }
+
+            // Emitir evento de cancelación
+            if (this.eventBus) {
+                this.eventBus.emit('mode:selection:cancelled', { table });
+            }
+        });
+
+        // Cerrar al hacer click fuera del modal
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                newBtnClose.click();
+            }
+        });
+
+        // Mostrar modal con animación
+        modal.style.display = 'flex';
+
+        // Accessibility: Focus en el botón de aprender
+        setTimeout(() => {
+            newBtnLearn.focus();
+        }, 100);
+
+        // Audio caption para accesibilidad
+        if (window.bootstrap?.accessibility?.audio) {
+            window.bootstrap.accessibility.audio.showCaption(
+                `Elige si quieres aprender o practicar la Tabla del ${table}`,
+                5000
             );
         }
 
-        // Emitir evento para que UI maneje la decisión
+        // ARIA announcement
+        if (window.bootstrap?.accessibility?.aria) {
+            window.bootstrap.accessibility.aria.announce(
+                `Opciones para la Tabla del ${table}. Puedes aprender con el truco secreto o practicar directamente.`
+            );
+        }
+
+        // Emitir evento de modal mostrado
         if (this.eventBus) {
             this.eventBus.emit('discovery:options:shown', {
                 table,
                 options: ['discover', 'practice']
             });
         }
-
-        // TODO: Implementar UI apropiada en Fase 2
-        // Por ahora, ir directo a descubrimiento
-        this.startTableDiscovery(table);
     }
 
     /**
