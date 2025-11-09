@@ -45,6 +45,24 @@ class ApplicationBootstrap {
             boundaries: new Map() // ErrorBoundary instances per module
         };
 
+        // Accessibility modules
+        this.accessibility = {
+            manager: null,
+            aria: null,
+            keyboard: null,
+            screenReader: null,
+            visual: null,
+            audio: null
+        };
+
+        // UX Research modules
+        this.uxResearch = {
+            userResearch: null,
+            analytics: null,
+            abTesting: null,
+            feedback: null
+        };
+
         // Estado de inicialización
         this.initialized = false;
     }
@@ -77,7 +95,13 @@ class ApplicationBootstrap {
         console.log('🔗 Fase 5: Wire Up Event Listeners...');
         this.wireUpEventListeners();
 
-        console.log('📊 Fase 6: Finalizando Performance Setup...');
+        console.log('♿ Fase 6: Inicializando Accessibility...');
+        this.initializeAccessibility();
+
+        console.log('📊 Fase 7: Inicializando UX Research...');
+        this.initializeUXResearch();
+
+        console.log('⚡ Fase 8: Finalizando Performance Setup...');
         this.finalizePerformance();
 
         console.log('✅ Sistema inicializado correctamente');
@@ -469,6 +493,110 @@ class ApplicationBootstrap {
     }
 
     /**
+     * Inicializa módulos de accesibilidad
+     */
+    initializeAccessibility() {
+        // AccessibilityManager (central manager)
+        if (typeof AccessibilityManager !== 'undefined') {
+            this.accessibility.manager = new AccessibilityManager();
+            console.log('  ✓ AccessibilityManager');
+        }
+
+        // AriaManager
+        if (typeof AriaManager !== 'undefined') {
+            this.accessibility.aria = new AriaManager();
+            console.log('  ✓ AriaManager');
+        }
+
+        // KeyboardNavigationManager
+        if (typeof KeyboardNavigationManager !== 'undefined') {
+            this.accessibility.keyboard = new KeyboardNavigationManager();
+            console.log('  ✓ KeyboardNavigationManager');
+        }
+
+        // ScreenReaderManager
+        if (typeof ScreenReaderManager !== 'undefined') {
+            this.accessibility.screenReader = new ScreenReaderManager();
+            console.log('  ✓ ScreenReaderManager');
+        }
+
+        // VisualAccessibilityManager
+        if (typeof VisualAccessibilityManager !== 'undefined') {
+            this.accessibility.visual = new VisualAccessibilityManager();
+            console.log('  ✓ VisualAccessibilityManager');
+        }
+
+        // AudioAccessibilityManager
+        if (typeof AudioAccessibilityManager !== 'undefined') {
+            this.accessibility.audio = new AudioAccessibilityManager();
+            console.log('  ✓ AudioAccessibilityManager');
+        }
+
+        // Load saved preferences
+        if (this.accessibility.manager) {
+            this.accessibility.manager.loadPreferences();
+            console.log('  ✓ Accessibility preferences loaded');
+        }
+    }
+
+    /**
+     * Inicializa módulos de UX Research
+     */
+    initializeUXResearch() {
+        // UserResearchManager
+        if (typeof UserResearchManager !== 'undefined') {
+            this.uxResearch.userResearch = new UserResearchManager({
+                trackClicks: true,
+                trackScrolls: true,
+                trackHovers: false, // Disabled to reduce data
+                trackKeys: false // Disabled for privacy
+            });
+            console.log('  ✓ UserResearchManager');
+        }
+
+        // AnalyticsManager
+        if (typeof AnalyticsManager !== 'undefined') {
+            this.uxResearch.analytics = new AnalyticsManager({
+                debugMode: false, // Set to true for development
+                batchSize: 20,
+                flushInterval: 30000
+            });
+
+            // Set user properties from player data
+            if (this.store) {
+                const player = this.store.getState().player;
+                this.uxResearch.analytics.setUserProperties({
+                    playerName: player.name,
+                    playerLevel: player.level,
+                    totalPlayTime: 0 // Will be tracked during gameplay
+                });
+            }
+
+            console.log('  ✓ AnalyticsManager');
+        }
+
+        // ABTestingManager
+        if (typeof ABTestingManager !== 'undefined') {
+            this.uxResearch.abTesting = new ABTestingManager({
+                debugMode: false
+            });
+
+            // Example: Create a feature flag for new tutorial
+            // this.uxResearch.abTesting.setFeatureFlag('new_tutorial', true, 50); // 50% of users
+
+            console.log('  ✓ ABTestingManager');
+        }
+
+        // FeedbackManager
+        if (typeof FeedbackManager !== 'undefined') {
+            this.uxResearch.feedback = new FeedbackManager({
+                enabled: true
+            });
+            console.log('  ✓ FeedbackManager');
+        }
+    }
+
+    /**
      * Obtiene el contexto completo de la aplicación
      * @returns {Object} Contexto con todos los módulos
      */
@@ -480,7 +608,9 @@ class ApplicationBootstrap {
             services: this.services,
             controllers: this.controllers,
             performance: this.performance,
-            errorHandling: this.errorHandling
+            errorHandling: this.errorHandling,
+            accessibility: this.accessibility,
+            uxResearch: this.uxResearch
         };
     }
 
@@ -591,7 +721,29 @@ class ApplicationBootstrap {
                 playerName: this.store.getState().player.name,
                 coins: this.store.getState().player.coins,
                 currentScreen: this.store.getState().ui.currentScreen
-            } : null
+            } : null,
+            accessibility: {
+                manager: !!this.accessibility.manager,
+                aria: !!this.accessibility.aria,
+                keyboard: !!this.accessibility.keyboard,
+                screenReader: !!this.accessibility.screenReader,
+                visual: !!this.accessibility.visual,
+                audio: !!this.accessibility.audio,
+                features: this.accessibility.manager ? this.accessibility.manager.getFeatures() : null,
+                wcagLevel: this.accessibility.manager ? this.accessibility.manager.getWCAGLevel() : null
+            },
+            uxResearch: {
+                userResearch: !!this.uxResearch.userResearch,
+                analytics: !!this.uxResearch.analytics,
+                abTesting: !!this.uxResearch.abTesting,
+                feedback: !!this.uxResearch.feedback,
+                stats: {
+                    sessions: this.uxResearch.userResearch ? this.uxResearch.userResearch.getSessionStats() : null,
+                    events: this.uxResearch.analytics ? this.uxResearch.analytics.getEventStats() : null,
+                    experiments: this.uxResearch.abTesting ? this.uxResearch.abTesting.getActiveExperiments().length : 0,
+                    npsScore: this.uxResearch.feedback ? this.uxResearch.feedback.getNPSScore() : null
+                }
+            }
         };
     }
 }
