@@ -380,7 +380,7 @@ class MultiplicationGame {
 
         document.getElementById('practiceMode')?.addEventListener('click', () => {
             window.soundSystem?.playClick();
-            this.startPracticeMode();
+            this.openCastleMap(); // Abrir mapa de castillo en lugar de práctica directa
         });
         document.getElementById('challengeMode')?.addEventListener('click', () => {
             window.soundSystem?.playClick();
@@ -434,6 +434,7 @@ class MultiplicationGame {
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromGrimorio')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromCastle')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
             if (window.speedDrillEngine) {
@@ -2823,6 +2824,125 @@ class MultiplicationGame {
         if (window.soundSystem) {
             window.soundSystem.playTransition();
         }
+    }
+
+    openCastleMap() {
+        console.log('🏰 Abriendo Mapa del Castillo');
+        this.showScreen('castleMapScreen');
+        this.renderCastleMap();
+    }
+
+    renderCastleMap() {
+        const playerService = window.bootstrap?.services?.player;
+        if (!playerService) {
+            console.error('❌ PlayerService no disponible');
+            return;
+        }
+
+        const modeController = window.bootstrap?.controllers?.mode;
+        const castleTower = document.getElementById('castleTower');
+        const castleCompleted = document.getElementById('castleCompleted');
+
+        if (!castleTower) return;
+
+        // Obtener estado de todas las tablas
+        const tablesStatus = playerService.getAllTablesStatus();
+
+        // Contar completadas
+        const completedCount = tablesStatus.filter(t => t.discovered).length;
+        if (castleCompleted) castleCompleted.textContent = completedCount;
+
+        // Limpiar torre
+        castleTower.innerHTML = '';
+
+        // Renderizar pisos (de arriba hacia abajo: tabla 10 → tabla 2)
+        tablesStatus.reverse().forEach((tableInfo, index) => {
+            const floor = document.createElement('div');
+            floor.className = 'castle-floor';
+
+            // Determinar estado
+            if (!tableInfo.unlocked) {
+                floor.classList.add('locked');
+            } else if (tableInfo.discovered) {
+                floor.classList.add('completed');
+            } else {
+                floor.classList.add('available');
+            }
+
+            // Avatar en el piso actual (primera tabla no descubierta y desbloqueada)
+            const isCurrent = tableInfo.unlocked && !tableInfo.discovered &&
+                              (index === 0 || tablesStatus[index - 1]?.discovered);
+
+            if (isCurrent) {
+                floor.classList.add('current');
+            }
+
+            // Iconos según estado
+            let statusIcon = '🔒';
+            if (!tableInfo.unlocked) {
+                statusIcon = '🔒';
+            } else if (tableInfo.discovered) {
+                statusIcon = '🎉';
+            } else {
+                statusIcon = '✨';
+            }
+
+            // Contenido del piso
+            floor.innerHTML = `
+                ${isCurrent ? `<div class="floor-avatar">${this.player.avatar}</div>` : ''}
+                <div class="floor-icon ${!tableInfo.unlocked ? 'locked-icon' : ''}">
+                    ${statusIcon}
+                </div>
+                <div class="floor-content">
+                    <h2 class="floor-title">Tabla del ${tableInfo.table}</h2>
+                    <p class="floor-description">
+                        ${!tableInfo.unlocked ? `Completa la tabla del ${tableInfo.table - 1} primero` :
+                          tableInfo.discovered ? `¡Completada!` :
+                          `¡Descubre esta tabla!`}
+                    </p>
+                    <div class="floor-progress ${tableInfo.discovered ? 'completed-progress' : ''}">
+                        ${tableInfo.discovered ? `✅ Dominada al ${tableInfo.mastery}%` :
+                          tableInfo.unlocked ? `🎯 Disponible para aprender` :
+                          `🔒 Bloqueada`}
+                    </div>
+                </div>
+                <div class="floor-badge">${statusIcon}</div>
+            `;
+
+            // Event listener
+            floor.addEventListener('click', () => {
+                if (!tableInfo.unlocked) {
+                    // Bloqueada
+                    console.log(`🔒 Tabla ${tableInfo.table} bloqueada`);
+                    window.soundSystem?.playError();
+
+                    if (window.mateoMascot) {
+                        window.mateoMascot.show(
+                            'sad',
+                            `¡Alto ahí! Primero debes conquistar la Tabla del ${tableInfo.table - 1} para desbloquear este piso del castillo.`,
+                            4000
+                        );
+                    }
+
+                    // Shake animation
+                    floor.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        floor.style.animation = '';
+                    }, 500);
+                } else {
+                    // Desbloqueada - abrir modal "Aprender vs Practicar"
+                    window.soundSystem?.playClick();
+
+                    if (modeController) {
+                        modeController.handleTableSelection(tableInfo.table, 'auto');
+                    } else {
+                        console.error('❌ ModeController no disponible');
+                    }
+                }
+            });
+
+            castleTower.appendChild(floor);
+        });
     }
 
     openHeroShowcase() {

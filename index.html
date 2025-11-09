@@ -1163,6 +1163,28 @@
         </div>
     </div>
 
+    <!-- Pantalla: Mapa del Castillo -->
+    <div id="castleMapScreen" class="screen">
+        <div class="castle-container">
+            <!-- Header -->
+            <div class="castle-header">
+                <button class="btn-back" id="backFromCastle">← Volver</button>
+                <h1 class="castle-title">🏰 Tu Castillo de las Tablas</h1>
+                <div class="castle-progress">
+                    <span id="castleCompleted">0</span> / 9 pisos conquistados
+                </div>
+            </div>
+
+            <!-- Castillo vertical con 9 pisos -->
+            <div class="castle-tower" id="castleTower">
+                <!-- Pisos generados dinámicamente de arriba (10) hacia abajo (2) -->
+                <!-- Piso 9: Tabla del 10 (arriba) -->
+                <!-- ... -->
+                <!-- Piso 1: Tabla del 2 (abajo) -->
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 

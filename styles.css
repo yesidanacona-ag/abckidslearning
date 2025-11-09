@@ -9572,3 +9572,253 @@ body.light-theme .pause-control-label {
     color: rgba(255, 255, 255, 0.9);
     margin-top: 15px;
 }
+
+/* ================================
+   MAPA DEL CASTILLO
+   Camino visual vertical para progresión
+   ================================ */
+
+.castle-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.castle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 20px;
+}
+
+.castle-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.castle-progress {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 25px;
+    border-radius: 20px;
+}
+
+/* Torre del castillo - vertical */
+.castle-tower {
+    display: flex;
+    flex-direction: column-reverse; /* Invertir: tabla 2 abajo, tabla 10 arriba */
+    gap: 30px;
+    padding: 40px 20px;
+    background: linear-gradient(to bottom, 
+        rgba(139, 92, 246, 0.1) 0%, 
+        rgba(99, 102, 241, 0.2) 100%
+    );
+    border-radius: 30px;
+    position: relative;
+}
+
+/* Línea vertical central (camino del castillo) */
+.castle-tower::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(to bottom, 
+        #667eea 0%, 
+        #764ba2 50%, 
+        #ffd700 100%
+    );
+    transform: translateX(-50%);
+    border-radius: 3px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Piso individual del castillo */
+.castle-floor {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 3px solid transparent;
+    min-height: 110px;
+}
+
+.castle-floor:hover {
+    transform: translateX(10px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Estados del piso */
+.castle-floor.locked {
+    opacity: 0.5;
+    background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+    cursor: not-allowed;
+    filter: grayscale(80%);
+}
+
+.castle-floor.locked:hover {
+    transform: none;
+}
+
+.castle-floor.available {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+    animation: floorPulse 2s ease-in-out infinite;
+}
+
+@keyframes floorPulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 12px 30px rgba(255, 215, 0, 0.7);
+    }
+}
+
+.castle-floor.completed {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #e6fff5 0%, #ffffff 100%);
+}
+
+.castle-floor.current {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+    animation: currentFloorGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes currentFloorGlow {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.8);
+    }
+}
+
+/* Icono del piso */
+.floor-icon {
+    font-size: 4rem;
+    margin-right: 25px;
+    flex-shrink: 0;
+}
+
+.floor-icon.locked-icon {
+    filter: grayscale(100%);
+}
+
+/* Contenido del piso */
+.floor-content {
+    flex: 1;
+}
+
+.floor-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.floor-description {
+    font-size: 1.3rem;
+    color: #666;
+    margin: 0 0 10px 0;
+}
+
+.floor-progress {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.floor-progress.completed-progress {
+    color: #10b981;
+}
+
+/* Badge de estado */
+.floor-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2.5rem;
+    animation: badgeFloat 3s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Avatar del jugador (solo en piso actual) */
+.floor-avatar {
+    font-size: 3.5rem;
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 3px solid #667eea;
+    animation: avatarBounce 1s ease-in-out infinite;
+}
+
+@keyframes avatarBounce {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .castle-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .castle-title {
+        font-size: 1.8rem;
+    }
+
+    .castle-tower {
+        padding: 20px 10px;
+        gap: 20px;
+    }
+
+    .castle-floor {
+        padding: 20px;
+    }
+
+    .floor-icon {
+        font-size: 3rem;
+        margin-right: 15px;
+    }
+
+    .floor-title {
+        font-size: 1.6rem;
+    }
+
+    .floor-description {
+        font-size: 1.1rem;
+    }
+
+    .floor-avatar {
+        font-size: 2.5rem;
+        left: -10px;
+    }
+}
