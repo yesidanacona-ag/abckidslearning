@@ -720,17 +720,67 @@ class MultiplicationGame {
         container.innerHTML = '';
         tables.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'table-mastery-card';
+
+            // Verificar si tabla está desbloqueada (Sistema de Bloqueo)
+            const isUnlocked = window.bootstrap?.services?.player?.isTableUnlocked?.(item.table) ?? true;
+            const isDiscovered = window.bootstrap?.services?.player?.isTableDiscovered?.(item.table) ?? false;
+
+            // Determinar estado visual
+            let statusIcon = '';
+            let statusClass = '';
+
+            if (!isUnlocked) {
+                statusIcon = '🔒'; // Bloqueada
+                statusClass = 'table-locked';
+            } else if (isDiscovered) {
+                statusIcon = '✅'; // Completada/Descubierta
+                statusClass = 'table-discovered';
+            } else {
+                statusIcon = '✨'; // Disponible para aprender
+                statusClass = 'table-available';
+            }
+
+            card.className = `table-mastery-card ${statusClass}`;
             card.innerHTML = `
+                <div class="table-status-badge">${statusIcon}</div>
                 <div class="table-mastery-number">${item.table}</div>
                 <div class="table-mastery-percent">${item.mastery}%</div>
                 <div class="table-mastery-bar">
                     <div class="table-mastery-bar-fill" style="width: ${item.mastery}%; background: ${item.status.color}"></div>
                 </div>
             `;
+
+            // Event listener con validación de bloqueo
             card.addEventListener('click', () => {
+                if (!isUnlocked) {
+                    // Tabla bloqueada - mostrar mensaje
+                    console.log(`🔒 Tabla ${item.table} bloqueada`);
+
+                    if (window.mateoMascot) {
+                        window.mateoMascot.show(
+                            'sad',
+                            `¡Espera! La Tabla del ${item.table} está bloqueada. Primero debes completar la Tabla del ${item.table - 1}.`,
+                            4000
+                        );
+                    }
+
+                    if (window.soundSystem) {
+                        window.soundSystem.playError();
+                    }
+
+                    // Shake animation
+                    card.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 500);
+
+                    return;
+                }
+
+                // Tabla desbloqueada - proceder normalmente
                 this.startPracticeWithTables([item.table]);
             });
+
             container.appendChild(card);
         });
     }
