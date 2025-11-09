@@ -2100,9 +2100,17 @@ class MultiplicationGame {
             });
         }
 
-        // Configurar avatar del jugador
-        document.getElementById('playerRaceAvatar').textContent = this.player.avatar;
+        // Configurar avatar y vehículo del jugador
+        const equippedCar = window.shopSystem ? window.shopSystem.getEquipped('cars') : '🏎️';
+
+        document.getElementById('playerRaceAvatar').textContent = equippedCar;
         document.getElementById('playerRaceName').textContent = this.player.name;
+
+        // Actualizar ícono en la pista
+        const playerRaceIcon = document.querySelector('#playerRacePosition .racer-icon');
+        if (playerRaceIcon) {
+            playerRaceIcon.textContent = equippedCar;
+        }
 
         this.gameState = {
             mode: 'race',

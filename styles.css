@@ -4967,6 +4967,25 @@ body.light-theme .pause-control-label {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.entity-weapon {
+    font-size: 3rem;
+    position: absolute;
+    bottom: 20px;
+    right: -40px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transform: rotate(15deg);
+    animation: weaponFloat 2s ease-in-out infinite;
+}
+
+@keyframes weaponFloat {
+    0%, 100% {
+        transform: rotate(15deg) translateY(0);
+    }
+    50% {
+        transform: rotate(20deg) translateY(-5px);
+    }
+}
+
 /* Barras de vida */
 .entity-health-container {
     display: flex;

@@ -83,6 +83,13 @@ class ShipDefenseEngine {
         if (window.app) {
             window.app.showScreen('shipDefenseScreen');
         }
+
+        // Actualizar nave equipada
+        const equippedShip = window.shopSystem ? window.shopSystem.getEquipped('ships') : '🚀';
+        const shipEl = document.getElementById('defenseShip');
+        if (shipEl) {
+            shipEl.textContent = equippedShip;
+        }
     }
 
     updateUI() {

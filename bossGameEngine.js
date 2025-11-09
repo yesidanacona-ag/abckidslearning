@@ -81,6 +81,9 @@ class BossGameEngine {
                 <div class="entity-avatar player-avatar" id="playerAvatar">
                     👦
                 </div>
+                <div class="entity-weapon" id="playerWeapon">
+                    🗡️
+                </div>
 
                 <!-- Súper-ataque -->
                 <div class="super-attack-container" id="superAttackContainer">
@@ -145,6 +148,7 @@ class BossGameEngine {
             bossPhase: document.getElementById('bossPhase'),
             playerEntity: document.getElementById('playerEntity'),
             playerAvatar: document.getElementById('playerAvatar'),
+            playerWeapon: document.getElementById('playerWeapon'),
             playerName: document.getElementById('playerName'),
             playerHealthFill: document.getElementById('playerHealthFill'),
             playerHealthText: document.getElementById('playerHealthText'),
@@ -203,6 +207,10 @@ class BossGameEngine {
         this.refs.bossName.textContent = boss.name;
         this.refs.playerAvatar.textContent = player.avatar;
         this.refs.playerName.textContent = player.name;
+
+        // Arma equipada
+        const equippedWeapon = window.shopSystem ? window.shopSystem.getEquipped('weapons') : '🗡️';
+        this.refs.playerWeapon.textContent = equippedWeapon;
 
         // Log
         this.addLog(`¡${boss.name} apareció!`, 'boss');
