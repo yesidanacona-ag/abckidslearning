@@ -426,6 +426,10 @@ class MultiplicationGame {
             window.soundSystem?.playClick();
             this.openGrimorio();
         });
+        document.getElementById('advancedModesBtn')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openAdvancedModes();
+        });
         document.getElementById('heroShowcaseMode')?.addEventListener('click', () => {
             window.soundSystem?.playClick();
             this.openHeroShowcase();
@@ -435,6 +439,7 @@ class MultiplicationGame {
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromGrimorio')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromCastle')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromAdvancedModes')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
             if (window.speedDrillEngine) {
@@ -2942,6 +2947,64 @@ class MultiplicationGame {
             });
 
             castleTower.appendChild(floor);
+        });
+    }
+
+    openAdvancedModes() {
+        console.log('🎮 Abriendo Modos Avanzados');
+        this.showScreen('advancedModesScreen');
+
+        const advancedModesGrid = document.querySelector('.advanced-modes-grid');
+        if (!advancedModesGrid) return;
+
+        // Limpiar grid
+        advancedModesGrid.innerHTML = '';
+
+        // IDs de los 6 modos avanzados
+        const advancedModeIds = [
+            'speedDrillMode',
+            'shipDefenseMode',
+            'factorChainMode',
+            'adventureMode',
+            'raceMode',
+            'bossMode'
+        ];
+
+        // Clonar cada modo al grid
+        advancedModeIds.forEach(id => {
+            const originalCard = document.getElementById(id);
+            if (originalCard) {
+                const clonedCard = originalCard.cloneNode(true);
+
+                // Mantener el mismo event listener
+                clonedCard.addEventListener('click', () => {
+                    window.soundSystem?.playClick();
+
+                    // Llamar al método correspondiente según el modo
+                    switch(id) {
+                        case 'speedDrillMode':
+                            this.startSpeedDrillMode();
+                            break;
+                        case 'shipDefenseMode':
+                            this.startShipDefenseMode();
+                            break;
+                        case 'factorChainMode':
+                            this.startFactorChainMode();
+                            break;
+                        case 'adventureMode':
+                            this.startAdventureMode();
+                            break;
+                        case 'raceMode':
+                            this.startRaceMode();
+                            break;
+                        case 'bossMode':
+                            this.startBossMode();
+                            break;
+                    }
+                });
+
+                advancedModesGrid.appendChild(clonedCard);
+            }
         });
     }
 

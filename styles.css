@@ -579,13 +579,13 @@ body::before {
     font-size: 2.5rem; /* +40%: 1.8rem → 2.5rem WCAG AAA */
     margin-bottom: 15px;
     font-weight: 700; /* Negrita para mejor legibilidad */
-    color: #ffffff; /* Contraste máximo contra fondo */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para legibilidad */
+    color: #1e293b; /* OSCURO para contraste sobre fondo claro */
+    text-shadow: none; /* Sin sombra para mejor lectura */
 }
 
 .mode-card p {
     font-size: 1.4rem; /* +40%: 1rem → 1.4rem */
-    color: rgba(255, 255, 255, 0.95); /* Contraste mejorado WCAG AAA */
+    color: #475569; /* GRIS OSCURO WCAG AAA (contraste 10:1 sobre blanco) */
     margin-bottom: 20px;
     line-height: 1.6; /* Mejor espaciado para lectura infantil */
 }
@@ -9474,17 +9474,18 @@ body.light-theme .pause-control-label {
 }
 
 /* ================================
-   OCULTAR MODOS SECUNDARIOS
-   Simplificación para niños 7-9 años
+   MODOS AVANZADOS
+   Ocultos del menú principal, visibles en pantalla especial
    ================================ */
 
-#speedDrillMode,
-#shipDefenseMode,
-#factorChainMode,
-#raceMode,
-#bossMode,
-#heroShowcaseMode {
-    display: none !important;
+/* Ocultar modos avanzados SOLO cuando están en el grid principal */
+.game-modes #speedDrillMode,
+.game-modes #shipDefenseMode,
+.game-modes #factorChainMode,
+.game-modes #raceMode,
+.game-modes #bossMode,
+.game-modes #heroShowcaseMode {
+    display: none;
 }
 
 /* ================================
@@ -9527,6 +9528,7 @@ body.light-theme .pause-control-label {
 
 #practiceMode p {
     font-size: 1.6rem;
+    color: #ffffff; /* Blanco sobre fondo purple para contraste */
 }
 
 /* Botón CTA Principal */
@@ -9589,10 +9591,10 @@ body.light-theme .pause-control-label {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Fondo purple para contraste con texto blanco */
     padding: 20px 30px;
     border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .castle-title {
@@ -9820,5 +9822,70 @@ body.light-theme .pause-control-label {
     .floor-avatar {
         font-size: 2.5rem;
         left: -10px;
+    }
+}
+
+/* ================================
+   PANTALLA DE MODOS AVANZADOS
+   ================================ */
+
+.advanced-modes-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.advanced-modes-header {
+    text-align: center;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 20px;
+    position: relative;
+}
+
+.advanced-modes-header .btn-back {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.advanced-modes-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.advanced-modes-subtitle {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0;
+}
+
+.advanced-modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* Los mode-cards dentro de advanced-modes-grid se mostrarán */
+.advanced-modes-grid .mode-card {
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    .advanced-modes-title {
+        font-size: 2rem;
+    }
+
+    .advanced-modes-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .advanced-modes-grid {
+        grid-template-columns: 1fr;
     }
 }
