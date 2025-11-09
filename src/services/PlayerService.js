@@ -38,8 +38,10 @@ class PlayerService {
                 timeSpent: 0
             },
             tableMastery: {},
+            unlockedTables: [2], // Tabla del 2 desbloqueada inicialmente
             achievements: [],
             medals: { gold: 0, silver: 0, bronze: 0 },
+            collectedTricks: [], // Grimorio de trucos coleccionados
             powerups: { shield: 2, hint: 3, skip: 1 },
             activePowerups: [],
             purchasedItems: [],
@@ -448,6 +450,214 @@ class PlayerService {
 
         // Ordenar por maestría (más débil primero)
         return weakMultipliers.sort((a, b) => a.mastery - b.mastery);
+    }
+
+    /* ================================ */
+    /* SISTEMA DE BLOQUEO DE TABLAS     */
+    /* ================================ */
+
+    /**
+     * Verifica si una tabla está desbloqueada
+     * @param {number} table - Número de tabla (2-10)
+     * @returns {boolean} true si está desbloqueada
+     */
+    isTableUnlocked(table) {
+        const player = this.getPlayer();
+
+        // Inicializar unlockedTables si no existe (compatibilidad con jugadores antiguos)
+        if (!player.unlockedTables) {
+            player.unlockedTables = [2]; // Tabla 2 por defecto
+            this.updatePlayer({ unlockedTables: player.unlockedTables });
+        }
+
+        return player.unlockedTables.includes(table);
+    }
+
+    /**
+     * Obtiene lista de tablas desbloqueadas
+     * @returns {Array} Array de números de tablas desbloqueadas
+     */
+    getUnlockedTables() {
+        const player = this.getPlayer();
+
+        if (!player.unlockedTables) {
+            return [2]; // Default: solo tabla 2
+        }
+
+        return [...player.unlockedTables].sort((a, b) => a - b);
+    }
+
+    /**
+     * Desbloquea la siguiente tabla en secuencia
+     * @param {number} currentTable - Tabla actual completada
+     */
+    unlockNextTable(currentTable) {
+        const player = this.getPlayer();
+
+        // Inicializar si no existe
+        if (!player.unlockedTables) {
+            player.unlockedTables = [2];
+        }
+
+        // Verificar que la tabla actual esté descubierta
+        const mastery = this.getTableMastery(currentTable);
+        if (!mastery || !mastery.discoveryCompleted) {
+            console.warn(`Tabla ${currentTable} no ha sido descubierta aún`);
+            return;
+        }
+
+        // Calcular siguiente tabla
+        const nextTable = currentTable + 1;
+
+        // Validar rango (2-10)
+        if (nextTable > 10) {
+            console.log('🎉 ¡Todas las tablas desbloqueadas!');
+            return;
+        }
+
+        // Verificar si ya está desbloqueada
+        if (player.unlockedTables.includes(nextTable)) {
+            console.log(`Tabla ${nextTable} ya estaba desbloqueada`);
+            return;
+        }
+
+        // Desbloquear siguiente tabla
+        player.unlockedTables.push(nextTable);
+        player.unlockedTables.sort((a, b) => a - b);
+
+        this.updatePlayer({ unlockedTables: player.unlockedTables });
+
+        // Emitir evento
+        if (this.eventBus) {
+            this.eventBus.emit('table:unlocked', {
+                table: nextTable,
+                unlockedBy: currentTable,
+                timestamp: Date.now()
+            });
+        }
+
+        console.log(`🔓 Tabla ${nextTable} desbloqueada!`);
+
+        // Mostrar notificación (si FeedbackSystem está disponible)
+        if (typeof window !== 'undefined' && window.feedbackSystem) {
+            window.feedbackSystem.showSuccess(`¡Tabla del ${nextTable} desbloqueada!`);
+        }
+
+        // Mateo celebra
+        if (typeof window !== 'undefined' && window.mateoMascot) {
+            window.mateoMascot.show(
+                'celebrating',
+                `¡Felicidades! Desbloqueaste la Tabla del ${nextTable}. ¡Sigue así!`,
+                4000
+            );
+        }
+    }
+
+    /**
+     * Obtiene estado de bloqueo de todas las tablas
+     * @returns {Array} Array de objetos { table, unlocked, discovered, mastery }
+     */
+    getAllTablesStatus() {
+        const player = this.getPlayer();
+        const status = [];
+
+        for (let table = 2; table <= 10; table++) {
+            const unlocked = this.isTableUnlocked(table);
+            const mastery = this.getTableMastery(table);
+            const discovered = mastery?.discoveryCompleted || false;
+            const masteryPercent = mastery?.overall || 0;
+
+            status.push({
+                table,
+                unlocked,
+                discovered,
+                mastery: masteryPercent,
+                status: !unlocked ? 'locked' : (!discovered ? 'available' : 'completed')
+            });
+        }
+
+        return status;
+    }
+
+    /**
+     * Obtiene la siguiente tabla disponible para aprender
+     * @returns {number|null} Número de tabla o null si todas completadas
+     */
+    getNextAvailableTable() {
+        const allStatus = this.getAllTablesStatus();
+
+        // Buscar primera tabla desbloqueada pero no descubierta
+        const nextTable = allStatus.find(t => t.unlocked && !t.discovered);
+
+        return nextTable ? nextTable.table : null;
+    }
+
+    /* ================================ */
+    /* GRIMORIO DE TRUCOS SECRETOS      */
+    /* ================================ */
+
+    /**
+     * Agrega un truco al grimorio
+     * @param {number} table - Número de tabla
+     * @param {Object} trick - Objeto con el truco
+     */
+    collectTrick(table, trick) {
+        const player = this.getPlayer();
+
+        // Inicializar si no existe
+        if (!player.collectedTricks) {
+            player.collectedTricks = [];
+        }
+
+        // Verificar si ya está coleccionado
+        const exists = player.collectedTricks.some(t => t.table === table);
+        if (exists) {
+            console.log(`Truco de tabla ${table} ya estaba coleccionado`);
+            return;
+        }
+
+        // Agregar truco
+        const collectedTrick = {
+            table,
+            trick: trick.explanation || trick.tip,
+            tip: trick.tip,
+            collectedAt: Date.now()
+        };
+
+        player.collectedTricks.push(collectedTrick);
+        player.collectedTricks.sort((a, b) => a.table - b.table);
+
+        this.updatePlayer({ collectedTricks: player.collectedTricks });
+
+        // Emitir evento
+        if (this.eventBus) {
+            this.eventBus.emit('trick:collected', {
+                table,
+                trick: collectedTrick,
+                total: player.collectedTricks.length
+            });
+        }
+
+        console.log(`📖 Truco de Tabla ${table} agregado al Grimorio`);
+    }
+
+    /**
+     * Obtiene todos los trucos coleccionados
+     * @returns {Array} Array de trucos coleccionados
+     */
+    getCollectedTricks() {
+        const player = this.getPlayer();
+        return player.collectedTricks || [];
+    }
+
+    /**
+     * Verifica si un truco está coleccionado
+     * @param {number} table - Número de tabla
+     * @returns {boolean} true si está coleccionado
+     */
+    hasTrick(table) {
+        const tricks = this.getCollectedTricks();
+        return tricks.some(t => t.table === table);
     }
 }
 

@@ -18,6 +18,9 @@ class TableDiscoveryEngine {
         this.attempts = {}; // { multiplier: { correct: boolean, timeMs: number, attempts: number } }
         this.sessionStartTime = Date.now();
 
+        // Truco mnemónico (se carga en intro)
+        this.currentMnemonic = null;
+
         // Configuración
         this.totalQuestions = 10;
         this.helpThreshold = 7; // Primeras 7 tienen ayuda disponible
@@ -93,6 +96,9 @@ class TableDiscoveryEngine {
         const mnemonic = this.mnemonicSystem ?
             this.mnemonicSystem.getTrick(this.table) :
             this.getDefaultMnemonic();
+
+        // Guardar mnemónico para coleccionarlo después
+        this.currentMnemonic = mnemonic;
 
         // Ocultar otras pantallas
         this.hideAllScreens();
@@ -789,6 +795,15 @@ class TableDiscoveryEngine {
 
         // Guardar en player data
         this.playerService.updateTableMastery(this.table, tableMastery);
+
+        // 🔓 Desbloquear siguiente tabla (Sistema de Bloqueo)
+        this.playerService.unlockNextTable(this.table);
+
+        // 📖 Guardar truco en grimorio
+        if (this.currentMnemonic) {
+            this.playerService.collectTrick(this.table, this.currentMnemonic);
+            console.log(`📚 Truco de la Tabla del ${this.table} agregado al grimorio`);
+        }
 
         // Emitir evento
         if (this.eventBus) {
