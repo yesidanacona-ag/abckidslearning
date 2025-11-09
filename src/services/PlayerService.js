@@ -341,6 +341,114 @@ class PlayerService {
             globalMastery: this.calculateGlobalMastery()
         };
     }
+
+    /**
+     * Actualiza el tracking granular de una tabla de multiplicar
+     * @param {number} table - Número de tabla (2-10)
+     * @param {Object} mastery - Objeto con datos de maestría granular
+     */
+    updateTableMastery(table, mastery) {
+        const player = this.getPlayer();
+
+        // Inicializar tableMastery si no existe
+        if (!player.tableMastery) {
+            player.tableMastery = {};
+        }
+
+        // Guardar o actualizar mastery de la tabla
+        player.tableMastery[table] = mastery;
+
+        // Actualizar player en store
+        this.updatePlayer({ tableMastery: player.tableMastery });
+
+        // Emitir evento
+        if (this.eventBus) {
+            this.eventBus.emit('player:table:mastery:updated', {
+                table,
+                mastery,
+                timestamp: Date.now()
+            });
+        }
+
+        console.log(`✓ Tabla ${table} mastery actualizada:`, mastery);
+    }
+
+    /**
+     * Obtiene el tracking granular de una tabla
+     * @param {number} table - Número de tabla (2-10)
+     * @returns {Object|null} Datos de maestría o null si no existe
+     */
+    getTableMastery(table) {
+        const player = this.getPlayer();
+        return player.tableMastery?.[table] || null;
+    }
+
+    /**
+     * Verifica si una tabla ha sido descubierta (completó modo descubrimiento)
+     * @param {number} table - Número de tabla (2-10)
+     * @returns {boolean} true si completó descubrimiento
+     */
+    isTableDiscovered(table) {
+        const mastery = this.getTableMastery(table);
+        return mastery?.discoveryCompleted === true;
+    }
+
+    /**
+     * Añade XP (puntos de experiencia) al jugador
+     * @param {number} amount - Cantidad de XP a añadir
+     * @param {string} reason - Razón (para analytics)
+     */
+    addXP(amount, reason = 'game_reward') {
+        if (amount <= 0) return;
+
+        const player = this.getPlayer();
+        const newXP = (player.xp || 0) + amount;
+
+        this.updatePlayer({ xp: newXP });
+
+        // Emitir evento
+        if (this.eventBus) {
+            this.eventBus.emit('player:xp:added', {
+                amount,
+                total: newXP,
+                reason,
+                timestamp: Date.now()
+            });
+        }
+
+        console.log(`✓ +${amount} XP (Total: ${newXP})`);
+    }
+
+    /**
+     * Obtiene multiplicadores débiles de una tabla
+     * @param {number} table - Número de tabla (2-10)
+     * @param {number} threshold - Threshold de maestría (default: 50%)
+     * @returns {Array} Array de multiplicadores débiles
+     */
+    getWeakMultipliers(table, threshold = 50) {
+        const mastery = this.getTableMastery(table);
+
+        if (!mastery || !mastery.multipliers) {
+            return [];
+        }
+
+        const weakMultipliers = [];
+
+        for (let multiplier = 1; multiplier <= 10; multiplier++) {
+            const data = mastery.multipliers[multiplier];
+            if (data && data.mastery < threshold) {
+                weakMultipliers.push({
+                    multiplier,
+                    mastery: data.mastery,
+                    correct: data.correct,
+                    total: data.total
+                });
+            }
+        }
+
+        // Ordenar por maestría (más débil primero)
+        return weakMultipliers.sort((a, b) => a.mastery - b.mastery);
+    }
 }
 
 // Exportar como global para compatibilidad

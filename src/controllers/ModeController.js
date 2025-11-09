@@ -454,6 +454,119 @@ class ModeController {
             }
         ];
     }
+
+    /**
+     * Inicia el flujo de descubrimiento de una tabla
+     * @param {number} table - Número de tabla (2-10)
+     */
+    startTableDiscovery(table) {
+        console.log(`🎓 Iniciando descubrimiento de Tabla ${table}`);
+
+        // Verificar que TableDiscoveryEngine esté disponible
+        if (typeof window === 'undefined' || !window.TableDiscoveryEngine) {
+            console.error('❌ TableDiscoveryEngine no disponible');
+            return;
+        }
+
+        // Crear contexto para el discovery engine
+        const context = {
+            eventBus: this.eventBus,
+            store: this.store,
+            services: {
+                player: this.services?.player
+            },
+            controllers: {
+                screen: this.screenController,
+                mode: this,
+                game: this.gameController
+            }
+        };
+
+        // Crear y lanzar discovery engine
+        const discovery = new window.TableDiscoveryEngine(table, context);
+        discovery.start();
+
+        // Guardar referencia para poder limpiar después
+        this.currentDiscovery = discovery;
+    }
+
+    /**
+     * Verifica si una tabla necesita modo descubrimiento
+     * @param {number} table - Número de tabla (2-10)
+     * @returns {boolean} true si necesita descubrimiento
+     */
+    needsDiscovery(table) {
+        if (!this.services?.player) return false;
+
+        const isDiscovered = this.services.player.isTableDiscovered(table);
+        return !isDiscovered;
+    }
+
+    /**
+     * Maneja selección de tabla con decisión aprender/practicar
+     * @param {number} table - Número de tabla (2-10)
+     * @param {string} mode - 'discover' o 'practice'
+     */
+    handleTableSelection(table, mode = 'auto') {
+        // Auto-detect si necesita descubrimiento
+        if (mode === 'auto') {
+            if (this.needsDiscovery(table)) {
+                // Mostrar opciones: Aprender o Practicar
+                this.showDiscoveryOptions(table);
+                return;
+            } else {
+                // Ya completó descubrimiento, ir directo a práctica
+                mode = 'practice';
+            }
+        }
+
+        // Ejecutar modo seleccionado
+        if (mode === 'discover') {
+            this.startTableDiscovery(table);
+        } else if (mode === 'practice') {
+            this.startPracticeMode([table]);
+        }
+    }
+
+    /**
+     * Muestra opciones de aprender vs practicar
+     * @param {number} table - Número de tabla (2-10)
+     */
+    showDiscoveryOptions(table) {
+        // Mostrar modal o pantalla de decisión
+        // Por ahora, usar confirm simple (mejorar en Fase 2 con UI apropiada)
+
+        // Mateo aparece con pregunta
+        if (typeof window !== 'undefined' && window.mateoMascot) {
+            window.mateoMascot.show(
+                'teaching',
+                `¡Hola! Veo que quieres trabajar con la Tabla del ${table}. ¿Quieres que te enseñe el truco secreto o prefieres practicar directamente?`,
+                0 // No auto-hide
+            );
+        }
+
+        // Emitir evento para que UI maneje la decisión
+        if (this.eventBus) {
+            this.eventBus.emit('discovery:options:shown', {
+                table,
+                options: ['discover', 'practice']
+            });
+        }
+
+        // TODO: Implementar UI apropiada en Fase 2
+        // Por ahora, ir directo a descubrimiento
+        this.startTableDiscovery(table);
+    }
+
+    /**
+     * Limpia el discovery engine actual
+     */
+    cleanupDiscovery() {
+        if (this.currentDiscovery) {
+            this.currentDiscovery.destroy();
+            this.currentDiscovery = null;
+        }
+    }
 }
 
 // Exportar como global para compatibilidad
