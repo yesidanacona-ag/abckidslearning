@@ -36,6 +36,15 @@ class ApplicationBootstrap {
             serviceWorkerManager: null
         };
 
+        // Error handling modules
+        this.errorHandling = {
+            globalHandler: null,
+            logger: null,
+            reporter: null,
+            recoveryManager: null,
+            boundaries: new Map() // ErrorBoundary instances per module
+        };
+
         // Estado de inicialización
         this.initialized = false;
     }
@@ -50,28 +59,153 @@ class ApplicationBootstrap {
             return this.getContext();
         }
 
-        console.log('⚡ Fase 0: Inicializando Performance Modules...');
+        console.log('🛡️ Fase 0: Inicializando Error Handling...');
+        this.initializeErrorHandling();
+
+        console.log('⚡ Fase 1: Inicializando Performance Modules...');
         this.initializePerformance();
 
-        console.log('📦 Fase 1: Inicializando Core Modules...');
+        console.log('📦 Fase 2: Inicializando Core Modules...');
         this.initializeCore();
 
-        console.log('🔧 Fase 2: Inicializando Services...');
+        console.log('🔧 Fase 3: Inicializando Services...');
         this.initializeServices();
 
-        console.log('🎮 Fase 3: Inicializando Controllers...');
+        console.log('🎮 Fase 4: Inicializando Controllers...');
         this.initializeControllers();
 
-        console.log('🔗 Fase 4: Wire Up Event Listeners...');
+        console.log('🔗 Fase 5: Wire Up Event Listeners...');
         this.wireUpEventListeners();
 
-        console.log('📊 Fase 5: Finalizando Performance Setup...');
+        console.log('📊 Fase 6: Finalizando Performance Setup...');
         this.finalizePerformance();
 
         console.log('✅ Sistema inicializado correctamente');
         this.initialized = true;
 
         return this.getContext();
+    }
+
+    /**
+     * Inicializa módulos de error handling
+     */
+    initializeErrorHandling() {
+        // Logger (debe ser lo primero para capturar todos los logs)
+        if (typeof Logger !== 'undefined') {
+            this.errorHandling.logger = new Logger({
+                level: 'info',
+                persistToStorage: true
+            });
+            window.logger = this.errorHandling.logger; // Global access
+            console.log('  ✓ Logger');
+        }
+
+        // GlobalErrorHandler
+        if (typeof GlobalErrorHandler !== 'undefined') {
+            this.errorHandling.globalHandler = new GlobalErrorHandler();
+
+            // Set custom handlers
+            this.errorHandling.globalHandler.onError((errorInfo) => {
+                // Log error
+                if (this.errorHandling.logger) {
+                    this.errorHandling.logger.error(errorInfo.message, errorInfo, 'GlobalErrorHandler');
+                }
+
+                // Report error
+                if (this.errorHandling.reporter) {
+                    this.errorHandling.reporter.report(errorInfo.error || new Error(errorInfo.message), {
+                        component: 'Global',
+                        operation: 'uncaught',
+                        severity: 'high'
+                    });
+                }
+            });
+
+            this.errorHandling.globalHandler.onPromiseRejection((rejectionInfo) => {
+                // Log rejection
+                if (this.errorHandling.logger) {
+                    this.errorHandling.logger.error('Unhandled promise rejection', rejectionInfo, 'GlobalErrorHandler');
+                }
+
+                // Report rejection
+                if (this.errorHandling.reporter) {
+                    this.errorHandling.reporter.report(rejectionInfo.reason || new Error('Promise rejection'), {
+                        component: 'Global',
+                        operation: 'promise_rejection',
+                        severity: 'high'
+                    });
+                }
+            });
+
+            console.log('  ✓ GlobalErrorHandler');
+        }
+
+        // RecoveryManager
+        if (typeof RecoveryManager !== 'undefined') {
+            this.errorHandling.recoveryManager = new RecoveryManager();
+            console.log('  ✓ RecoveryManager');
+        }
+
+        // ErrorReporter
+        if (typeof ErrorReporter !== 'undefined') {
+            this.errorHandling.reporter = new ErrorReporter({
+                reportToConsole: true,
+                reportToStorage: true,
+                reportToRemote: false // Enable when backend available
+            });
+
+            // Set user context when available
+            window.addEventListener('DOMContentLoaded', () => {
+                if (this.store) {
+                    const player = this.store.getState().player;
+                    this.errorHandling.reporter.setUserContext({
+                        userId: player.name,
+                        userName: player.name
+                    });
+                }
+            });
+
+            console.log('  ✓ ErrorReporter');
+        }
+
+        // Create ErrorBoundaries for each module
+        const modules = ['PlayerService', 'AdaptiveService', 'QuestionService', 'AchievementService', 'GameController', 'ScreenController', 'ModeController'];
+
+        if (typeof ErrorBoundary !== 'undefined') {
+            modules.forEach(moduleName => {
+                const boundary = new ErrorBoundary(moduleName, {
+                    errorThreshold: 5,
+                    onError: (errorInfo) => {
+                        if (this.errorHandling.logger) {
+                            this.errorHandling.logger.error(errorInfo.error.message, errorInfo, moduleName);
+                        }
+                    },
+                    onCritical: (errorInfo, recentErrors) => {
+                        if (this.errorHandling.reporter) {
+                            this.errorHandling.reporter.report(new Error(errorInfo.error.message), {
+                                component: moduleName,
+                                operation: errorInfo.operation,
+                                severity: 'critical',
+                                recentErrors
+                            });
+                        }
+                    },
+                    recoveryStrategy: (error, operation, args) => {
+                        if (this.errorHandling.recoveryManager) {
+                            return this.errorHandling.recoveryManager.recover(error, {
+                                operation,
+                                args
+                            });
+                        }
+                        return null;
+                    }
+                });
+
+                this.errorHandling.boundaries.set(moduleName, boundary);
+            });
+
+            console.log(`  ✓ ErrorBoundaries (${modules.length} modules)`);
+        }
     }
 
     /**
@@ -345,7 +479,8 @@ class ApplicationBootstrap {
             store: this.store,
             services: this.services,
             controllers: this.controllers,
-            performance: this.performance
+            performance: this.performance,
+            errorHandling: this.errorHandling
         };
     }
 
@@ -434,6 +569,19 @@ class ApplicationBootstrap {
                 assetOptimizer: !!this.performance.assetOptimizer,
                 serviceWorkerManager: !!this.performance.serviceWorkerManager,
                 report: this.performance.monitor ? this.performance.monitor.getReport() : null
+            },
+            errorHandling: {
+                globalHandler: !!this.errorHandling.globalHandler,
+                logger: !!this.errorHandling.logger,
+                reporter: !!this.errorHandling.reporter,
+                recoveryManager: !!this.errorHandling.recoveryManager,
+                boundaries: this.errorHandling.boundaries.size,
+                stats: {
+                    globalErrors: this.errorHandling.globalHandler ? this.errorHandling.globalHandler.getStats() : null,
+                    logStats: this.errorHandling.logger ? this.errorHandling.logger.getStats() : null,
+                    reportSummary: this.errorHandling.reporter ? this.errorHandling.reporter.createSummaryReport() : null,
+                    recoveryStats: this.errorHandling.recoveryManager ? this.errorHandling.recoveryManager.getStats() : null
+                }
             },
             eventBusStats: this.eventBus ? {
                 eventsRegistered: this.eventBus.getEvents().length,

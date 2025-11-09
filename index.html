@@ -1026,6 +1026,13 @@
     <!-- NUEVA ARQUITECTURA MODULAR      -->
     <!-- ================================ -->
 
+    <!-- Error Handling (Must load first) -->
+    <script src="src/error/Logger.js"></script>
+    <script src="src/error/ErrorBoundary.js"></script>
+    <script src="src/error/GlobalErrorHandler.js"></script>
+    <script src="src/error/RecoveryManager.js"></script>
+    <script src="src/error/ErrorReporter.js"></script>
+
     <!-- Core Modules (Foundation) -->
     <script src="src/core/StorageManager.js"></script>
     <script src="src/core/EventBus.js"></script>
