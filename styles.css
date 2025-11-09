@@ -448,38 +448,40 @@ body::before {
 }
 
 .player-avatar {
-    font-size: 3rem;
-    width: 70px;
-    height: 70px;
+    font-size: 4.2rem; /* +40%: 3rem → 4.2rem */
+    width: 90px; /* Aumentado proporcionalmente */
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    border: 3px solid #ffd700;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    border: 4px solid #ffd700; /* Borde más grueso */
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); /* Brillo más intenso */
 }
 
 .player-name {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 2.1rem; /* +40%: 1.5rem → 2.1rem */
+    font-weight: 800; /* Extra bold */
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .player-mastery {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
 }
 
 .mastery-badge {
-    background: linear-gradient(135deg, #a855f7, #ec4899);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
+    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); /* Dorado vibrante */
+    padding: 8px 20px; /* +40% padding */
+    border-radius: 25px;
+    font-size: 1.26rem; /* +40%: 0.9rem → 1.26rem */
+    font-weight: 800;
+    color: #000; /* Negro sobre dorado = WCAG AAA (contraste 12:1) */
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
     display: inline-block;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .mastery-progress-bar {
@@ -507,13 +509,15 @@ body::before {
 .stat {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.5rem;
-    font-weight: bold;
+    gap: 12px;
+    font-size: 2.1rem; /* +40%: 1.5rem → 2.1rem */
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stat-icon {
-    font-size: 2rem;
+    font-size: 2.8rem; /* +40%: 2rem → 2.8rem */
 }
 
 /* Modos de Juego */
@@ -529,13 +533,14 @@ body::before {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 30px;
+    padding: 40px; /* Aumentado de 30px para mejor área táctil (44x44px min) */
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Mejorado para animación más suave */
     border: 2px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
+    min-height: 220px; /* Área táctil mínima garantizada */
 }
 
 .mode-card::before {
@@ -554,14 +559,14 @@ body::before {
 }
 
 .mode-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-12px) scale(1.08); /* Mayor elevación y scale para feedback visual claro */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    border-color: rgba(255, 255, 255, 0.6); /* Borde más visible */
 }
 
 .mode-icon {
-    font-size: 4rem;
-    margin-bottom: 15px;
+    font-size: 5.6rem; /* +40%: 4rem → 5.6rem para mejor visibilidad */
+    margin-bottom: 20px;
     animation: bounce 2s ease-in-out infinite;
 }
 
@@ -571,23 +576,29 @@ body::before {
 }
 
 .mode-card h3 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+    font-size: 2.5rem; /* +40%: 1.8rem → 2.5rem WCAG AAA */
+    margin-bottom: 15px;
+    font-weight: 700; /* Negrita para mejor legibilidad */
+    color: #ffffff; /* Contraste máximo contra fondo */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para legibilidad */
 }
 
 .mode-card p {
-    color: var(--text-secondary);
-    margin-bottom: 15px;
-    line-height: 1.5;
+    font-size: 1.4rem; /* +40%: 1rem → 1.4rem */
+    color: rgba(255, 255, 255, 0.95); /* Contraste mejorado WCAG AAA */
+    margin-bottom: 20px;
+    line-height: 1.6; /* Mejor espaciado para lectura infantil */
 }
 
 .mode-badge {
     display: inline-block;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    background: linear-gradient(135deg, var(--primary), var(--purple));
+    padding: 8px 20px; /* Aumentado para mejor área táctil */
+    border-radius: 25px;
+    font-size: 1.26rem; /* +40%: 0.9rem → 1.26rem */
+    font-weight: 800; /* Extra bold para destacar */
+    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); /* Dorado vibrante */
+    color: #000; /* Negro sobre dorado = WCAG AAA (contraste 12:1) */
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); /* Brillo dorado */
 }
 
 /* ================================ */
@@ -9440,4 +9451,124 @@ body.light-theme .pause-control-label {
     .trick-item:hover {
         transform: translateX(5px) scale(1.02);
     }
+}
+
+/* ================================
+   ESTRELLAS VISUALES (Reemplazo de Maestría %)
+   ================================ */
+
+.stars-visual {
+    font-size: 1.6rem;
+    letter-spacing: 4px;
+    margin-top: 5px;
+    animation: starsGlow 2s ease-in-out infinite;
+}
+
+@keyframes starsGlow {
+    0%, 100% { 
+        filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+    }
+    50% { 
+        filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+    }
+}
+
+/* ================================
+   OCULTAR MODOS SECUNDARIOS
+   Simplificación para niños 7-9 años
+   ================================ */
+
+#speedDrillMode,
+#shipDefenseMode,
+#factorChainMode,
+#raceMode,
+#bossMode,
+#heroShowcaseMode {
+    display: none !important;
+}
+
+/* ================================
+   JERARQUÍA VISUAL - MODO PRÁCTICA DESTACADO
+   Card principal más grande y visible
+   ================================ */
+
+#practiceMode {
+    grid-column: span 1; /* Por defecto ocupa 1 columna */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 4px solid #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    animation: practicePulse 2s ease-in-out infinite;
+    transform: scale(1.05); /* Ligeramente más grande */
+}
+
+@keyframes practicePulse {
+    0%, 100% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+}
+
+#practiceMode:hover {
+    transform: translateY(-15px) scale(1.12); /* Mayor elevación */
+    border-color: #ffed4e;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 1), 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+#practiceMode .mode-icon {
+    font-size: 6.5rem; /* Aún más grande para card destacada */
+}
+
+#practiceMode h3 {
+    font-size: 2.8rem; /* Más grande que otras cards */
+    color: #ffd700; /* Dorado brillante */
+}
+
+#practiceMode p {
+    font-size: 1.6rem;
+}
+
+/* Botón CTA Principal */
+.cta-main-container {
+    text-align: center;
+    margin: 30px auto 40px;
+    max-width: 600px;
+}
+
+.cta-main {
+    display: inline-block;
+    padding: 25px 60px;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #000;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-decoration: none;
+    animation: ctaBounce 2s ease-in-out infinite;
+}
+
+@keyframes ctaBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.cta-main:hover {
+    transform: translateY(-12px) scale(1.1);
+    box-shadow: 0 15px 45px rgba(16, 185, 129, 0.7);
+    background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+}
+
+.cta-main:active {
+    transform: translateY(-6px) scale(1.05);
+}
+
+.cta-subtitle {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 15px;
 }

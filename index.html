@@ -113,9 +113,10 @@
                 <div class="player-details">
                     <div class="player-name" id="headerPlayerName">Jugador</div>
                     <div class="player-mastery">
-                        <span class="mastery-badge">Maestría <span id="playerMastery">0%</span></span>
-                        <div class="mastery-progress-bar">
-                            <div class="mastery-fill" id="masteryBar"></div>
+                        <span class="mastery-badge">⭐ <span id="playerStars">0</span> de 45 estrellas</span>
+                        <div class="stars-visual" id="starsVisual">
+                            <!-- Estrellas visuales generadas dinámicamente -->
+                            ⭐⭐⭐⭐⭐
                         </div>
                     </div>
                 </div>
@@ -137,19 +138,27 @@
         </header>
 
         <div class="main-content">
+            <!-- Botón CTA Principal -->
+            <div class="cta-main-container">
+                <button class="cta-main" id="ctaStartLearning">
+                    🚀 ¡EMPEZAR A APRENDER!
+                </button>
+                <p class="cta-subtitle">Descubre las tablas de multiplicar con trucos mágicos</p>
+            </div>
+
             <div class="game-modes">
                 <div class="mode-card" id="practiceMode">
                     <div class="mode-icon">📚</div>
-                    <h3>Modo Práctica</h3>
-                    <p>Practica las tablas a tu ritmo</p>
-                    <div class="mode-badge">Relajado</div>
+                    <h3>¡Aprender Tablas!</h3>
+                    <p>Tú controlas el tiempo</p>
+                    <div class="mode-badge">🐌 Relajado</div>
                 </div>
 
                 <div class="mode-card" id="challengeMode">
                     <div class="mode-icon">⚡</div>
-                    <h3>Desafío Rápido</h3>
-                    <p>¡Contra el reloj! ¿Cuántas puedes?</p>
-                    <div class="mode-badge">Emocionante</div>
+                    <h3>¡Rápido como un Rayo!</h3>
+                    <p>¿Cuántas sabes en 1 minuto?</p>
+                    <div class="mode-badge">🚀 Emocionante</div>
                 </div>
 
                 <div class="mode-card" id="speedDrillMode">
@@ -196,30 +205,30 @@
 
                 <div class="mode-card" id="progressMode">
                     <div class="mode-icon">📊</div>
-                    <h3>Mi Progreso</h3>
-                    <p>Ver estadísticas y logros</p>
-                    <div class="mode-badge">Info</div>
+                    <h3>Mis Logros</h3>
+                    <p>¡Mira todo lo que has aprendido!</p>
+                    <div class="mode-badge">🏆 Logros</div>
                 </div>
 
                 <div class="mode-card" id="shopMode">
                     <div class="mode-icon">🛒</div>
-                    <h3>Tienda</h3>
-                    <p>Compra avatares, naves y poder-ups</p>
-                    <div class="mode-badge">¡Nuevo!</div>
+                    <h3>Tienda Mágica</h3>
+                    <p>Compra avatares y poderes</p>
+                    <div class="mode-badge">✨ Nuevo</div>
                 </div>
 
                 <div class="mode-card" id="missionsMode">
                     <div class="mode-icon">🎯</div>
-                    <h3>Misiones Diarias</h3>
-                    <p>Completa misiones y gana recompensas</p>
-                    <div class="mode-badge">¡Nuevo!</div>
+                    <h3>Misiones del Día</h3>
+                    <p>Completa desafíos especiales</p>
+                    <div class="mode-badge">⭐ Diario</div>
                 </div>
 
                 <div class="mode-card" id="grimorioMode">
                     <div class="mode-icon">📖</div>
-                    <h3>Grimorio de Trucos</h3>
-                    <p>Consulta los trucos que has descubierto</p>
-                    <div class="mode-badge hot">✨ Mágico</div>
+                    <h3>Libro de Trucos</h3>
+                    <p>Revisa tus trucos secretos</p>
+                    <div class="mode-badge hot">🧙‍♂️ Mágico</div>
                 </div>
 
                 <div class="mode-card hero-showcase-card" id="heroShowcaseMode">

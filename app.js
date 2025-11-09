@@ -372,19 +372,64 @@ class MultiplicationGame {
         this.setupAvatarTabs();
 
         // Modos de juego
-        document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
-        document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
-        document.getElementById('speedDrillMode')?.addEventListener('click', () => this.startSpeedDrillMode());
-        document.getElementById('shipDefenseMode')?.addEventListener('click', () => this.startShipDefenseMode());
-        document.getElementById('factorChainMode')?.addEventListener('click', () => this.startFactorChainMode());
-        document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
-        document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
-        document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
-        document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
-        document.getElementById('shopMode')?.addEventListener('click', () => this.openShop());
-        document.getElementById('missionsMode')?.addEventListener('click', () => this.openMissions());
-        document.getElementById('grimorioMode')?.addEventListener('click', () => this.openGrimorio());
-        document.getElementById('heroShowcaseMode')?.addEventListener('click', () => this.openHeroShowcase());
+        // Botón CTA Principal
+        document.getElementById('ctaStartLearning')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startPracticeMode();
+        });
+
+        document.getElementById('practiceMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startPracticeMode();
+        });
+        document.getElementById('challengeMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startChallengeMode();
+        });
+        document.getElementById('speedDrillMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startSpeedDrillMode();
+        });
+        document.getElementById('shipDefenseMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startShipDefenseMode();
+        });
+        document.getElementById('factorChainMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startFactorChainMode();
+        });
+        document.getElementById('adventureMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startAdventureMode();
+        });
+        document.getElementById('raceMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startRaceMode();
+        });
+        document.getElementById('bossMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startBossMode();
+        });
+        document.getElementById('progressMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.showProgressScreen();
+        });
+        document.getElementById('shopMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openShop();
+        });
+        document.getElementById('missionsMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openMissions();
+        });
+        document.getElementById('grimorioMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openGrimorio();
+        });
+        document.getElementById('heroShowcaseMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openHeroShowcase();
+        });
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
