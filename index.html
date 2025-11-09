@@ -974,6 +974,134 @@
         </div>
     </div>
 
+    <!-- ================================ -->
+    <!-- PANTALLAS DE MODO DESCUBRIMIENTO -->
+    <!-- ================================ -->
+
+    <!-- Pantalla 1: Intro - Truco Mnemónico -->
+    <div id="discoveryIntroScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <div class="discovery-header">
+                <h1 class="discovery-title">🧙‍♂️ El Truco Secreto de la Tabla del 2</h1>
+            </div>
+
+            <div class="discovery-intro-content">
+                <div class="discovery-mnemonic-section">
+                    <div class="mnemonic-icon">✨</div>
+                    <p class="discovery-explanation">
+                        <!-- Contenido dinámico de TableDiscoveryEngine -->
+                    </p>
+                </div>
+
+                <div class="discovery-examples">
+                    <h3 class="examples-title">📚 Mira el Patrón:</h3>
+                    <ul class="discovery-examples-list">
+                        <!-- Lista dinámica generada por TableDiscoveryEngine -->
+                    </ul>
+                </div>
+
+                <div class="discovery-pattern">
+                    <!-- Patrón visual completo generado dinámicamente -->
+                </div>
+
+                <div class="discovery-intro-actions">
+                    <button class="btn-discovery-continue" id="discoveryIntroContinue">
+                        ✨ ENTIENDO, ¡PRACTICEMOS!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla 2: Training - 10 Preguntas Secuenciales -->
+    <div id="discoveryTrainingScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <!-- Header con progreso -->
+            <div class="discovery-training-header">
+                <h2 class="training-title">🎯 Desbloquea el Cofre del 2</h2>
+                <div class="discovery-progress">
+                    <div class="discovery-progress-bar">
+                        <!-- Estrellas generadas dinámicamente: ⭐⭐⭐⚪⚪⚪⚪⚪⚪⚪ -->
+                    </div>
+                    <div class="discovery-progress-text">0/10</div>
+                </div>
+            </div>
+
+            <!-- Mateo mini en esquina -->
+            <div class="discovery-mateo-mini">
+                🧙‍♂️ ¡Tú puedes!
+            </div>
+
+            <!-- Área de pregunta -->
+            <div class="discovery-question-area">
+                <div class="discovery-question">
+                    <!-- Contenido dinámico: 2 × 4 = ? -->
+                </div>
+
+                <!-- Opciones de respuesta -->
+                <div class="discovery-options">
+                    <!-- Botones generados dinámicamente -->
+                </div>
+
+                <!-- Área de ayuda -->
+                <div class="discovery-help-container" style="display: none;">
+                    <button class="discovery-help-btn">💡 VER AYUDA</button>
+                    <p class="discovery-help-text" style="display: none;">
+                        <!-- Texto de ayuda dinámico: 2 + 2 + 2 + 2 = ? -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla 3: Reward - Recompensas -->
+    <div id="discoveryRewardScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <div class="discovery-reward-content">
+                <!-- Animación de cofre (CSS animation) -->
+                <div class="reward-chest-animation">
+                    <div class="reward-chest">🎁</div>
+                </div>
+
+                <h1 class="reward-title">🎊 ¡MISIÓN COMPLETADA! 🎊</h1>
+                <h2 class="reward-subtitle">🏆 TABLA DEL 2 DESBLOQUEADA</h2>
+
+                <!-- Estadísticas de la sesión -->
+                <div class="reward-stats">
+                    <!-- Contenido dinámico:
+                    <div class="stat-item">
+                        <span class="stat-label">Precisión:</span>
+                        <span class="stat-value">90%</span>
+                    </div>
+                    -->
+                </div>
+
+                <!-- Recompensas obtenidas -->
+                <div class="reward-items-section">
+                    <h3 class="reward-items-title">Has ganado:</h3>
+                    <div class="reward-items">
+                        <!-- Contenido dinámico:
+                        <div class="reward-item">
+                            <span class="reward-icon">🥈</span>
+                            <span class="reward-text">Medalla "Maestro del 2"</span>
+                        </div>
+                        -->
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="reward-actions">
+                    <button class="btn-reward-practice reward-practice-btn">
+                        🎯 PRACTICAR MÁS
+                    </button>
+                    <button class="btn-reward-map reward-map-btn">
+                        🏰 VOLVER AL MAPA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 
@@ -1069,6 +1197,9 @@
     <script src="src/ux/AnalyticsManager.js"></script>
     <script src="src/ux/ABTestingManager.js"></script>
     <script src="src/ux/FeedbackManager.js"></script>
+
+    <!-- Game Modes (Discovery, Practice, etc) -->
+    <script src="src/modes/TableDiscoveryEngine.js"></script>
 
     <!-- Bootstrap (Initialization) -->
     <script src="src/Bootstrap.js"></script>
