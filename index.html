@@ -215,6 +215,13 @@
                     <div class="mode-badge">¡Nuevo!</div>
                 </div>
 
+                <div class="mode-card" id="grimorioMode">
+                    <div class="mode-icon">📖</div>
+                    <h3>Grimorio de Trucos</h3>
+                    <p>Consulta los trucos que has descubierto</p>
+                    <div class="mode-badge hot">✨ Mágico</div>
+                </div>
+
                 <div class="mode-card hero-showcase-card" id="heroShowcaseMode">
                     <div class="mode-icon">👑</div>
                     <h3>Escaparate del Héroe</h3>
@@ -1098,6 +1105,51 @@
                         🏰 VOLVER AL MAPA
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla: Grimorio de Trucos Secretos -->
+    <div id="grimorioScreen" class="screen">
+        <div class="grimorio-container">
+            <!-- Header -->
+            <div class="grimorio-header">
+                <button class="btn-back" id="backFromGrimorio">← Volver</button>
+                <h1 class="grimorio-title">📖 Grimorio de Trucos Secretos</h1>
+                <div class="grimorio-progress">
+                    <span id="grimorioCollected">0</span> / <span id="grimorioTotal">9</span>
+                </div>
+            </div>
+
+            <!-- Libro abierto -->
+            <div class="grimorio-book">
+                <!-- Página izquierda: Lista de trucos -->
+                <div class="grimorio-page grimorio-page-left">
+                    <h2 class="page-title">📚 Tablas Descubiertas</h2>
+                    <div class="tricks-list" id="tricksList">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Página derecha: Detalle del truco seleccionado -->
+                <div class="grimorio-page grimorio-page-right">
+                    <div id="trickDetailContent">
+                        <div class="trick-placeholder">
+                            <div class="placeholder-icon">✨</div>
+                            <p>Selecciona una tabla de la izquierda para ver su truco secreto</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay trucos -->
+            <div class="grimorio-empty" id="grimorioEmpty" style="display: none;">
+                <div class="empty-icon">📭</div>
+                <h2>¡Tu grimorio está vacío!</h2>
+                <p>Descubre tus primeras tablas para coleccionar trucos mágicos</p>
+                <button class="btn-primary" id="startLearningFromGrimorio">
+                    🎓 COMENZAR A APRENDER
+                </button>
             </div>
         </div>
     </div>

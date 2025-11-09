@@ -9172,3 +9172,272 @@ body.light-theme .pause-control-label {
         border-width: 2px;
     }
 }
+
+/* ================================
+   GRIMORIO DE TRUCOS SECRETOS
+   Libro mágico para trucos coleccionados
+   ================================ */
+
+.grimorio-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grimorio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.grimorio-title {
+    font-size: 2rem;
+    color: #764ba2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.grimorio-progress {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* Libro abierto */
+.grimorio-book {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: linear-gradient(135deg, #f5f0e1 0%, #faf8f3 100%);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Sombra del centro del libro */
+.grimorio-book::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 0, 0, 0.1) 50%, 
+        transparent 100%
+    );
+    transform: translateX(-50%);
+}
+
+/* Páginas */
+.grimorio-page {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    min-height: 500px;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    color: #764ba2;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+/* Lista de trucos */
+.tricks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.trick-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.trick-item:hover {
+    transform: translateX(10px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
+}
+
+.trick-item.selected {
+    background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+    transform: translateX(10px) scale(1.08);
+}
+
+.trick-item.locked {
+    background: #bdc3c7;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.trick-item.locked:hover {
+    transform: none;
+}
+
+.trick-item-icon {
+    font-size: 2rem;
+}
+
+.trick-item-content h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.trick-item-content p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Detalle del truco */
+.trick-detail {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.trick-detail-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.trick-detail-icon {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.trick-detail-title {
+    font-size: 1.8rem;
+    color: #764ba2;
+    margin: 0;
+}
+
+.trick-detail-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+.trick-explanation {
+    background: #f0f4ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 5px solid #667eea;
+}
+
+.trick-tip {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #ffc107;
+}
+
+.trick-tip strong {
+    color: #856404;
+}
+
+/* Placeholder */
+.trick-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #999;
+}
+
+.placeholder-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Grimorio vacío */
+.grimorio-empty {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 6rem;
+    margin-bottom: 20px;
+}
+
+.grimorio-empty h2 {
+    font-size: 2rem;
+    color: #764ba2;
+    margin-bottom: 15px;
+}
+
+.grimorio-empty p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .grimorio-book {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .grimorio-book::before {
+        display: none;
+    }
+
+    .grimorio-page {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .grimorio-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .grimorio-title {
+        font-size: 1.5rem;
+    }
+
+    .grimorio-book {
+        padding: 20px;
+    }
+
+    .grimorio-page {
+        padding: 20px;
+    }
+
+    .trick-item {
+        padding: 12px;
+    }
+
+    .trick-item:hover {
+        transform: translateX(5px) scale(1.02);
+    }
+}

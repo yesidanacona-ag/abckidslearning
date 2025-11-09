@@ -383,10 +383,12 @@ class MultiplicationGame {
         document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
         document.getElementById('shopMode')?.addEventListener('click', () => this.openShop());
         document.getElementById('missionsMode')?.addEventListener('click', () => this.openMissions());
+        document.getElementById('grimorioMode')?.addEventListener('click', () => this.openGrimorio());
         document.getElementById('heroShowcaseMode')?.addEventListener('click', () => this.openHeroShowcase());
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromGrimorio')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
             if (window.speedDrillEngine) {
@@ -2660,6 +2662,121 @@ class MultiplicationGame {
             window.dailyMissionsSystem.open();
         } else {
             console.error('❌ Sistema de misiones no disponible');
+        }
+    }
+
+    openGrimorio() {
+        console.log('📖 Abriendo Grimorio de Trucos Secretos');
+        this.showScreen('grimorioScreen');
+        this.renderGrimorio();
+    }
+
+    renderGrimorio() {
+        const playerService = window.bootstrap?.services?.player;
+        if (!playerService) {
+            console.error('❌ PlayerService no disponible');
+            return;
+        }
+
+        // Obtener trucos coleccionados
+        const collectedTricks = playerService.getCollectedTricks();
+        const tricksList = document.getElementById('tricksList');
+        const grimorioEmpty = document.getElementById('grimorioEmpty');
+        const grimorioBook = document.querySelector('.grimorio-book');
+        const grimorioCollected = document.getElementById('grimorioCollected');
+        const grimorioTotal = document.getElementById('grimorioTotal');
+
+        // Actualizar contador
+        if (grimorioCollected) grimorioCollected.textContent = collectedTricks.length;
+        if (grimorioTotal) grimorioTotal.textContent = 9; // Tablas 2-10
+
+        // Mostrar/ocultar según tenga trucos
+        if (collectedTricks.length === 0) {
+            grimorioBook.style.display = 'none';
+            grimorioEmpty.style.display = 'block';
+
+            // Botón para empezar a aprender
+            const startBtn = document.getElementById('startLearningFromGrimorio');
+            if (startBtn) {
+                startBtn.onclick = () => {
+                    this.showScreen('practiceScreen');
+                    this.showDomainMap();
+                };
+            }
+            return;
+        }
+
+        grimorioBook.style.display = 'grid';
+        grimorioEmpty.style.display = 'none';
+
+        // Renderizar lista de trucos
+        if (!tricksList) return;
+        tricksList.innerHTML = '';
+
+        // Ordenar por número de tabla
+        const sortedTricks = [...collectedTricks].sort((a, b) => a.table - b.table);
+
+        sortedTricks.forEach((trick, index) => {
+            const trickItem = document.createElement('div');
+            trickItem.className = 'trick-item';
+            if (index === 0) trickItem.classList.add('selected'); // Seleccionar primero
+
+            trickItem.innerHTML = `
+                <div class="trick-item-icon">✨</div>
+                <div class="trick-item-content">
+                    <h3>Tabla del ${trick.table}</h3>
+                    <p>${new Date(trick.collectedAt).toLocaleDateString()}</p>
+                </div>
+            `;
+
+            trickItem.addEventListener('click', () => {
+                // Remover selección de otros
+                document.querySelectorAll('.trick-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                trickItem.classList.add('selected');
+
+                // Mostrar detalle
+                this.showTrickDetail(trick);
+            });
+
+            tricksList.appendChild(trickItem);
+        });
+
+        // Mostrar detalle del primer truco automáticamente
+        if (sortedTricks.length > 0) {
+            this.showTrickDetail(sortedTricks[0]);
+        }
+    }
+
+    showTrickDetail(trick) {
+        const detailContent = document.getElementById('trickDetailContent');
+        if (!detailContent) return;
+
+        detailContent.innerHTML = `
+            <div class="trick-detail">
+                <div class="trick-detail-header">
+                    <div class="trick-detail-icon">🧙‍♂️</div>
+                    <h2 class="trick-detail-title">Tabla del ${trick.table}</h2>
+                </div>
+                <div class="trick-detail-body">
+                    <div class="trick-explanation">
+                        <strong>🎯 Truco Secreto:</strong>
+                        <p>${trick.trick}</p>
+                    </div>
+                    ${trick.tip ? `
+                        <div class="trick-tip">
+                            <strong>💡 Consejo de Mateo:</strong>
+                            <p>${trick.tip}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        // Reproducir sonido
+        if (window.soundSystem) {
+            window.soundSystem.playTransition();
         }
     }
 
