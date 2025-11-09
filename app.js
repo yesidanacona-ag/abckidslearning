@@ -376,6 +376,7 @@ class MultiplicationGame {
         document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
         document.getElementById('speedDrillMode')?.addEventListener('click', () => this.startSpeedDrillMode());
         document.getElementById('shipDefenseMode')?.addEventListener('click', () => this.startShipDefenseMode());
+        document.getElementById('factorChainMode')?.addEventListener('click', () => this.startFactorChainMode());
         document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
         document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
         document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
@@ -403,6 +404,12 @@ class MultiplicationGame {
         document.getElementById('backFromRace')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromBoss')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromProgress')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromFactorChain')?.addEventListener('click', () => {
+            if (window.factorChainEngine) {
+                window.factorChainEngine.stop();
+            }
+            this.showMainScreen();
+        });
 
         // Modo Práctica
         document.querySelectorAll('.table-btn').forEach(btn => {
@@ -443,6 +450,13 @@ class MultiplicationGame {
         document.getElementById('trickModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'trickModal') {
                 this.hideTricksModal();
+            }
+        });
+
+        // Factor Chain - Hint Button
+        document.getElementById('factorHintBtn')?.addEventListener('click', () => {
+            if (window.factorChainEngine) {
+                window.factorChainEngine.useHint();
             }
         });
     }
@@ -2604,6 +2618,24 @@ class MultiplicationGame {
             window.heroShowcase.open(this.player);
         } else {
             console.error('❌ Sistema de Escaparate del Héroe no disponible');
+        }
+    }
+
+    startFactorChainMode() {
+        this.currentMode = 'factorChain';
+        this.showScreen('factorChainScreen');
+
+        if (window.mateoMascot) {
+            window.mateoMascot.show('happy');
+            window.mateoMascot.speak('¡Descompón el número en factores! 🧩', 3000);
+        }
+
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        if (window.factorChainEngine) {
+            window.factorChainEngine.start(1);
         }
     }
 

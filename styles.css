@@ -7819,6 +7819,286 @@ body.light-theme .pause-control-label {
     box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
 }
 
+/* ================================ */
+/* FACTOR CHAIN - CADENA DE FACTORES */
+/* ================================ */
+
+.factor-game-area {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.factor-instruction {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.factor-instruction h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.8em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.factor-instruction #factorTarget {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Contenedor de la cadena de factores */
+.factor-chain-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* Nodo de factor individual */
+.factor-node {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px 30px;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    animation: factorAppear 0.5s ease-out;
+}
+
+.factor-node .factor-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.factor-node .factor-badge {
+    margin-top: 8px;
+    padding: 5px 12px;
+    background: rgba(255, 215, 0, 0.9);
+    color: #333;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+/* Factor primo */
+.factor-node.prime-factor {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.5);
+    animation: primeGlow 2s ease-in-out infinite;
+}
+
+@keyframes primeGlow {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.5);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(245, 87, 108, 0.8);
+    }
+}
+
+/* Factor activo (seleccionable) */
+.factor-node.active-factor {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid #ffd700;
+    cursor: pointer;
+    animation: activeFactorPulse 1.5s ease-in-out infinite;
+}
+
+.factor-node.active-factor:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes activeFactorPulse {
+    0%, 100% {
+        border-color: #ffd700;
+    }
+    50% {
+        border-color: #ff6b6b;
+    }
+}
+
+/* Símbolo de multiplicación */
+.factor-multiply {
+    font-size: 2.5em;
+    color: #ffd700;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación de aparición */
+@keyframes factorAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.5) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Opciones de divisores */
+.divisor-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.divisor-option {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 25px 20px;
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+}
+
+.divisor-option:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.divisor-option:active {
+    transform: translateY(-2px) scale(1);
+}
+
+/* Resaltado de pista */
+.divisor-option.hint-highlight {
+    animation: hintPulse 1s ease-in-out 3;
+    border: 3px solid #ffd700;
+}
+
+@keyframes hintPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 6px 15px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.9);
+    }
+}
+
+/* Botón de pista */
+.factor-hint-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(245, 87, 108, 0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.factor-hint-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 87, 108, 0.6);
+}
+
+.factor-hint-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Stats de factor chain */
+.factor-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    gap: 20px;
+}
+
+.factor-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.factor-stat-label {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.factor-stat-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+/* Responsive Factor Chain */
+@media (max-width: 768px) {
+    .factor-game-area {
+        padding: 10px;
+        gap: 20px;
+    }
+
+    .factor-instruction h3 {
+        font-size: 1.3em;
+    }
+
+    .factor-instruction #factorTarget {
+        font-size: 2em;
+    }
+
+    .factor-node {
+        padding: 15px 20px;
+    }
+
+    .factor-node .factor-value {
+        font-size: 2em;
+    }
+
+    .factor-multiply {
+        font-size: 2em;
+    }
+
+    .divisor-options {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .divisor-option {
+        padding: 20px 15px;
+        font-size: 1.5em;
+    }
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
     .hero-showcase-main {

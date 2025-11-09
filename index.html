@@ -166,6 +166,13 @@
                     <div class="mode-badge hot">Pensar Diferente</div>
                 </div>
 
+                <div class="mode-card" id="factorChainMode">
+                    <div class="mode-icon">🧩</div>
+                    <h3>Cadena de Factores</h3>
+                    <p>Descompón números en factores primos</p>
+                    <div class="mode-badge hot">Puzzle</div>
+                </div>
+
                 <div class="mode-card" id="adventureMode">
                     <div class="mode-icon">🚀</div>
                     <h3>Aventura Espacial</h3>
@@ -915,6 +922,58 @@
         </div>
     </div>
 
+    <!-- Pantalla de Cadena de Factores -->
+    <div id="factorChainScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromFactorChain">← Volver</button>
+            <h2>🧩 Cadena de Factores</h2>
+            <div class="factor-stats-header">
+                <div class="stat-pill">
+                    <span class="stat-icon">🎯</span>
+                    Nivel <span id="factorLevel">1</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">⭐</span>
+                    <span id="factorScore">0</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon" id="factorHints">💡💡💡</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="factor-game-area">
+            <!-- Instrucción -->
+            <div class="factor-instruction">
+                <h3>Número Objetivo: <span id="factorTarget">24</span></h3>
+                <p class="factor-hint">🧩 Descompón el número en sus factores. Selecciona un divisor para factorizar.</p>
+            </div>
+
+            <!-- Cadena de factores -->
+            <div class="factor-chain-display">
+                <div class="chain-title">Tu Cadena de Factores:</div>
+                <div class="factor-chain-container" id="factorChainContainer">
+                    <!-- Los factores se generan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Opciones de divisores -->
+            <div class="divisor-selection">
+                <div class="divisor-title">Selecciona un Divisor:</div>
+                <div class="divisor-options" id="divisorOptions">
+                    <!-- Los divisores se generan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Botón de pista -->
+            <div class="factor-actions">
+                <button class="btn-hint" id="factorHintBtn">
+                    💡 Usar Pista
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 
@@ -975,6 +1034,7 @@
     <script src="numericKeyboard.js"></script>
     <script src="speedDrillEngine.js"></script>
     <script src="shipDefenseEngine.js"></script>
+    <script src="factorChainEngine.js"></script>
     <script src="rewardFlowSystem.js"></script>
     <script src="heroShowcaseSystem.js"></script>
     <script src="spaceGameEngine.js"></script>
