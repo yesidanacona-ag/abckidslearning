@@ -6625,3 +6625,345 @@ body.light-theme .pause-control-label {
         grid-template-columns: 1fr;
     }
 }
+
+/* ================================
+   TECLADO NUMÉRICO ADAPTATIVO
+   ================================ */
+
+.numeric-keyboard {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.numeric-keyboard.hidden {
+    display: none;
+}
+
+.keyboard-display {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 25px;
+    margin-bottom: 15px;
+    text-align: center;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.keyboard-value {
+    font-size: 2.5em;
+    font-weight: 800;
+    color: #667eea;
+    font-family: 'Poppins', sans-serif;
+    min-width: 60px;
+    transition: all 0.2s ease;
+}
+
+.keyboard-value.has-value {
+    color: #2d3748;
+}
+
+.keyboard-value.flash-correct {
+    animation: flashGreen 0.3s ease;
+}
+
+.keyboard-value.flash-incorrect {
+    animation: flashRed 0.3s ease;
+}
+
+@keyframes flashGreen {
+    50% {
+        background: #48bb78;
+        color: white;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes flashRed {
+    50% {
+        background: #f56565;
+        color: white;
+        transform: scale(1.1);
+    }
+}
+
+.keyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.key-btn {
+    background: white;
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+}
+
+.key-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.key-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.key-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.key-backspace {
+    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+    color: white;
+}
+
+.key-enter {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+}
+
+.key-icon {
+    font-size: 1.2em;
+}
+
+.numeric-keyboard.shake {
+    animation: keyboardShake 0.5s ease;
+}
+
+@keyframes keyboardShake {
+    0%, 100% { transform: translateX(-50%); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(calc(-50% - 5px)); }
+    20%, 40%, 60%, 80% { transform: translateX(calc(-50% + 5px)); }
+}
+
+/* ================================
+   TALADRO RÁPIDO - PANTALLA
+   ================================ */
+
+.drill-game {
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 20px 150px;
+}
+
+.drill-question-container {
+    text-align: center;
+    margin-top: 80px;
+}
+
+.drill-question {
+    font-size: 4em;
+    font-weight: 900;
+    color: #2d3748;
+    margin-bottom: 30px;
+    font-family: 'Poppins', sans-serif;
+    animation: questionAppear 0.3s ease;
+}
+
+@keyframes questionAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.drill-answer {
+    display: inline-block;
+    background: white;
+    padding: 20px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+}
+
+.drill-answer-value {
+    font-size: 3em;
+    font-weight: 800;
+    color: #cbd5e0;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.drill-answer-value.has-value {
+    color: #667eea;
+}
+
+.drill-answer-value.correct {
+    color: #48bb78;
+    animation: correctPulse 0.4s ease;
+}
+
+.drill-answer-value.incorrect {
+    color: #f56565;
+    animation: incorrectShake 0.4s ease;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+.drill-feedback {
+    margin-top: 30px;
+    font-size: 1.5em;
+    font-weight: 700;
+    padding: 15px 30px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.drill-feedback.hidden {
+    display: none;
+}
+
+.drill-feedback.correct {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.drill-feedback.incorrect {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.drill-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 40px;
+}
+
+.drill-stat {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.drill-stat.correct {
+    border-left: 5px solid #48bb78;
+}
+
+.drill-stat.incorrect {
+    border-left: 5px solid #f56565;
+}
+
+.drill-stat.streak {
+    border-left: 5px solid #ed8936;
+}
+
+.drill-stat-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.drill-stat-value {
+    font-size: 2.5em;
+    font-weight: 900;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 5px;
+}
+
+.drill-stat-label {
+    font-size: 0.9em;
+    color: #718096;
+    font-weight: 600;
+}
+
+.drill-stat-value.streak-fire {
+    color: #ed8936;
+    animation: firePulse 1s ease infinite;
+}
+
+@keyframes firePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.drill-progress {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: #667eea;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge Hot para el modo */
+.mode-badge.hot {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    animation: hotPulse 2s ease infinite;
+}
+
+@keyframes hotPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(237, 137, 54, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(237, 137, 54, 0.8); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .numeric-keyboard {
+        bottom: 10px;
+        padding: 15px;
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .key-btn {
+        padding: 15px;
+        font-size: 1.5em;
+    }
+
+    .drill-question {
+        font-size: 2.5em;
+    }
+
+    .drill-answer-value {
+        font-size: 2em;
+    }
+
+    .drill-stats {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .keyboard-value {
+        font-size: 2em;
+    }
+}

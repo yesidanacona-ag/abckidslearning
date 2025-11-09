@@ -152,6 +152,13 @@
                     <div class="mode-badge">Emocionante</div>
                 </div>
 
+                <div class="mode-card" id="speedDrillMode">
+                    <div class="mode-icon">⚡</div>
+                    <h3>Taladro Rápido</h3>
+                    <p>Escribe la respuesta sin opciones</p>
+                    <div class="mode-badge hot">Dominio Real</div>
+                </div>
+
                 <div class="mode-card" id="adventureMode">
                     <div class="mode-icon">🚀</div>
                     <h3>Aventura Espacial</h3>
@@ -802,6 +809,51 @@
         </div>
     </div>
 
+    <!-- Pantalla de Taladro Rápido -->
+    <div id="speedDrillScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromSpeedDrill">← Volver</button>
+            <h2>⚡ Taladro Rápido</h2>
+            <div class="drill-progress">
+                <span id="drillQuestionNumber">1</span> / <span id="drillTotalQuestions">20</span>
+            </div>
+        </div>
+
+        <div class="drill-game">
+            <!-- Pregunta Principal -->
+            <div class="drill-question-container">
+                <div class="drill-question" id="drillQuestion">7 × 8 = </div>
+                <div class="drill-answer">
+                    <span class="drill-answer-value" id="drillAnswer">_</span>
+                </div>
+            </div>
+
+            <!-- Feedback -->
+            <div class="drill-feedback hidden" id="drillFeedback">¡Correcto!</div>
+
+            <!-- Teclado Numérico (inyectado dinámicamente) -->
+
+            <!-- Stats en Vivo -->
+            <div class="drill-stats">
+                <div class="drill-stat correct">
+                    <div class="drill-stat-icon">✓</div>
+                    <div class="drill-stat-value" id="drillCorrectCount">0</div>
+                    <div class="drill-stat-label">Correctas</div>
+                </div>
+                <div class="drill-stat streak">
+                    <div class="drill-stat-icon">🔥</div>
+                    <div class="drill-stat-value" id="drillStreak">0</div>
+                    <div class="drill-stat-label">Racha</div>
+                </div>
+                <div class="drill-stat incorrect">
+                    <div class="drill-stat-icon">✗</div>
+                    <div class="drill-stat-value" id="drillIncorrectCount">0</div>
+                    <div class="drill-stat-label">Incorrectas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 
@@ -859,6 +911,8 @@
     <script src="fireModeSystem.js"></script>
     <script src="shopSystem.js"></script>
     <script src="dailyMissionsSystem.js"></script>
+    <script src="numericKeyboard.js"></script>
+    <script src="speedDrillEngine.js"></script>
     <script src="spaceGameEngine.js"></script>
     <script src="bossGameEngine.js"></script>
     <script src="practiceSystemEngine.js"></script>

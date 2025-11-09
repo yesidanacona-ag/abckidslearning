@@ -322,6 +322,7 @@ class MultiplicationGame {
         // Modos de juego
         document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
         document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
+        document.getElementById('speedDrillMode')?.addEventListener('click', () => this.startSpeedDrillMode());
         document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
         document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
         document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
@@ -332,6 +333,12 @@ class MultiplicationGame {
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
+            if (window.speedDrillEngine) {
+                window.speedDrillEngine.stop();
+            }
+            this.showMainScreen();
+        });
         document.getElementById('backFromAdventure')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromRace')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromBoss')?.addEventListener('click', () => this.showMainScreen());
@@ -361,6 +368,8 @@ class MultiplicationGame {
                 this.startPracticeMode();
             } else if (this.currentMode === 'challenge') {
                 this.startChallengeMode();
+            } else if (this.currentMode === 'speedDrill') {
+                this.startSpeedDrillMode();
             }
         });
 
@@ -1737,6 +1746,46 @@ class MultiplicationGame {
         this.trackMissionChallengePlayed();
 
         this.showResultsModal();
+    }
+
+    // ================================
+    // MODO TALADRO RÁPIDO
+    // ================================
+
+    startSpeedDrillMode() {
+        this.currentMode = 'speedDrill';
+        this.showScreen('speedDrillScreen');
+
+        // Mateo da instrucciones
+        if (window.mateoMascot) {
+            window.mateoMascot.show('happy');
+            window.mateoMascot.speak('¡Escribe la respuesta sin opciones! ⚡', 3000);
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startSpeedDrillMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                if (window.speedDrillEngine) {
+                    window.speedDrillEngine.stop();
+                }
+                this.showMainScreen();
+            });
+        }
+
+        // Iniciar el motor del Taladro Rápido
+        if (window.speedDrillEngine) {
+            window.speedDrillEngine.start();
+        } else {
+            console.error('⚠️ speedDrillEngine no está disponible');
+        }
     }
 
     // ================================
