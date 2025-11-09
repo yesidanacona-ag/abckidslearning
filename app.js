@@ -111,12 +111,11 @@ class MultiplicationGame {
         return {
             name: '',
             avatar: '🦸',
-            level: 1,
-            xp: 0,
             totalStars: 0,
             totalMedals: 0,
             streak: 0,
             bestStreak: 0,
+            coins: 0, // Monedas para la tienda
             stats: {
                 totalQuestions: 0,
                 correctAnswers: 0,
@@ -128,13 +127,37 @@ class MultiplicationGame {
             medals: { gold: 0, silver: 0, bronze: 0 },
             powerups: { shield: 2, hint: 3, skip: 1 }, // Power-ups iniciales
             activePowerups: [], // Power-ups activos en la partida actual
+            purchasedItems: [], // Items comprados en la tienda
+            equippedItems: {}, // Items equipados por categoría
             lastPlayed: Date.now()
         };
     }
 
     loadPlayer() {
         const saved = localStorage.getItem('multiplicationPlayer');
-        return saved ? JSON.parse(saved) : null;
+        if (!saved) return null;
+
+        const player = JSON.parse(saved);
+
+        // Migración de datos: Eliminar sistema XP/Nivel
+        if (player.hasOwnProperty('level') || player.hasOwnProperty('xp')) {
+            console.log('🔄 Migrando datos de jugador: removiendo sistema XP/Nivel');
+            delete player.level;
+            delete player.xp;
+
+            // Asegurar que campos nuevos existan
+            if (!player.hasOwnProperty('coins')) {
+                player.coins = 0;
+            }
+            if (!player.hasOwnProperty('purchasedItems')) {
+                player.purchasedItems = [];
+            }
+            if (!player.hasOwnProperty('equippedItems')) {
+                player.equippedItems = {};
+            }
+        }
+
+        return player;
     }
 
     savePlayer() {
@@ -194,17 +217,54 @@ class MultiplicationGame {
         }
 
         document.getElementById('playerAvatar').textContent = this.player.avatar;
-        document.getElementById('playerLevel').textContent = this.player.level;
+
+        // Calcular y mostrar maestría global (promedio de todas las tablas)
+        const globalMastery = this.calculateGlobalMastery();
+        const masteryEl = document.getElementById('playerMastery');
+        if (masteryEl) {
+            masteryEl.textContent = globalMastery + '%';
+        }
+
         document.getElementById('totalStars').textContent = this.player.totalStars;
         document.getElementById('totalMedals').textContent = this.player.totalMedals;
         document.getElementById('streak').textContent = this.player.streak;
 
-        const xpNeeded = this.player.level * 100;
-        const xpProgress = (this.player.xp / xpNeeded) * 100;
-        document.getElementById('xpBar').style.width = xpProgress + '%';
+        // Barra de progreso ahora muestra maestría global
+        const masteryBar = document.getElementById('masteryBar');
+        if (masteryBar) {
+            masteryBar.style.width = globalMastery + '%';
+        }
 
         // Actualizar equipamiento
         this.updateEquipmentDisplay();
+    }
+
+    // Calcular maestría global (promedio de todas las tablas 2-10)
+    calculateGlobalMastery() {
+        let totalMastery = 0;
+        let tableCount = 0;
+
+        // Intentar obtener datos del practiceSystem primero (más actualizado)
+        if (this.practiceSystem && this.practiceSystem.tableMastery) {
+            for (let i = 2; i <= 10; i++) {
+                const mastery = this.practiceSystem.tableMastery[i] || 0;
+                totalMastery += mastery;
+                tableCount++;
+            }
+            return tableCount > 0 ? Math.round(totalMastery / tableCount) : 0;
+        }
+
+        // Fallback a player.tableMastery
+        for (let i = 2; i <= 10; i++) {
+            const tableData = this.player.tableMastery[i];
+            if (tableData && tableData.mastery !== undefined) {
+                // mastery está entre 0-1, convertir a 0-100
+                totalMastery += tableData.mastery * 100;
+                tableCount++;
+            }
+        }
+
+        return tableCount > 0 ? Math.round(totalMastery / tableCount) : 0;
     }
 
     updateEquipmentDisplay() {
@@ -256,38 +316,30 @@ class MultiplicationGame {
     }
 
     // ================================
-    // SISTEMA DE EXPERIENCIA Y NIVELES
+    // SISTEMA DE RECOMPENSAS (Solo Monedas)
     // ================================
+    // Nota: XP/Nivel eliminado. Progresión basada en % de Maestría
 
-    addXP(amount) {
-        this.player.xp += amount;
-        const xpNeeded = this.player.level * 100;
-
-        if (this.player.xp >= xpNeeded) {
-            this.player.xp -= xpNeeded;
-            this.player.level++;
-            this.showLevelUpAnimation();
-            this.checkAchievements();
+    addCoins(amount) {
+        if (!this.player.coins) {
+            this.player.coins = 0;
         }
 
-        this.updateHeader();
+        this.player.coins += amount;
         this.savePlayer();
-    }
 
-    showLevelUpAnimation() {
-        // Sonido épico de nivel up
-        if (window.soundSystem) {
-            window.soundSystem.playLevelUp();
-            setTimeout(() => window.soundSystem.playConfetti(), 300);
+        // Actualizar HUD de monedas si el coinSystem está disponible
+        if (window.coinSystem) {
+            window.coinSystem.stars = this.player.coins;
+            window.coinSystem.updateHUD();
         }
 
-        this.createConfetti();
-        this.showNotification(`¡Nivel ${this.player.level}! 🎉`, 'success');
-
-        // Mostrar Mateo celebrando nivel up
-        if (window.mateoMascot) {
-            window.mateoMascot.onLevelUp(this.player.level);
+        // Mostrar notificación
+        if (amount > 0) {
+            this.showNotification(`+${amount} monedas 💰`, 'success');
         }
+
+        console.log(`💰 +${amount} monedas. Total: ${this.player.coins}`);
     }
 
     // ================================
@@ -887,7 +939,7 @@ class MultiplicationGame {
         const points = 10 + (this.gameState.streak * 2);
         this.gameState.score += points;
 
-        this.addXP(5);
+        this.addCoins(5);
         this.player.stats.correctAnswers++;
         this.player.totalStars += 1;
 
@@ -1637,7 +1689,7 @@ class MultiplicationGame {
             this.gameState.score += points;
 
             this.player.stats.correctAnswers++;
-            this.addXP(3);
+            this.addCoins(3);
 
             // Tracking de misión
             this.trackMissionCorrectAnswer();
@@ -1884,7 +1936,7 @@ class MultiplicationGame {
         // Agregar puntos y XP
         this.gameState.score += points;
         this.gameState.planet++;
-        this.addXP(5);
+        this.addCoins(5);
 
         // Agregar estrellas del sistema de monedas
         if (window.coinSystem) {
@@ -2093,7 +2145,7 @@ class MultiplicationGame {
             btnElement.classList.add('correct');
             this.gameState.correct++;
             this.player.stats.correctAnswers++;
-            this.addXP(5);
+            this.addCoins(5);
 
             // Sonidos
             if (window.soundSystem) {
@@ -2324,7 +2376,7 @@ class MultiplicationGame {
         this.player.stats.correctAnswers++;
 
         // Agregar XP
-        this.addXP(7);
+        this.addCoins(7);
 
         // Agregar estrellas
         if (window.coinSystem) {
@@ -2585,8 +2637,11 @@ class MultiplicationGame {
             { id: 'first_step', icon: '👣', name: 'Primeros Pasos', desc: 'Responde tu primera pregunta', condition: () => this.player.stats.totalQuestions >= 1 },
             { id: 'ten_streak', icon: '🔥', name: 'En Racha', desc: 'Consigue una racha de 10', condition: () => this.player.bestStreak >= 10 },
             { id: 'hundred_questions', icon: '💯', name: 'Centenario', desc: 'Responde 100 preguntas', condition: () => this.player.stats.totalQuestions >= 100 },
-            { id: 'level_5', icon: '⭐', name: 'Estrella Brillante', desc: 'Alcanza el nivel 5', condition: () => this.player.level >= 5 },
-            { id: 'level_10', icon: '🌟', name: 'Superestrella', desc: 'Alcanza el nivel 10', condition: () => this.player.level >= 10 },
+            { id: 'mastery_25', icon: '⭐', name: 'Aprendiz', desc: 'Alcanza 25% de maestría global', condition: () => this.calculateGlobalMastery() >= 25 },
+            { id: 'mastery_50', icon: '🌟', name: 'Estudiante', desc: 'Alcanza 50% de maestría global', condition: () => this.calculateGlobalMastery() >= 50 },
+            { id: 'mastery_75', icon: '💫', name: 'Experto', desc: 'Alcanza 75% de maestría global', condition: () => this.calculateGlobalMastery() >= 75 },
+            { id: 'mastery_90', icon: '🎖️', name: 'Maestro', desc: 'Alcanza 90% de maestría global', condition: () => this.calculateGlobalMastery() >= 90 },
+            { id: 'mastery_100', icon: '👑', name: 'Gran Maestro', desc: 'Alcanza 100% de maestría global', condition: () => this.calculateGlobalMastery() >= 100 },
             { id: 'master_table', icon: '🏆', name: 'Maestro de Tabla', desc: 'Domina completamente una tabla', condition: () => Object.values(this.player.tableMastery).some(m => m.mastery >= 0.95) },
             { id: 'perfect_game', icon: '💎', name: 'Perfección', desc: 'Completa un juego sin errores', condition: () => false }, // Se verifica en tiempo real
             { id: 'speed_demon', icon: '⚡', name: 'Rayo Veloz', desc: 'Responde 20 preguntas en desafío', condition: () => false }
@@ -2664,11 +2719,11 @@ class MultiplicationGame {
                 date: null
             },
             {
-                id: 'level_10',
+                id: 'mastery_50',
                 icon: '⭐',
-                name: 'Estrella Suprema',
-                description: 'Alcanza nivel 10',
-                unlocked: this.player.level >= 10,
+                name: 'Estudiante Avanzado',
+                description: 'Alcanza 50% de maestría global',
+                unlocked: this.calculateGlobalMastery() >= 50,
                 date: null
             },
             {
@@ -3096,34 +3151,41 @@ class MultiplicationGame {
                 check: () => this.player.streak >= 50
             },
 
-            // Logros de nivel
+            // Logros de maestría global
             {
-                id: 'level_5',
-                name: 'Ascenso',
-                desc: 'Alcanza nivel 5',
+                id: 'mastery_25',
+                name: 'Aprendiz',
+                desc: 'Alcanza 25% de maestría global',
                 icon: '⬆️',
-                check: () => this.player.level >= 5
+                check: () => this.calculateGlobalMastery() >= 25
             },
             {
-                id: 'level_10',
-                name: 'Veterano',
-                desc: 'Alcanza nivel 10',
+                id: 'mastery_50',
+                name: 'Estudiante',
+                desc: 'Alcanza 50% de maestría global',
                 icon: '🏆',
-                check: () => this.player.level >= 10
+                check: () => this.calculateGlobalMastery() >= 50
             },
             {
-                id: 'level_20',
-                name: 'Élite',
-                desc: 'Alcanza nivel 20',
+                id: 'mastery_75',
+                name: 'Experto',
+                desc: 'Alcanza 75% de maestría global',
                 icon: '💪',
-                check: () => this.player.level >= 20
+                check: () => this.calculateGlobalMastery() >= 75
             },
             {
-                id: 'level_50',
-                name: 'Dios de las Matemáticas',
-                desc: 'Alcanza nivel 50',
-                icon: '⚡👑',
-                check: () => this.player.level >= 50
+                id: 'mastery_90',
+                name: 'Maestro',
+                desc: 'Alcanza 90% de maestría global',
+                icon: '⚡',
+                check: () => this.calculateGlobalMastery() >= 90
+            },
+            {
+                id: 'mastery_100',
+                name: 'Gran Maestro Global',
+                desc: 'Alcanza 100% de maestría global',
+                icon: '👑',
+                check: () => this.calculateGlobalMastery() >= 100
             },
 
             // Logros de maestría
