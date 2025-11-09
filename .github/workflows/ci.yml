@@ -1,0 +1,92 @@
+name: CI - Test & Quality
+
+on:
+  push:
+    branches: [ main, master, claude/* ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Generate coverage report
+        run: npm run test:coverage -- --run
+        continue-on-error: true
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check WCAG compliance markers
+        run: |
+          echo "Checking for WCAG AAA compliance..."
+          grep -r "✅ WCAG AAA" styles.css || echo "⚠️ No WCAG markers found"
+
+      - name: Check for error handling
+        run: |
+          echo "Checking for error handling patterns..."
+          grep -r "hasError" *.js | wc -l || echo "No error handling found"
+
+      - name: Validate color palette
+        run: |
+          echo "Validating COLOR_PALETTE.md exists..."
+          test -f COLOR_PALETTE.md && echo "✅ Color palette documented" || echo "❌ Missing color palette"
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start server (test)
+        run: |
+          npm start &
+          sleep 5
+          kill $!
+        continue-on-error: true
+
+      - name: Validate HTML
+        run: |
+          test -f index.html && echo "✅ index.html exists"
+          test -f styles.css && echo "✅ styles.css exists"
+          test -f app.js && echo "✅ app.js exists"

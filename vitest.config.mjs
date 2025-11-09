@@ -14,6 +14,12 @@ export default defineConfig({
         'mateo.js',
         'sounds.js',
         'mnemonicTricks.js',
+        // Game engines
+        'spaceGameEngine.js',
+        'bossGameEngine.js',
+        'galaxySystemEngine.js',
+        'practiceSystemEngine.js',
+        'fireModeSystem.js',
         // New modular architecture
         'src/core/**/*.js',
         'src/services/**/*.js',
