@@ -27,6 +27,15 @@ class ApplicationBootstrap {
             mode: null
         };
 
+        // Performance modules
+        this.performance = {
+            monitor: null,
+            moduleLoader: null,
+            resourceHints: null,
+            assetOptimizer: null,
+            serviceWorkerManager: null
+        };
+
         // Estado de inicialización
         this.initialized = false;
     }
@@ -41,6 +50,9 @@ class ApplicationBootstrap {
             return this.getContext();
         }
 
+        console.log('⚡ Fase 0: Inicializando Performance Modules...');
+        this.initializePerformance();
+
         console.log('📦 Fase 1: Inicializando Core Modules...');
         this.initializeCore();
 
@@ -52,6 +64,9 @@ class ApplicationBootstrap {
 
         console.log('🔗 Fase 4: Wire Up Event Listeners...');
         this.wireUpEventListeners();
+
+        console.log('📊 Fase 5: Finalizando Performance Setup...');
+        this.finalizePerformance();
 
         console.log('✅ Sistema inicializado correctamente');
         this.initialized = true;
@@ -86,6 +101,86 @@ class ApplicationBootstrap {
             console.log('  ✓ GameStore');
         } else {
             console.error('  ❌ GameStore no disponible');
+        }
+    }
+
+    /**
+     * Inicializa módulos de performance
+     */
+    initializePerformance() {
+        // Performance Monitor
+        if (typeof PerformanceMonitor !== 'undefined') {
+            this.performance.monitor = new PerformanceMonitor();
+            this.performance.monitor.mark('bootstrap:start');
+            console.log('  ✓ PerformanceMonitor');
+        }
+
+        // Resource Hints
+        if (typeof ResourceHints !== 'undefined') {
+            this.performance.resourceHints = new ResourceHints();
+            this.performance.resourceHints.applyAppHints();
+            console.log('  ✓ ResourceHints');
+        }
+
+        // Asset Optimizer
+        if (typeof AssetOptimizer !== 'undefined') {
+            this.performance.assetOptimizer = new AssetOptimizer();
+            console.log('  ✓ AssetOptimizer');
+        }
+
+        // Service Worker Manager
+        if (typeof ServiceWorkerManager !== 'undefined') {
+            this.performance.serviceWorkerManager = new ServiceWorkerManager();
+
+            // Register service worker
+            this.performance.serviceWorkerManager.register().then(registered => {
+                if (registered) {
+                    console.log('  ✓ ServiceWorkerManager (registered)');
+
+                    // Show update notification when available
+                    this.performance.serviceWorkerManager.onUpdateAvailable(() => {
+                        console.log('🔄 Nueva versión disponible');
+                        this.performance.serviceWorkerManager.showUpdateNotification();
+                    });
+
+                    // Log when offline-ready
+                    this.performance.serviceWorkerManager.onOfflineReady(() => {
+                        console.log('📱 App lista para uso offline');
+                    });
+                } else {
+                    console.log('  ⚠️ ServiceWorkerManager (not registered)');
+                }
+            });
+        }
+
+        // Module Loader (for future lazy loading implementation)
+        if (typeof ModuleLoader !== 'undefined') {
+            this.performance.moduleLoader = new ModuleLoader();
+            console.log('  ✓ ModuleLoader');
+        }
+    }
+
+    /**
+     * Finaliza configuración de performance
+     */
+    finalizePerformance() {
+        if (this.performance.monitor) {
+            this.performance.monitor.mark('bootstrap:end');
+            this.performance.monitor.measure('bootstrap:duration', 'bootstrap:start', 'bootstrap:end');
+
+            // Log performance report after 2 seconds (allow paint metrics to be captured)
+            setTimeout(() => {
+                this.performance.monitor.logReport();
+            }, 2000);
+        }
+
+        // Preload critical images
+        if (this.performance.assetOptimizer) {
+            const criticalImages = [
+                'assets/characters/mateo-neutral.png'
+                // Add more critical images here
+            ];
+            this.performance.assetOptimizer.preloadCriticalImages(criticalImages);
         }
     }
 
@@ -249,7 +344,8 @@ class ApplicationBootstrap {
             eventBus: this.eventBus,
             store: this.store,
             services: this.services,
-            controllers: this.controllers
+            controllers: this.controllers,
+            performance: this.performance
         };
     }
 
@@ -330,6 +426,14 @@ class ApplicationBootstrap {
                 game: !!this.controllers.game,
                 screen: !!this.controllers.screen,
                 mode: !!this.controllers.mode
+            },
+            performance: {
+                monitor: !!this.performance.monitor,
+                moduleLoader: !!this.performance.moduleLoader,
+                resourceHints: !!this.performance.resourceHints,
+                assetOptimizer: !!this.performance.assetOptimizer,
+                serviceWorkerManager: !!this.performance.serviceWorkerManager,
+                report: this.performance.monitor ? this.performance.monitor.getReport() : null
             },
             eventBusStats: this.eventBus ? {
                 eventsRegistered: this.eventBus.getEvents().length,
