@@ -14,38 +14,41 @@ const CACHE_FIRST = 'cache-first';
 const NETWORK_FIRST = 'network-first';
 const STALE_WHILE_REVALIDATE = 'stale-while-revalidate';
 
+// Detect base URL for GitHub Pages
+const BASE_URL = self.location.pathname.includes('/abckidslearning/') ? '/abckidslearning' : '';
+
 // Static assets to cache immediately
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
+    `${BASE_URL}/`,
+    `${BASE_URL}/index.html`,
+    `${BASE_URL}/styles.css`,
+    `${BASE_URL}/app.js`,
+    `${BASE_URL}/manifest.json`,
 
     // Core modules
-    '/src/core/StorageManager.js',
-    '/src/core/EventBus.js',
-    '/src/core/GameStore.js',
+    `${BASE_URL}/src/core/StorageManager.js`,
+    `${BASE_URL}/src/core/EventBus.js`,
+    `${BASE_URL}/src/core/GameStore.js`,
 
     // Services
-    '/src/services/PlayerService.js',
-    '/src/services/QuestionService.js',
-    '/src/services/AdaptiveService.js',
-    '/src/services/AchievementService.js',
+    `${BASE_URL}/src/services/PlayerService.js`,
+    `${BASE_URL}/src/services/QuestionService.js`,
+    `${BASE_URL}/src/services/AdaptiveService.js`,
+    `${BASE_URL}/src/services/AchievementService.js`,
 
     // Controllers
-    '/src/controllers/GameController.js',
-    '/src/controllers/ScreenController.js',
-    '/src/controllers/ModeController.js',
+    `${BASE_URL}/src/controllers/GameController.js`,
+    `${BASE_URL}/src/controllers/ScreenController.js`,
+    `${BASE_URL}/src/controllers/ModeController.js`,
 
     // Bootstrap
-    '/src/Bootstrap.js',
+    `${BASE_URL}/src/Bootstrap.js`,
 
     // Performance modules
-    '/src/performance/ModuleLoader.js',
-    '/src/performance/PerformanceMonitor.js',
-    '/src/performance/ResourceHints.js',
-    '/src/performance/AssetOptimizer.js',
+    `${BASE_URL}/src/performance/ModuleLoader.js`,
+    `${BASE_URL}/src/performance/PerformanceMonitor.js`,
+    `${BASE_URL}/src/performance/ResourceHints.js`,
+    `${BASE_URL}/src/performance/AssetOptimizer.js`,
 
     // Legacy systems
     '/mateo.js',
