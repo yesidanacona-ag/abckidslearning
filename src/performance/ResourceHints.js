@@ -157,10 +157,11 @@ class ResourceHints {
         this.prefetch('src/core/GameStore.js');
 
         // Preload critical images (mascot, backgrounds)
-        this.preloadImages([
-            { href: 'assets/characters/mateo-neutral.png', type: 'image/png' },
-            { href: 'assets/backgrounds/main-bg.jpg', type: 'image/jpeg' }
-        ]);
+        // DISABLED: Assets are SVG files, not PNG/JPG
+        // this.preloadImages([
+        //     { href: 'assets/characters/mateo-happy.svg', type: 'image/svg+xml' },
+        //     { href: 'assets/backgrounds/practice-library.svg', type: 'image/svg+xml' }
+        // ]);
 
         // If using CDN for libraries
         // this.preconnect('https://cdn.example.com', true);
@@ -179,11 +180,11 @@ class ResourceHints {
             ],
             'space': [
                 'spaceGameEngine.js',
-                'assets/backgrounds/space-bg.jpg'
+                'assets/backgrounds/adventure-space.svg'
             ],
             'boss': [
                 'bossGameEngine.js',
-                'assets/backgrounds/boss-bg.jpg'
+                'assets/backgrounds/battle-arena.svg'
             ],
             'galaxy': [
                 'galaxySystemEngine.js'
