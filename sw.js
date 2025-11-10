@@ -51,15 +51,22 @@ const STATIC_ASSETS = [
     `${BASE_URL}/src/performance/AssetOptimizer.js`,
 
     // Legacy systems
-    '/mateo.js',
-    '/sounds.js',
-    '/mnemonicTricks.js',
-    '/pauseMenu.js',
-    '/coinSystem.js',
-    '/feedbackSystem.js',
+    `${BASE_URL}/mateo.js`,
+    `${BASE_URL}/sounds.js`,
+    `${BASE_URL}/mnemonicTricks.js`,
+    `${BASE_URL}/pauseMenu.js`,
+    `${BASE_URL}/coinSystem.js`,
+    `${BASE_URL}/feedbackSystem.js`,
+    `${BASE_URL}/fireModeSystem.js`,
+    `${BASE_URL}/shopSystem.js`,
+    `${BASE_URL}/dailyMissionsSystem.js`,
+    `${BASE_URL}/spaceGameEngine.js`,
+    `${BASE_URL}/bossGameEngine.js`,
+    `${BASE_URL}/practiceSystemEngine.js`,
+    `${BASE_URL}/galaxySystemEngine.js`,
 
-    // Critical images (add your actual paths)
-    '/assets/characters/mateo-neutral.png'
+    // Offline page
+    `${BASE_URL}/offline.html`
 ];
 
 // Routes and their strategies
