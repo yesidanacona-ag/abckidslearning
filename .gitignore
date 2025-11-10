@@ -5,6 +5,9 @@ package-lock.json
 # Testing
 coverage/
 .vitest/
+playwright-report/
+test-results/
+.playwright/
 
 # OS
 .DS_Store

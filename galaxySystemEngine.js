@@ -5,14 +5,32 @@
 
 class GalaxySystemEngine {
     constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d');
+        try {
+            this.canvas = document.getElementById(canvasId);
+            if (!this.canvas) {
+                console.error('❌ Canvas no encontrado:', canvasId);
+                this.hasError = true;
+                return;
+            }
 
-        // Dimensiones
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
-        this.centerX = this.width / 2;
-        this.centerY = this.height / 2;
+            this.ctx = this.canvas.getContext('2d');
+            if (!this.ctx) {
+                console.error('❌ No se pudo obtener contexto 2D del canvas');
+                this.hasError = true;
+                return;
+            }
+
+            this.hasError = false;
+
+            // Dimensiones
+            this.width = this.canvas.width;
+            this.height = this.canvas.height;
+            this.centerX = this.width / 2;
+            this.centerY = this.height / 2;
+        } catch (error) {
+            console.error('❌ Error al inicializar GalaxySystemEngine:', error);
+            this.hasError = true;
+        }
 
         // Sol central
         this.sun = {
@@ -159,31 +177,42 @@ class GalaxySystemEngine {
     }
 
     render() {
-        // Fondo espacial
-        this.ctx.fillStyle = '#0a0e27';
-        this.ctx.fillRect(0, 0, this.width, this.height);
+        try {
+            // Validar que tenemos contexto
+            if (!this.ctx || this.hasError) {
+                console.warn('⚠️ No se puede renderizar: contexto no disponible');
+                return;
+            }
 
-        // Estrellas de fondo
-        this.renderStars();
+            // Fondo espacial
+            this.ctx.fillStyle = '#0a0e27';
+            this.ctx.fillRect(0, 0, this.width, this.height);
 
-        // Órbitas (líneas sutiles)
-        this.renderOrbits();
+            // Estrellas de fondo
+            this.renderStars();
 
-        // Sol central
-        this.renderSun();
+            // Órbitas (líneas sutiles)
+            this.renderOrbits();
 
-        // Planetas
-        this.renderPlanets();
+            // Sol central
+            this.renderSun();
 
-        // Nave Nodriza
-        this.renderMotherShip();
+            // Planetas
+            this.renderPlanets();
 
-        // Cometa de racha
-        this.renderStreakComet();
+            // Nave Nodriza
+            this.renderMotherShip();
 
-        // Tooltip si hover
-        if (this.hoveredPlanet) {
-            this.renderTooltip(this.hoveredPlanet);
+            // Cometa de racha
+            this.renderStreakComet();
+
+            // Tooltip si hover
+            if (this.hoveredPlanet) {
+                this.renderTooltip(this.hoveredPlanet);
+            }
+        } catch (error) {
+            console.error('❌ Error en render():', error);
+            this.handleRenderError(error);
         }
     }
 
@@ -571,6 +600,31 @@ class GalaxySystemEngine {
     onPlanetClick(planet) {
         // Callback para abrir modal
         console.log('Planeta clickeado:', planet);
+    }
+
+    // =============================
+    // ERROR HANDLING
+    // =============================
+
+    handleRenderError(error) {
+        console.error('🔴 Error crítico en renderizado de galaxia:', error);
+        this.hasError = true;
+        this.isRunning = false;
+
+        // Intentar mostrar mensaje al usuario
+        if (this.ctx) {
+            try {
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+                this.ctx.fillStyle = '#FF0000';
+                this.ctx.font = '20px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('Error al mostrar la galaxia', this.width / 2, this.height / 2);
+                this.ctx.fillText('Por favor recarga la página', this.width / 2, this.height / 2 + 30);
+            } catch (e) {
+                console.error('❌ No se pudo mostrar mensaje de error:', e);
+            }
+        }
     }
 }
 

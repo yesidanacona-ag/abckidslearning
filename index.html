@@ -16,7 +16,7 @@
 </head>
 <body>
     <!-- Pantalla de Bienvenida -->
-    <div id="welcomeScreen" class="screen active">
+    <div id="welcomeScreen" class="screen active" role="main" aria-label="Pantalla de bienvenida">
         <div class="welcome-container">
             <div class="logo-container">
                 <div class="magic-star">✨</div>
@@ -28,16 +28,16 @@
             <div class="welcome-form">
                 <div class="input-group">
                     <label for="playerName">¿Cómo te llamas?</label>
-                    <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="15">
+                    <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="15" aria-label="Ingresa tu nombre" aria-required="true">
                 </div>
 
                 <div class="avatar-selector">
-                    <label>Elige tu avatar:</label>
-                    <div class="avatar-tabs">
-                        <button class="avatar-tab active" data-category="personajes">👥 Personajes</button>
-                        <button class="avatar-tab" data-category="animales">🐾 Animales</button>
-                        <button class="avatar-tab" data-category="fantasía">✨ Fantasía</button>
-                        <button class="avatar-tab" data-category="deportes">⚽ Deportes</button>
+                    <label id="avatar-label">Elige tu avatar:</label>
+                    <div class="avatar-tabs" role="tablist" aria-labelledby="avatar-label">
+                        <button class="avatar-tab active" data-category="personajes" role="tab" aria-selected="true" aria-controls="avatarGrid">👥 Personajes</button>
+                        <button class="avatar-tab" data-category="animales" role="tab" aria-selected="false" aria-controls="avatarGrid">🐾 Animales</button>
+                        <button class="avatar-tab" data-category="fantasía" role="tab" aria-selected="false" aria-controls="avatarGrid">✨ Fantasía</button>
+                        <button class="avatar-tab" data-category="deportes" role="tab" aria-selected="false" aria-controls="avatarGrid">⚽ Deportes</button>
                     </div>
                     <div class="avatar-grid" id="avatarGrid">
                         <!-- Personajes -->
@@ -100,98 +100,149 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" id="startAdventure">¡Comenzar Aventura!</button>
+                <button class="btn-primary" id="startAdventure" aria-label="Comenzar la aventura de aprendizaje">¡Comenzar Aventura!</button>
             </div>
         </div>
     </div>
 
     <!-- Pantalla Principal -->
-    <div id="mainScreen" class="screen">
-        <header class="main-header">
-            <div class="player-info">
+    <div id="mainScreen" class="screen" role="main" aria-label="Menú principal del juego">
+        <header class="main-header" role="banner">
+            <div class="player-info" aria-label="Información del jugador">
                 <div class="player-avatar" id="playerAvatar">🦸</div>
                 <div class="player-details">
                     <div class="player-name" id="headerPlayerName">Jugador</div>
-                    <div class="player-level">
-                        <span class="level-badge">Nivel <span id="playerLevel">1</span></span>
-                        <div class="xp-bar">
-                            <div class="xp-fill" id="xpBar"></div>
+                    <div class="player-mastery">
+                        <span class="mastery-badge">⭐ <span id="playerStars">0</span> de 45 estrellas</span>
+                        <div class="stars-visual" id="starsVisual">
+                            <!-- Estrellas visuales generadas dinámicamente -->
+                            ⭐⭐⭐⭐⭐
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="player-stats">
-                <div class="stat">
-                    <span class="stat-icon">⭐</span>
+            <div class="player-stats" role="status" aria-label="Estadísticas del jugador">
+                <div class="stat" aria-label="Estrellas totales">
+                    <span class="stat-icon" aria-hidden="true">⭐</span>
                     <span id="totalStars">0</span>
                 </div>
-                <div class="stat">
-                    <span class="stat-icon">🏆</span>
+                <div class="stat" aria-label="Medallas totales">
+                    <span class="stat-icon" aria-hidden="true">🏆</span>
                     <span id="totalMedals">0</span>
                 </div>
-                <div class="stat">
-                    <span class="stat-icon">🔥</span>
+                <div class="stat" aria-label="Racha actual">
+                    <span class="stat-icon" aria-hidden="true">🔥</span>
                     <span id="streak">0</span>
                 </div>
             </div>
         </header>
 
         <div class="main-content">
-            <div class="game-modes">
-                <div class="mode-card" id="practiceMode">
-                    <div class="mode-icon">📚</div>
-                    <h3>Modo Práctica</h3>
-                    <p>Practica las tablas a tu ritmo</p>
-                    <div class="mode-badge">Relajado</div>
+            <!-- Botón CTA Principal -->
+            <div class="cta-main-container">
+                <button class="cta-main" id="ctaStartLearning">
+                    🚀 ¡EMPEZAR A APRENDER!
+                </button>
+                <p class="cta-subtitle">Descubre las tablas de multiplicar con trucos mágicos</p>
+            </div>
+
+            <div class="game-modes" role="navigation" aria-label="Modos de juego">
+                <div class="mode-card" id="practiceMode" role="button" tabindex="0" aria-label="Modo Aprender Tablas: Aprende a tu propio ritmo sin presión de tiempo">
+                    <div class="mode-icon" aria-hidden="true">📚</div>
+                    <h3>¡Aprender Tablas!</h3>
+                    <p>Tú controlas el tiempo</p>
+                    <div class="mode-badge" aria-hidden="true">🐌 Relajado</div>
                 </div>
 
-                <div class="mode-card" id="challengeMode">
-                    <div class="mode-icon">⚡</div>
-                    <h3>Desafío Rápido</h3>
-                    <p>¡Contra el reloj! ¿Cuántas puedes?</p>
-                    <div class="mode-badge">Emocionante</div>
+                <div class="mode-card" id="challengeMode" role="button" tabindex="0" aria-label="Modo Rápido como un Rayo: Responde todas las multiplicaciones que puedas en 1 minuto">
+                    <div class="mode-icon" aria-hidden="true">⚡</div>
+                    <h3>¡Rápido como un Rayo!</h3>
+                    <p>¿Cuántas sabes en 1 minuto?</p>
+                    <div class="mode-badge" aria-hidden="true">🚀 Emocionante</div>
                 </div>
 
-                <div class="mode-card" id="adventureMode">
-                    <div class="mode-icon">🚀</div>
+                <div class="mode-card" id="speedDrillMode" role="button" tabindex="0" aria-label="Modo Taladro Rápido: Escribe la respuesta directamente sin opciones múltiples">
+                    <div class="mode-icon" aria-hidden="true">⚡</div>
+                    <h3>Taladro Rápido</h3>
+                    <p>Escribe la respuesta sin opciones</p>
+                    <div class="mode-badge hot" aria-hidden="true">Dominio Real</div>
+                </div>
+
+                <div class="mode-card" id="shipDefenseMode" role="button" tabindex="0" aria-label="Modo Defensa de la Nave: Identifica múltiplos y protege tu nave espacial">
+                    <div class="mode-icon" aria-hidden="true">🛸</div>
+                    <h3>Defensa de la Nave</h3>
+                    <p>Identifica múltiplos y protege tu nave</p>
+                    <div class="mode-badge hot" aria-hidden="true">Pensar Diferente</div>
+                </div>
+
+                <div class="mode-card" id="factorChainMode" role="button" tabindex="0" aria-label="Modo Cadena de Factores: Resuelve puzzles descomponiendo números en factores primos">
+                    <div class="mode-icon" aria-hidden="true">🧩</div>
+                    <h3>Cadena de Factores</h3>
+                    <p>Descompón números en factores primos</p>
+                    <div class="mode-badge hot" aria-hidden="true">Puzzle</div>
+                </div>
+
+                <div class="mode-card" id="adventureMode" role="button" tabindex="0" aria-label="Modo Aventura Espacial: Viaja por el espacio resolviendo multiplicaciones en cada planeta">
+                    <div class="mode-icon" aria-hidden="true">🚀</div>
                     <h3>Aventura Espacial</h3>
                     <p>Viaja por el espacio resolviendo multiplicaciones</p>
-                    <div class="mode-badge">Épico</div>
+                    <div class="mode-badge" aria-hidden="true">Épico</div>
                 </div>
 
-                <div class="mode-card" id="raceMode">
-                    <div class="mode-icon">🏁</div>
+                <div class="mode-card" id="raceMode" role="button" tabindex="0" aria-label="Modo Carrera Matemática: Compite contra oponentes virtuales en una carrera de multiplicaciones">
+                    <div class="mode-icon" aria-hidden="true">🏁</div>
                     <h3>Carrera Matemática</h3>
                     <p>Compite contra oponentes virtuales</p>
-                    <div class="mode-badge">Competitivo</div>
+                    <div class="mode-badge" aria-hidden="true">Competitivo</div>
                 </div>
 
-                <div class="mode-card" id="bossMode">
-                    <div class="mode-icon">👾</div>
+                <div class="mode-card" id="bossMode" role="button" tabindex="0" aria-label="Modo Batalla de Jefes: Enfrenta jefes matemáticos épicos respondiendo multiplicaciones">
+                    <div class="mode-icon" aria-hidden="true">👾</div>
                     <h3>Batalla de Jefes</h3>
                     <p>Derrota a los jefes matemáticos</p>
-                    <div class="mode-badge">Difícil</div>
+                    <div class="mode-badge" aria-hidden="true">Difícil</div>
                 </div>
 
-                <div class="mode-card" id="progressMode">
-                    <div class="mode-icon">📊</div>
-                    <h3>Mi Progreso</h3>
-                    <p>Ver estadísticas y logros</p>
-                    <div class="mode-badge">Info</div>
+                <div class="mode-card" id="progressMode" role="button" tabindex="0" aria-label="Mis Logros: Revisa tus estadísticas y progreso de aprendizaje">
+                    <div class="mode-icon" aria-hidden="true">📊</div>
+                    <h3>Mis Logros</h3>
+                    <p>¡Mira todo lo que has aprendido!</p>
+                    <div class="mode-badge" aria-hidden="true">🏆 Logros</div>
                 </div>
 
-                <div class="mode-card" id="shopMode">
-                    <div class="mode-icon">🛒</div>
-                    <h3>Tienda</h3>
-                    <p>Compra avatares, naves y poder-ups</p>
-                    <div class="mode-badge">¡Nuevo!</div>
+                <div class="mode-card" id="shopMode" role="button" tabindex="0" aria-label="Tienda Mágica: Compra avatares, naves y poderes especiales con tus monedas">
+                    <div class="mode-icon" aria-hidden="true">🛒</div>
+                    <h3>Tienda Mágica</h3>
+                    <p>Compra avatares y poderes</p>
+                    <div class="mode-badge" aria-hidden="true">✨ Nuevo</div>
                 </div>
 
-                <div class="mode-card" id="missionsMode">
-                    <div class="mode-icon">🎯</div>
-                    <h3>Misiones Diarias</h3>
-                    <p>Completa misiones y gana recompensas</p>
-                    <div class="mode-badge">¡Nuevo!</div>
+                <div class="mode-card" id="missionsMode" role="button" tabindex="0" aria-label="Misiones del Día: Completa desafíos diarios especiales para ganar recompensas">
+                    <div class="mode-icon" aria-hidden="true">🎯</div>
+                    <h3>Misiones del Día</h3>
+                    <p>Completa desafíos especiales</p>
+                    <div class="mode-badge" aria-hidden="true">⭐ Diario</div>
+                </div>
+
+                <div class="mode-card" id="grimorioMode" role="button" tabindex="0" aria-label="Libro de Trucos: Revisa tus trucos mnemotécnicos secretos para memorizar tablas">
+                    <div class="mode-icon" aria-hidden="true">📖</div>
+                    <h3>Libro de Trucos</h3>
+                    <p>Revisa tus trucos secretos</p>
+                    <div class="mode-badge hot" aria-hidden="true">🧙‍♂️ Mágico</div>
+                </div>
+
+                <div class="mode-card" id="advancedModesBtn" role="button" tabindex="0" aria-label="Más Juegos: Descubre modos de juego avanzados adicionales">
+                    <div class="mode-icon" aria-hidden="true">🎮</div>
+                    <h3>Más Juegos</h3>
+                    <p>Descubre más modos avanzados</p>
+                    <div class="mode-badge hot" aria-hidden="true">🚀 Avanzado</div>
+                </div>
+
+                <div class="mode-card hero-showcase-card" id="heroShowcaseMode" role="button" tabindex="0" aria-label="Escaparate del Héroe: Muestra tu personaje personalizado y todos tus logros">
+                    <div class="mode-icon" aria-hidden="true">👑</div>
+                    <h3>Escaparate del Héroe</h3>
+                    <p>Muestra tu personaje y logros</p>
+                    <div class="mode-badge hot" aria-hidden="true">Épico</div>
                 </div>
             </div>
 
@@ -228,9 +279,9 @@
     <!-- Pantalla de Modo Práctica Adaptativo -->
     <div id="practiceScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromPractice">← Volver</button>
+            <button class="btn-back" id="backFromPractice" aria-label="Volver al menú principal">← Volver</button>
             <h2>Modo Práctica</h2>
-            <div class="score-display">Puntos: <span id="practiceScore">0</span></div>
+            <div class="score-display" role="status" aria-live="polite" aria-label="Puntuación actual">Puntos: <span id="practiceScore">0</span></div>
         </div>
 
         <!-- Pantalla de Diagnóstico (primera vez) -->
@@ -442,7 +493,7 @@
     <!-- Pantalla de Desafío Rápido -->
     <div id="challengeScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromChallenge">← Volver</button>
+            <button class="btn-back" id="backFromChallenge" aria-label="Volver al menú principal">← Volver</button>
             <h2>Desafío Rápido</h2>
             <div class="timer-display">
                 <span class="timer-icon">⏱️</span>
@@ -490,7 +541,7 @@
     <!-- Pantalla de Aventura Espacial -->
     <div id="adventureScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromAdventure">← Volver</button>
+            <button class="btn-back" id="backFromAdventure" aria-label="Volver al menú principal">← Volver</button>
             <h2>Aventura Espacial</h2>
             <div class="lives-display">
                 <span id="livesContainer">❤️❤️❤️</span>
@@ -511,7 +562,7 @@
     <!-- Pantalla de Carrera Matemática -->
     <div id="raceScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromRace">← Volver</button>
+            <button class="btn-back" id="backFromRace" aria-label="Volver al menú principal">← Volver</button>
             <h2>Carrera Matemática</h2>
             <div class="race-progress-display">
                 <span>Pregunta <span id="raceQuestionNum">1</span>/10</span>
@@ -602,7 +653,7 @@
     <!-- Pantalla de Batalla de Jefes -->
     <div id="bossScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromBoss">← Volver</button>
+            <button class="btn-back" id="backFromBoss" aria-label="Volver al menú principal">← Volver</button>
             <h2>Batalla de Jefes</h2>
             <div class="boss-level-display">
                 <span>Jefe <span id="currentBossNum">1</span>/10</span>
@@ -620,7 +671,7 @@
     <!-- Pantalla de Progreso -->
     <div id="progressScreen" class="screen">
         <div class="game-header">
-            <button class="btn-back" id="backFromProgress">← Volver</button>
+            <button class="btn-back" id="backFromProgress" aria-label="Volver al menú principal">← Volver</button>
             <h2>🌌 La Galaxia del Dominio</h2>
         </div>
 
@@ -802,19 +853,414 @@
         </div>
     </div>
 
+    <!-- Pantalla de Taladro Rápido -->
+    <div id="speedDrillScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromSpeedDrill" aria-label="Volver al menú principal">← Volver</button>
+            <h2>⚡ Taladro Rápido</h2>
+            <div class="drill-progress">
+                <span id="drillQuestionNumber">1</span> / <span id="drillTotalQuestions">20</span>
+            </div>
+        </div>
+
+        <div class="drill-game">
+            <!-- Pregunta Principal -->
+            <div class="drill-question-container">
+                <div class="drill-question" id="drillQuestion">7 × 8 = </div>
+                <div class="drill-answer">
+                    <span class="drill-answer-value" id="drillAnswer">_</span>
+                </div>
+            </div>
+
+            <!-- Feedback -->
+            <div class="drill-feedback hidden" id="drillFeedback">¡Correcto!</div>
+
+            <!-- Teclado Numérico (inyectado dinámicamente) -->
+
+            <!-- Stats en Vivo -->
+            <div class="drill-stats">
+                <div class="drill-stat correct">
+                    <div class="drill-stat-icon">✓</div>
+                    <div class="drill-stat-value" id="drillCorrectCount">0</div>
+                    <div class="drill-stat-label">Correctas</div>
+                </div>
+                <div class="drill-stat streak">
+                    <div class="drill-stat-icon">🔥</div>
+                    <div class="drill-stat-value" id="drillStreak">0</div>
+                    <div class="drill-stat-label">Racha</div>
+                </div>
+                <div class="drill-stat incorrect">
+                    <div class="drill-stat-icon">✗</div>
+                    <div class="drill-stat-value" id="drillIncorrectCount">0</div>
+                    <div class="drill-stat-label">Incorrectas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Defensa de la Nave -->
+    <div id="shipDefenseScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromShipDefense" aria-label="Volver al menú principal">← Volver</button>
+            <h2>🛸 Defensa de la Nave</h2>
+            <div class="defense-stats-header">
+                <div class="stat-pill">
+                    <span class="stat-icon">❤️</span>
+                    <span id="defenseLives">❤️❤️❤️</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">⭐</span>
+                    <span id="defenseScore">0</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">🌊</span>
+                    Oleada <span id="defenseWave">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="defense-game-area">
+            <!-- Instrucción -->
+            <div class="defense-instruction">
+                <h3 id="defenseTable">Tabla del 7</h3>
+                <p class="defense-hint">💡 Haz clic en los múltiplos. Deja pasar los demás.</p>
+            </div>
+
+            <!-- Barra de progreso de oleada -->
+            <div class="defense-wave-progress">
+                <div class="defense-progress-bar">
+                    <div class="defense-progress-fill" id="defenseProgress"></div>
+                </div>
+            </div>
+
+            <!-- Área de juego (asteroides caen aquí) -->
+            <div class="defense-space" id="asteroidsContainer">
+                <!-- Los asteroides se generan dinámicamente -->
+            </div>
+
+            <!-- Nave del jugador (parte inferior) -->
+            <div class="defense-ship-area">
+                <div class="defense-ship" id="defenseShip">🛸</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Cadena de Factores -->
+    <div id="factorChainScreen" class="screen">
+        <div class="game-header">
+            <button class="btn-back" id="backFromFactorChain" aria-label="Volver al menú principal">← Volver</button>
+            <h2>🧩 Cadena de Factores</h2>
+            <div class="factor-stats-header">
+                <div class="stat-pill">
+                    <span class="stat-icon">🎯</span>
+                    Nivel <span id="factorLevel">1</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">⭐</span>
+                    <span id="factorScore">0</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon" id="factorHints">💡💡💡</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="factor-game-area">
+            <!-- Instrucción -->
+            <div class="factor-instruction">
+                <h3>Número Objetivo: <span id="factorTarget">24</span></h3>
+                <p class="factor-hint">🧩 Descompón el número en sus factores. Selecciona un divisor para factorizar.</p>
+            </div>
+
+            <!-- Cadena de factores -->
+            <div class="factor-chain-display">
+                <div class="chain-title">Tu Cadena de Factores:</div>
+                <div class="factor-chain-container" id="factorChainContainer">
+                    <!-- Los factores se generan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Opciones de divisores -->
+            <div class="divisor-selection">
+                <div class="divisor-title">Selecciona un Divisor:</div>
+                <div class="divisor-options" id="divisorOptions">
+                    <!-- Los divisores se generan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Botón de pista -->
+            <div class="factor-actions">
+                <button class="btn-hint" id="factorHintBtn">
+                    💡 Usar Pista
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================ -->
+    <!-- PANTALLAS DE MODO DESCUBRIMIENTO -->
+    <!-- ================================ -->
+
+    <!-- Pantalla 1: Intro - Truco Mnemónico -->
+    <div id="discoveryIntroScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <div class="discovery-header">
+                <h1 class="discovery-title">🧙‍♂️ El Truco Secreto de la Tabla del 2</h1>
+            </div>
+
+            <div class="discovery-intro-content">
+                <div class="discovery-mnemonic-section">
+                    <div class="mnemonic-icon">✨</div>
+                    <p class="discovery-explanation">
+                        <!-- Contenido dinámico de TableDiscoveryEngine -->
+                    </p>
+                </div>
+
+                <div class="discovery-examples">
+                    <h3 class="examples-title">📚 Mira el Patrón:</h3>
+                    <ul class="discovery-examples-list">
+                        <!-- Lista dinámica generada por TableDiscoveryEngine -->
+                    </ul>
+                </div>
+
+                <div class="discovery-pattern">
+                    <!-- Patrón visual completo generado dinámicamente -->
+                </div>
+
+                <div class="discovery-intro-actions">
+                    <button class="btn-discovery-continue" id="discoveryIntroContinue">
+                        ✨ ENTIENDO, ¡PRACTICEMOS!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla 2: Training - 10 Preguntas Secuenciales -->
+    <div id="discoveryTrainingScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <!-- Header con progreso -->
+            <div class="discovery-training-header">
+                <h2 class="training-title">🎯 Desbloquea el Cofre del 2</h2>
+                <div class="discovery-progress">
+                    <div class="discovery-progress-bar">
+                        <!-- Estrellas generadas dinámicamente: ⭐⭐⭐⚪⚪⚪⚪⚪⚪⚪ -->
+                    </div>
+                    <div class="discovery-progress-text">0/10</div>
+                </div>
+            </div>
+
+            <!-- Mateo mini en esquina -->
+            <div class="discovery-mateo-mini">
+                🧙‍♂️ ¡Tú puedes!
+            </div>
+
+            <!-- Área de pregunta -->
+            <div class="discovery-question-area">
+                <div class="discovery-question">
+                    <!-- Contenido dinámico: 2 × 4 = ? -->
+                </div>
+
+                <!-- Opciones de respuesta -->
+                <div class="discovery-options">
+                    <!-- Botones generados dinámicamente -->
+                </div>
+
+                <!-- Área de ayuda -->
+                <div class="discovery-help-container" style="display: none;">
+                    <button class="discovery-help-btn">💡 VER AYUDA</button>
+                    <p class="discovery-help-text" style="display: none;">
+                        <!-- Texto de ayuda dinámico: 2 + 2 + 2 + 2 = ? -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla 3: Reward - Recompensas -->
+    <div id="discoveryRewardScreen" class="screen discovery-screen">
+        <div class="discovery-container">
+            <div class="discovery-reward-content">
+                <!-- Animación de cofre (CSS animation) -->
+                <div class="reward-chest-animation">
+                    <div class="reward-chest">🎁</div>
+                </div>
+
+                <h1 class="reward-title">🎊 ¡MISIÓN COMPLETADA! 🎊</h1>
+                <h2 class="reward-subtitle">🏆 TABLA DEL 2 DESBLOQUEADA</h2>
+
+                <!-- Estadísticas de la sesión -->
+                <div class="reward-stats">
+                    <!-- Contenido dinámico:
+                    <div class="stat-item">
+                        <span class="stat-label">Precisión:</span>
+                        <span class="stat-value">90%</span>
+                    </div>
+                    -->
+                </div>
+
+                <!-- Recompensas obtenidas -->
+                <div class="reward-items-section">
+                    <h3 class="reward-items-title">Has ganado:</h3>
+                    <div class="reward-items">
+                        <!-- Contenido dinámico:
+                        <div class="reward-item">
+                            <span class="reward-icon">🥈</span>
+                            <span class="reward-text">Medalla "Maestro del 2"</span>
+                        </div>
+                        -->
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="reward-actions">
+                    <button class="btn-reward-practice reward-practice-btn">
+                        🎯 PRACTICAR MÁS
+                    </button>
+                    <button class="btn-reward-map reward-map-btn">
+                        🏰 VOLVER AL MAPA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla: Grimorio de Trucos Secretos -->
+    <div id="grimorioScreen" class="screen">
+        <div class="grimorio-container">
+            <!-- Header -->
+            <div class="grimorio-header">
+                <button class="btn-back" id="backFromGrimorio" aria-label="Volver al menú principal">← Volver</button>
+                <h1 class="grimorio-title">📖 Grimorio de Trucos Secretos</h1>
+                <div class="grimorio-progress">
+                    <span id="grimorioCollected">0</span> / <span id="grimorioTotal">9</span>
+                </div>
+            </div>
+
+            <!-- Libro abierto -->
+            <div class="grimorio-book">
+                <!-- Página izquierda: Lista de trucos -->
+                <div class="grimorio-page grimorio-page-left">
+                    <h2 class="page-title">📚 Tablas Descubiertas</h2>
+                    <div class="tricks-list" id="tricksList">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Página derecha: Detalle del truco seleccionado -->
+                <div class="grimorio-page grimorio-page-right">
+                    <div id="trickDetailContent">
+                        <div class="trick-placeholder">
+                            <div class="placeholder-icon">✨</div>
+                            <p>Selecciona una tabla de la izquierda para ver su truco secreto</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay trucos -->
+            <div class="grimorio-empty" id="grimorioEmpty" style="display: none;">
+                <div class="empty-icon">📭</div>
+                <h2>¡Tu grimorio está vacío!</h2>
+                <p>Descubre tus primeras tablas para coleccionar trucos mágicos</p>
+                <button class="btn-primary" id="startLearningFromGrimorio">
+                    🎓 COMENZAR A APRENDER
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla: Mapa del Castillo -->
+    <div id="castleMapScreen" class="screen">
+        <div class="castle-container">
+            <!-- Header -->
+            <div class="castle-header">
+                <button class="btn-back" id="backFromCastle" aria-label="Volver al menú principal">← Volver</button>
+                <h1 class="castle-title">🏰 Tu Castillo de las Tablas</h1>
+                <div class="castle-progress">
+                    <span id="castleCompleted">0</span> / 9 pisos conquistados
+                </div>
+            </div>
+
+            <!-- Castillo vertical con 9 pisos -->
+            <div class="castle-tower" id="castleTower">
+                <!-- Pisos generados dinámicamente de arriba (10) hacia abajo (2) -->
+                <!-- Piso 9: Tabla del 10 (arriba) -->
+                <!-- ... -->
+                <!-- Piso 1: Tabla del 2 (abajo) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla: Modos Avanzados -->
+    <div id="advancedModesScreen" class="screen">
+        <div class="advanced-modes-container">
+            <!-- Header -->
+            <div class="advanced-modes-header">
+                <button class="btn-back" id="backFromAdvancedModes" aria-label="Volver al menú principal">← Volver</button>
+                <h1 class="advanced-modes-title">🎮 Modos Avanzados</h1>
+                <p class="advanced-modes-subtitle">Desafíos especiales para expertos</p>
+            </div>
+
+            <!-- Grid de modos avanzados -->
+            <div class="advanced-modes-grid">
+                <!-- Los 6 modos se clonarán aquí desde el DOM principal -->
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de Partículas -->
     <canvas id="particlesCanvas"></canvas>
 
     <!-- Mateo el Mago - Mascota -->
-    <div id="mateoContainer" class="mateo-container" style="display: none;">
+    <div id="mateoContainer" class="mateo-container" role="complementary" aria-label="Asistente Mateo el Mago" style="display: none;">
         <img id="mateoImage" src="assets/characters/mateo-happy.svg" alt="Mateo el Mago" class="mateo-character">
-        <div id="mateoSpeech" class="mateo-speech"></div>
+        <div id="mateoSpeech" class="mateo-speech" role="status" aria-live="polite" aria-atomic="true"></div>
     </div>
 
     <!-- Botón de toggle de sonido -->
-    <button id="soundToggle" class="sound-toggle" title="Activar/Desactivar Sonidos">
-        <span class="sound-icon">🔊</span>
+    <button id="soundToggle" class="sound-toggle" aria-label="Activar o desactivar sonidos del juego">
+        <span class="sound-icon" aria-hidden="true">🔊</span>
     </button>
+
+    <!-- Modal de Decisión: Aprender vs Practicar -->
+    <div id="learnOrPracticeModal" class="modal-overlay learn-practice-modal" style="display: none;">
+        <div class="modal-content learn-practice-content">
+            <!-- Mateo animado -->
+            <div class="modal-mateo">
+                <div class="mateo-avatar-large">🧙‍♂️</div>
+                <div class="mateo-speech-bubble">
+                    <p id="learnPracticeModalMessage">¡Hola! Veo que quieres trabajar con la <strong>Tabla del <span id="modalTableNumber">2</span></strong>.</p>
+                    <p>¿Qué te gustaría hacer?</p>
+                </div>
+            </div>
+
+            <!-- Opciones grandes -->
+            <div class="learn-practice-options">
+                <!-- Opción 1: Aprender (Descubrir) -->
+                <button class="learn-practice-btn learn-btn" id="btnLearnTable">
+                    <div class="btn-icon">🎓</div>
+                    <div class="btn-content">
+                        <h3>¡APRENDER!</h3>
+                        <p>Descubre el truco secreto y practica paso a paso</p>
+                    </div>
+                    <div class="btn-badge">🌟 NUEVO</div>
+                </button>
+
+                <!-- Opción 2: Practicar -->
+                <button class="learn-practice-btn practice-btn" id="btnPracticeTable">
+                    <div class="btn-icon">⚡</div>
+                    <div class="btn-content">
+                        <h3>¡PRACTICAR!</h3>
+                        <p>Responde preguntas y mejora tu velocidad</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Botón cerrar -->
+            <button class="modal-close-btn" id="closeLearnPracticeModal">✕</button>
+        </div>
+    </div>
 
     <!-- Modal de Trucos Mnemotécnicos -->
     <div id="trickModal" class="modal-overlay" style="display: none;">
@@ -850,6 +1296,67 @@
         </div>
     </div>
 
+    <!-- ================================ -->
+    <!-- NUEVA ARQUITECTURA MODULAR      -->
+    <!-- ================================ -->
+
+    <!-- Error Handling (Must load first) -->
+    <script src="src/error/Logger.js"></script>
+    <script src="src/error/ErrorBoundary.js"></script>
+    <script src="src/error/GlobalErrorHandler.js"></script>
+    <script src="src/error/RecoveryManager.js"></script>
+    <script src="src/error/ErrorReporter.js"></script>
+
+    <!-- Core Modules (Foundation) -->
+    <script src="src/core/StorageManager.js"></script>
+    <script src="src/core/EventBus.js"></script>
+    <script src="src/core/GameStore.js"></script>
+
+    <!-- Services (Business Logic) -->
+    <script src="src/services/PlayerService.js"></script>
+    <script src="src/services/AdaptiveService.js"></script>
+    <script src="src/services/QuestionService.js"></script>
+    <script src="src/services/AchievementService.js"></script>
+
+    <!-- Controllers (Orchestration) -->
+    <script src="src/controllers/GameController.js"></script>
+    <script src="src/controllers/ScreenController.js"></script>
+    <script src="src/controllers/ModeController.js"></script>
+
+    <!-- Performance Modules (Optimization) -->
+    <script src="src/performance/PerformanceMonitor.js"></script>
+    <script src="src/performance/ModuleLoader.js"></script>
+    <script src="src/performance/ResourceHints.js"></script>
+    <script src="src/performance/AssetOptimizer.js"></script>
+    <script src="src/performance/ServiceWorkerManager.js"></script>
+
+    <!-- Accessibility Modules (Inclusive Design) -->
+    <script src="src/accessibility/AccessibilityManager.js"></script>
+    <script src="src/accessibility/AriaManager.js"></script>
+    <script src="src/accessibility/KeyboardNavigationManager.js"></script>
+    <script src="src/accessibility/ScreenReaderManager.js"></script>
+    <script src="src/accessibility/VisualAccessibilityManager.js"></script>
+    <script src="src/accessibility/AudioAccessibilityManager.js"></script>
+
+    <!-- UX Research Modules (Data-Driven Optimization) -->
+    <script src="src/ux/UserResearchManager.js"></script>
+    <script src="src/ux/AnalyticsManager.js"></script>
+    <script src="src/ux/ABTestingManager.js"></script>
+    <script src="src/ux/FeedbackManager.js"></script>
+
+    <!-- Game Modes (Discovery, Practice, etc) -->
+    <script src="src/modes/TableDiscoveryEngine.js"></script>
+
+    <!-- Systems (Medals, etc) -->
+    <script src="src/systems/MedalsSystem.js"></script>
+
+    <!-- Bootstrap (Initialization) -->
+    <script src="src/Bootstrap.js"></script>
+
+    <!-- ================================ -->
+    <!-- SISTEMAS EXISTENTES              -->
+    <!-- ================================ -->
+
     <script src="sounds.js"></script>
     <script src="mnemonicTricks.js"></script>
     <script src="mateo.js"></script>
@@ -859,6 +1366,12 @@
     <script src="fireModeSystem.js"></script>
     <script src="shopSystem.js"></script>
     <script src="dailyMissionsSystem.js"></script>
+    <script src="numericKeyboard.js"></script>
+    <script src="speedDrillEngine.js"></script>
+    <script src="shipDefenseEngine.js"></script>
+    <script src="factorChainEngine.js"></script>
+    <script src="rewardFlowSystem.js"></script>
+    <script src="heroShowcaseSystem.js"></script>
     <script src="spaceGameEngine.js"></script>
     <script src="bossGameEngine.js"></script>
     <script src="practiceSystemEngine.js"></script>
