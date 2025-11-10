@@ -240,7 +240,18 @@ class MultiplicationGame {
     }
 
     updateHeader() {
-        document.getElementById('headerPlayerName').textContent = this.player.name;
+        const headerPlayerName = document.getElementById('headerPlayerName');
+        const playerAvatar = document.getElementById('playerAvatar');
+        const playerLevel = document.getElementById('playerLevel');
+        const totalStars = document.getElementById('totalStars');
+        const totalMedals = document.getElementById('totalMedals');
+        const streak = document.getElementById('streak');
+        const xpBar = document.getElementById('xpBar');
+
+        // Si los elementos no existen (estamos en welcomeScreen), salir
+        if (!headerPlayerName || !playerAvatar) return;
+
+        headerPlayerName.textContent = this.player.name;
 
         // Sincronizar avatar con shopSystem
         if (window.shopSystem) {
@@ -269,7 +280,7 @@ class MultiplicationGame {
             masteryBar.style.width = globalMastery + '%';
         }
 
-        // Actualizar equipamiento
+        // Actualizar equipamiento (solo si los elementos existen)
         this.updateEquipmentDisplay();
     }
 
