@@ -5,9 +5,21 @@
 
 class BossGameEngine {
     constructor(containerId, onBossDefeated, onPlayerDefeated) {
-        this.container = document.getElementById(containerId);
-        this.onBossDefeated = onBossDefeated;
-        this.onPlayerDefeated = onPlayerDefeated;
+        try {
+            this.container = document.getElementById(containerId);
+            if (!this.container) {
+                console.error('❌ Container no encontrado:', containerId);
+                this.hasError = true;
+                return;
+            }
+
+            this.hasError = false;
+            this.onBossDefeated = onBossDefeated;
+            this.onPlayerDefeated = onPlayerDefeated;
+        } catch (error) {
+            console.error('❌ Error al inicializar BossGameEngine:', error);
+            this.hasError = true;
+        }
 
         // Estado de batalla
         this.currentBoss = null;
@@ -81,6 +93,9 @@ class BossGameEngine {
                 <div class="entity-avatar player-avatar" id="playerAvatar">
                     👦
                 </div>
+                <div class="entity-weapon" id="playerWeapon">
+                    🗡️
+                </div>
 
                 <!-- Súper-ataque -->
                 <div class="super-attack-container" id="superAttackContainer">
@@ -145,6 +160,7 @@ class BossGameEngine {
             bossPhase: document.getElementById('bossPhase'),
             playerEntity: document.getElementById('playerEntity'),
             playerAvatar: document.getElementById('playerAvatar'),
+            playerWeapon: document.getElementById('playerWeapon'),
             playerName: document.getElementById('playerName'),
             playerHealthFill: document.getElementById('playerHealthFill'),
             playerHealthText: document.getElementById('playerHealthText'),
@@ -189,27 +205,41 @@ class BossGameEngine {
     // =============================
 
     startBattle(boss, player) {
-        this.currentBoss = boss;
-        this.player = player;
-        this.bossHealth = boss.health;
-        this.maxBossHealth = boss.health;
-        this.playerHealth = 100;
-        this.correctStreak = 0;
-        this.superAttackCharge = 0;
-        this.superAttackReady = false;
+        try {
+            if (this.hasError) {
+                console.error('❌ No se puede iniciar batalla: engine tiene error');
+                return;
+            }
 
-        // UI
-        this.refs.bossAvatar.textContent = boss.avatar;
-        this.refs.bossName.textContent = boss.name;
-        this.refs.playerAvatar.textContent = player.avatar;
-        this.refs.playerName.textContent = player.name;
+            this.currentBoss = boss;
+            this.player = player;
+            this.bossHealth = boss.health;
+            this.maxBossHealth = boss.health;
+            this.playerHealth = 100;
+            this.correctStreak = 0;
+            this.superAttackCharge = 0;
+            this.superAttackReady = false;
 
-        // Log
-        this.addLog(`¡${boss.name} apareció!`, 'boss');
+            // UI
+            this.refs.bossAvatar.textContent = boss.avatar;
+            this.refs.bossName.textContent = boss.name;
+            this.refs.playerAvatar.textContent = player.avatar;
+            this.refs.playerName.textContent = player.name;
 
-        // Primera pregunta (turno del jefe = defensa del jugador)
-        this.turn = 'boss';
-        this.showQuestion();
+            // Arma equipada
+            const equippedWeapon = window.shopSystem ? window.shopSystem.getEquipped('weapons') : '🗡️';
+            this.refs.playerWeapon.textContent = equippedWeapon;
+
+            // Log
+            this.addLog(`¡${boss.name} apareció!`, 'boss');
+
+            // Primera pregunta (turno del jefe = defensa del jugador)
+            this.turn = 'boss';
+            this.showQuestion();
+        } catch (error) {
+            console.error('❌ Error en startBattle():', error);
+            this.handleError(error);
+        }
     }
 
     // =============================
@@ -824,6 +854,37 @@ class BossGameEngine {
         this.superAttackCharge = 0;
         this.superAttackReady = false;
         this.isProcessing = false;
+    }
+
+    // =============================
+    // ERROR HANDLING
+    // =============================
+
+    handleError(error) {
+        console.error('🔴 Error crítico en BossGameEngine:', error);
+        this.hasError = true;
+        this.isProcessing = false;
+
+        // Mostrar mensaje de error al usuario
+        try {
+            if (this.container) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: #FF0000; padding: 30px; border-radius: 10px; text-align: center; z-index: 1000;';
+                errorDiv.innerHTML = `
+                    <h2 style="color: #FF0000; margin-bottom: 15px;">❌ Error en la Batalla</h2>
+                    <p style="color: #FFFFFF;">Hubo un problema técnico.</p>
+                    <p style="color: #FFFFFF;">Por favor vuelve al menú principal.</p>
+                `;
+                this.container.appendChild(errorDiv);
+            }
+        } catch (e) {
+            console.error('❌ No se pudo mostrar mensaje de error:', e);
+        }
+
+        // Llamar callback de derrota para salir limpiamente
+        if (this.onPlayerDefeated) {
+            setTimeout(() => this.onPlayerDefeated(), 2000);
+        }
     }
 }
 

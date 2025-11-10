@@ -2,339 +2,273 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
----
-
 ## Project Overview
 
-**Multiplicar Mágico** is an educational Progressive Web App (PWA) for teaching multiplication tables (2-10) to children aged 7-12 through gamification. The app features 8 game modes, adaptive learning algorithms, a virtual economy with shop, achievements, and progress visualization.
+**Multiplicar Mágico** is an educational Progressive Web App (PWA) designed to teach multiplication tables to children through gamification and adaptive learning. The app is built with vanilla JavaScript and runs entirely client-side with no backend dependencies.
 
-## Commands
+## Development Commands
 
-### Development
 ```bash
-npm start              # Start local server on port 3000
-npm test               # Run tests in watch mode
-npm run test:run       # Run tests once
-npm run test:coverage  # Generate coverage report (target: >80%)
-npm run test:ui        # Open Vitest UI
+# Start development server (required - don't open index.html directly due to CORS)
+npm start                    # Starts server at http://localhost:8080
+
+# Testing
+npm test                     # Run all tests once
+npm run test:run             # Alternative: run tests once
+npm run test:ui              # Run tests in watch mode with UI
+npm run test:coverage        # Generate coverage report
+
+# Server alternatives (if npm start doesn't work)
+python -m http.server 8080   # Python 3
 ```
 
-### Running the App
-- Open `index.html` directly in browser, OR
-- Run `npm start` and visit http://localhost:3000
-- No build step required - vanilla JavaScript
+**Important**: Never open `index.html` directly in browser - always use a local server to avoid CORS errors with assets, manifest, and other resources.
 
-## Architecture
+## Architecture Overview
 
-### Recent Refactoring (Nov 2025)
+### Module Loading System
 
-The codebase was recently refactored from a monolithic 3,765-line `app.js` into a professional modular architecture. **Key insight**: The project is in a **transitional state** - new modular components exist alongside the legacy monolithic system.
-
-### Directory Structure
+The app uses a **modular script-based architecture** where independent engine/system modules are loaded via `<script>` tags in `index.html` before the main `app.js`:
 
 ```
-abckidslearning/
-├── core/                    # NEW: Modern modular components
-│   ├── EventBus.js         # Observer pattern for decoupled communication
-│   ├── QuestionGenerator.js # Factory for creating questions with smart options
-│   └── StateManager.js     # Singleton for centralized state management
-│
-├── systems/                 # NEW: Extracted systems from app.js
-│   ├── AdaptiveSystem.js   # Learning algorithm (spaced repetition, mastery tracking)
-│   └── TutorialSystem.js   # Interactive onboarding with spotlight effects
-│
-├── services/               # NEW: Infrastructure services
-│   └── StorageService.js   # localStorage abstraction with versioning/TTL
-│
-├── tests/                  # Vitest unit tests
-│   ├── EventBus.test.js    # 50+ tests
-│   ├── QuestionGenerator.test.js # 80+ tests
-│   └── StateManager.test.js # 50+ tests
-│
-├── app.js                  # LEGACY: Main game class (still ~3.7K lines)
-│                           # Contains MultiplicationGame, some UI logic
-│
-├── *GameEngine.js files:   # Game mode implementations
-│   ├── spaceGameEngine.js     # Space shooter with Canvas
-│   ├── bossGameEngine.js      # Turn-based RPG battles
-│   ├── galaxySystemEngine.js  # 3D solar system progress visualization
-│   └── practiceSystemEngine.js # Diagnostic + adaptive practice mode
-│
-├── *System.js files:       # Feature systems
-│   ├── coinSystem.js          # Economy/currency management
-│   ├── shopSystem.js          # Item purchasing (avatars, ships, weapons)
-│   ├── dailyMissionsSystem.js # Quest system
-│   ├── fireModeSystem.js      # Combo multiplier mode
-│   └── feedbackSystem.js      # Visual feedback animations
-│
-├── mateo.js                # Mascot assistant character
-├── mnemonicTricks.js       # Memory tricks for each multiplication table
-├── pauseMenu.js            # In-game pause overlay
-├── sounds.js               # Audio system
-└── server.js               # Simple static file server
+sounds.js → mnemonicTricks.js → mateo.js → pauseMenu.js → coinSystem.js
+→ feedbackSystem.js → fireModeSystem.js → shopSystem.js → dailyMissionsSystem.js
+→ spaceGameEngine.js → bossGameEngine.js → practiceSystemEngine.js
+→ galaxySystemEngine.js → app.js
 ```
 
-### Key Architectural Patterns
+Each module exposes global classes that `MultiplicationGame` (in `app.js`) instantiates and orchestrates.
 
-1. **Observer Pattern (EventBus)**
-   - Used for decoupling components
-   - Events like `'answer:correct'`, `'level:up'`, `'achievement:unlocked'`
-   - New modules use this; legacy code still uses `window.*` globals
+### Core Systems
 
-2. **Factory Pattern (QuestionGenerator)**
-   - Centralizes question generation logic
-   - Generates realistic incorrect options (8 different strategies)
-   - Supports difficulty levels and adaptive strategies
-   - **Not yet integrated** into game engines (still duplicated code)
+**Main Controller** (`app.js`):
+- `MultiplicationGame` - Central game controller, manages all systems
+- `AdaptiveSystem` - Analyzes player performance and adjusts difficulty
+- `TutorialSystem` - First-time user onboarding
 
-3. **Singleton Pattern (StateManager)**
-   - Single source of truth for app state
-   - Path-based get/set: `state.set('player.level', 5)`
-   - Auto-persists to localStorage
-   - **Not yet integrated** with legacy code (still uses `this.player`, `localStorage` directly)
+**Game Engines** (separate files):
+- `SpaceGameEngine` - Space adventure mode with Canvas-based rendering
+- `BossGameEngine` - Boss battle mode with epic fights
+- `PracticeSystemEngine` - Adaptive practice mode
+- `GalaxySystemEngine` - Galaxy exploration mode with planets
+- `FireModeSystem` - Fast-paced fire mode
 
-4. **Module Pattern**
-   - Each system is an ES6 class with clear responsibilities
-   - Currently loaded via `<script>` tags (no bundler)
+**Support Systems** (separate files):
+- `SoundSystem` (`sounds.js`) - Audio management with user preferences
+- `MateoMascot` (`mateo.js`) - Interactive mascot with expressions and speech
+- `MnemonicSystem` (`mnemonicTricks.js`) - Memory tricks for multiplication
+- `CoinSystem` - Virtual economy and rewards
+- `ShopSystem` - In-game store for customization items
+- `DailyMissionsSystem` - Daily challenges
+- `FeedbackSystem` - Visual feedback for user actions
+- `PauseMenu` - Global pause functionality
 
-## Integration Status
+### Data Architecture
 
-### ✅ Completed
-- Core modules created and tested (223 tests passing)
-- Professional patterns implemented
-- Test infrastructure with Vitest + happy-dom
+**All data is stored in browser LocalStorage**:
+- Player profile (name, avatar, XP, level, coins)
+- Statistics (questions answered, accuracy, best streak)
+- Table mastery progress (0-100% per table)
+- Achievements unlocked
+- Purchased items from shop
+- Settings (sound enabled, tutorial completed)
 
-### ⚠️ In Progress
-- Legacy `app.js` still uses old patterns:
-  - Direct `localStorage` calls instead of `StorageService`
-  - `window.*` globals instead of `EventBus`
-  - Inline question generation instead of `QuestionGenerator`
-- Game engines have duplicated question generation logic
-
-### 🔜 Next Steps (per REFACTORING_COMPLETED.md)
-1. Migrate `app.js` to use EventBus for communication
-2. Replace game engine question generation with `QuestionGenerator`
-3. Migrate state management to `StateManager`
-4. Implement dependency injection instead of `window.*` globals
-
-## Key Systems
-
-### Adaptive Learning System
-Located in `systems/AdaptiveSystem.js` and parts of `app.js`:
-- Tracks mastery per table (0-100%)
-- Spaced repetition algorithm
-- Analyzes error patterns and response times
-- Suggests tables needing practice
-- `recordAnswer(table, isCorrect, responseTime)` - main method
-- `getSuggestedTables(count)` - returns prioritized tables
-
-### Question Generation
-**Legacy**: Each game engine has its own generation logic
-**New**: `core/QuestionGenerator.js` provides:
-```javascript
-const gen = new QuestionGenerator({
-  optionsCount: 4,
-  difficultyLevel: 'medium' // easy/medium/hard
-});
-
-const question = gen.generate({
-  tables: [7, 8, 9],
-  multiplierMin: 2,
-  multiplierMax: 10
-});
-// Returns: { id, table, multiplier, answer, options, difficulty }
-```
-
-### Storage Architecture
-**Legacy**: Direct `localStorage.setItem('multiplicationGamePlayer', JSON.stringify(player))`
-**New**: `services/StorageService.js` with namespacing, versioning, TTL
+**Key**: `playerData` contains the entire player state as JSON.
 
 ### State Management
-**Legacy**: State scattered across `this.player`, `this.gameState`, direct localStorage
-**New**: Centralized `StateManager.getInstance()` with reactive subscriptions
 
-## Game Modes
+State is managed through the `MultiplicationGame.player` object, which is:
+1. Loaded from `localStorage` on app initialization
+2. Updated in-memory during gameplay
+3. Persisted via `savePlayer()` after significant actions
+4. Accessed by all subsystems through the main game instance
 
-Each mode has its own engine file:
+## Code Patterns and Conventions
 
-1. **Practice Mode** (`practiceSystemEngine.js`)
-   - 15-question diagnostic
-   - Visual mastery map (circular chart)
-   - Table selection with recommendations
-   - Zero time pressure
+### Commit Message Style
 
-2. **Quick Challenge** (in `app.js`)
-   - 60-second timer
-   - Combo multipliers (x2, x3, x4)
-   - Fire Mode at 5+ streak
+Uses emoji-based semantic commits following this pattern:
+- `✨ NUEVA SECCIÓN:` - New feature/section
+- `🐛 FIX:` - Bug fix
+- `🐛 FIX CRÍTICO:` - Critical bug fix
+- `🎨 MEJORA:` - Improvement/enhancement
+- `🌌 FASE X COMPLETADA:` - Phase completion
+- `📚 FASE X COMPLETADA:` - Documentation phase completion
 
-3. **Space Adventure** (`spaceGameEngine.js`)
-   - Canvas-based space shooter
-   - Mouse/keyboard controls
-   - Power-ups (shield, lives, points, boost)
-   - Progressive difficulty
+### Testing Practices
 
-4. **Math Race** (in `app.js`)
-   - 4 runners (player + 3 AI)
-   - Speed-based progression
-   - 5 laps to win
+- Framework: **Vitest** with **happy-dom** environment
+- Location: `tests/` directory
+- Coverage: 135 tests across 3 files
+- Setup: `tests/setup.js` provides global mocks (localStorage, Audio, SpeechSynthesis, requestAnimationFrame)
+- Run tests before commits for significant changes
+- Write test first when fixing bugs to prevent regression
 
-5. **Boss Battle** (`bossGameEngine.js`)
-   - Turn-based RPG combat
-   - 9 bosses (one per table 2-10)
-   - HP scales with player mastery
-   - Super-attack charging system
+### Module Pattern
 
-6. **Galaxy Progress** (`galaxySystemEngine.js`)
-   - 3D solar system visualization
-   - Planets represent tables
-   - Colors indicate mastery level
-   - Clickable for detailed stats
-
-7. **Daily Missions** (`dailyMissionsSystem.js`)
-8. **Shop/Inventory** (`shopSystem.js`)
-
-## Testing
-
-### Framework
-- **Vitest** with `happy-dom` environment
-- Target coverage: >80% (see `vitest.config.js`)
-
-### Current Coverage
-- Core modules: >90% coverage, 223/231 tests passing
-- Legacy code: Minimal/no coverage
-- 8 tests fail in old test files that test pre-refactoring code
-
-### Running Tests
-```bash
-npm test                # Watch mode
-npm run test:coverage   # Generate coverage HTML report
-npm run test:ui         # Visual UI for debugging
-```
-
-### Test Structure
-- Tests use global `describe`, `it`, `expect` (via vitest globals)
-- Setup file: `tests/setup.js`
-- Mock localStorage/DOM as needed with happy-dom
-
-## Important Conventions
-
-### State Persistence
-- **Key**: `'multiplicationGamePlayer'` in localStorage
-- Auto-saves after: answers, purchases, achievements, screen changes
-- Structure: `{ player, tableMastery, inventory, equipped, achievements, settings }`
-
-### Player Object
+Each system/engine follows this pattern:
 ```javascript
-{
-  name: string,
-  avatar: string (emoji),
-  level: number,
-  xp: number,
-  stars: number,           // Currency
-  trophies: { gold, silver, bronze },
-  streak: number,          // Consecutive days
-  lastPlayedDate: string,
-  equipped: { avatar, ship, car, weapon }
+class SystemName {
+    constructor(dependencies) {
+        // Initialize state
+        this.init();
+    }
+
+    init() {
+        // Setup event listeners, DOM elements, etc.
+    }
+
+    // Public methods
 }
+
+// Global instantiation (if standalone) or instantiated by MultiplicationGame
 ```
 
-### Table Mastery Tracking
-```javascript
-tableMastery[table] = {
-  mastery: 0.0-1.0,      // Percentage as decimal
-  attempts: number,
-  correct: number,
-  incorrect: number,
-  avgResponseTime: number,
-  lastPracticed: timestamp
-}
-```
+### DOM Manipulation
 
-### Event Naming
-EventBus events use namespaced format:
-- `'answer:correct'`, `'answer:incorrect'`
-- `'level:up'`, `'level:progress'`
-- `'achievement:unlocked'`
-- `'coin:earned'`, `'item:purchased'`
+- Uses vanilla JavaScript (no framework)
+- Direct DOM queries via `getElementById`, `querySelector`
+- Event delegation for dynamic elements
+- Manual show/hide of screens via `classList.add/remove('active')`
 
-### DOM IDs
-Key screens use these container IDs:
-- `#welcomeScreen` - Initial name/avatar selection
-- `#mainScreen` - Main menu with 8 mode cards
-- `#playScreen` - Active gameplay
-- `#resultsScreen` - Post-game stats
-- `#shopScreen` - Item purchasing
-- `#galaxyScreen` - Progress visualization
+## Working with Game Modes
 
-## Common Tasks
+Each game mode is self-contained in its engine file:
 
-### Adding a New Game Mode
-1. Create `*GameEngine.js` file with class
-2. Add mode card to `index.html` main screen grid
-3. Add click handler in `app.js` `setupEventListeners()`
-4. Implement: `start()`, `showQuestion()`, `checkAnswer()`, `endGame()`
-5. Use `QuestionGenerator` from core (once integrated)
-6. Emit events via `EventBus` for scoring/achievements
+1. **Practice Mode** (`practiceSystemEngine.js`): Table selection → adaptive questions → progress tracking
+2. **Space Adventure** (`spaceGameEngine.js`): Canvas-based rendering, planet progression, lives system
+3. **Boss Battles** (`bossGameEngine.js`): Turn-based combat, boss HP, special attacks
+4. **Galaxy Mode** (`galaxySystemEngine.js`): Planet visualization, click handlers for navigation
+5. **Fire Mode** (`fireModeSystem.js`): Speed-based challenges
 
-### Modifying the Adaptive Algorithm
-- Primary logic in `systems/AdaptiveSystem.js`
-- Backup logic still in `app.js` `AdaptiveSystem` class
-- Key method: `recordAnswer(table, isCorrect, responseTime)`
-- Mastery formula: `(correct / (correct + incorrect)) * recencyFactor`
-- Spaced repetition: prioritizes tables by (low mastery + time since practice)
+When adding/modifying a game mode:
+- The engine handles its own UI, rendering, and game logic
+- Communicates back to `MultiplicationGame` for scoring, XP, coins
+- Uses `AdaptiveSystem` for question generation
+- Triggers `MateoMascot` for feedback
+- Plays sounds via `window.soundSystem`
+
+## Common Development Tasks
+
+### Adding a New Achievement
+
+1. Add achievement definition to `app.js` in the achievements array
+2. Add check logic in relevant method (e.g., `checkAnswer()`, `endGame()`)
+3. Call `unlockAchievement(achievementId)` when condition met
+4. Test with `localStorage.clear()` to reset progress
+
+### Modifying Adaptive Learning
+
+The `AdaptiveSystem` class uses:
+- **Performance tracking**: Accuracy per table, recent mistakes
+- **Spaced repetition**: Prioritizes weak tables
+- **Difficulty adjustment**: Changes question complexity based on mastery
+
+Edit `AdaptiveSystem.getNextQuestion()` to change selection algorithm.
 
 ### Adding Shop Items
-1. Add item data to `shopSystem.js` category arrays
-2. Update `renderShop()` to display new category if needed
-3. Add purchase logic in `purchaseItem(item)`
-4. Handle equipment in `equipItem(item)` if applicable
 
-### Debugging State Issues
-- Check browser DevTools → Application → Local Storage → `multiplicationGamePlayer`
-- Use `StateManager.getInstance().export()` for new modules
-- Player data loads in `MultiplicationGame` constructor via `loadPlayer()`
-- Call `savePlayer()` to persist changes
+1. Add item to `ShopSystem.items` array with properties: `id`, `name`, `description`, `price`, `icon`, `type`
+2. Item types: `avatar`, `background`, `power-up`, etc.
+3. Purchase logic automatically handles coins and `player.purchasedItems`
+4. Add visual representation in the respective UI section
 
-## Progressive Web App (PWA)
+### Debugging Tutorial Issues
 
-- `manifest.json` defines app metadata
-- Installable on mobile/desktop
-- Works offline (all assets are local)
-- No service worker currently (could be added)
+The `TutorialSystem` has extensive console logging:
+- Clear localStorage: `localStorage.clear()` in browser console
+- Reload page to trigger tutorial
+- Check F12 console for "🚀 Tutorial:" logs
+- Verify `pointer-events` restoration on `mainScreen` if clicks don't work
+
+## File Organization
+
+```
+/
+├── index.html              # Main HTML, loads all modules in order
+├── app.js                  # Main game controller (3300+ lines)
+├── styles.css              # All styles, animations, responsive design
+├── server.js               # Development HTTP server
+├── vitest.config.mjs       # Test configuration
+├── package.json            # Scripts and dependencies
+│
+├── Game Engines
+│   ├── spaceGameEngine.js
+│   ├── bossGameEngine.js
+│   ├── practiceSystemEngine.js
+│   ├── galaxySystemEngine.js
+│   └── fireModeSystem.js
+│
+├── Core Systems
+│   ├── mateo.js
+│   ├── sounds.js
+│   ├── mnemonicTricks.js
+│   ├── coinSystem.js
+│   ├── shopSystem.js
+│   ├── dailyMissionsSystem.js
+│   ├── feedbackSystem.js
+│   └── pauseMenu.js
+│
+├── tests/
+│   ├── setup.js            # Global test setup and mocks
+│   ├── mateo.test.js       # Mateo mascot tests (42 tests)
+│   ├── tutorial.test.js    # Tutorial system tests (44 tests)
+│   └── game-logic.test.js  # Core game logic tests (49 tests)
+│
+├── assets/
+│   ├── achievements/
+│   ├── backgrounds/
+│   └── characters/
+│
+└── Documentation
+    ├── README.md               # User-facing documentation
+    ├── TESTING.md              # Complete testing guide
+    ├── INSTRUCCIONES.md        # Spanish setup instructions
+    └── AUDITORIA_*.md          # Design audits and analysis
+```
 
 ## Browser Compatibility
 
-Targets modern browsers with ES6+ support:
-- Chrome/Edge (recommended)
-- Firefox
-- Safari
-- Mobile browsers (iOS/Android)
+- Target: Modern browsers (Chrome, Firefox, Safari, Edge)
+- Mobile-first responsive design
+- Uses: ES6+, Canvas API, LocalStorage, PWA features
+- No transpilation - runs native ES6 in browser
 
-No transpilation or polyfills - uses native ES6 classes, arrow functions, template literals, etc.
+## Performance Considerations
 
-## Documentation Files
+- Canvas rendering for space mode is performance-sensitive
+- Particle systems should be throttled on slower devices
+- LocalStorage has ~5-10MB limit - player data is small but monitor growth
+- Animations use CSS transforms for GPU acceleration
+- `requestAnimationFrame` for smooth game loops
 
-- `RESUMEN_FUNCIONAL_APP.md` - Complete functional specification (30 pages)
-- `REFACTORING_COMPLETED.md` - Refactoring report with architecture details
-- `ARQUITECTURA_ANALISIS.md` - Original architecture analysis that led to refactoring
-- `TESTING.md` - Testing guide
-- `README.md` - User-facing documentation
+## Localization
 
-When making changes to game logic, consult `RESUMEN_FUNCIONAL_APP.md` for the intended behavior and mechanics.
+Currently Spanish only (`lang="es"`). Text is hardcoded in:
+- HTML elements in `index.html`
+- String literals in JavaScript files
+- Achievement/feedback messages in `app.js`
 
-## Performance Notes
+To add another language, consider extracting strings to a constants object.
 
-- Animations use `requestAnimationFrame` where possible
-- Canvas rendering in space/galaxy modes
-- Particle system can be heavy on older devices
-- No lazy loading yet - all scripts load upfront
-- LocalStorage operations are synchronous (consider debouncing saves)
+## Key Technical Gotchas
 
-## Sound System
+1. **Module Load Order Matters**: `app.js` must load last as it depends on all other classes being defined globally
+2. **CORS Requirement**: Must use HTTP server; `file://` protocol breaks asset loading
+3. **LocalStorage Sync**: Changes to `player` object in memory don't persist until `savePlayer()` is called
+4. **Tutorial Blocking**: TutorialSystem modifies `pointer-events` on `mainScreen` - must be restored on completion
+5. **Canvas Cleanup**: Game engines with Canvas must clear state when switching modes to prevent memory leaks
+6. **Event Listener Duplication**: When reinitializing UI, remove old listeners before adding new ones
 
-- `sounds.js` manages audio
-- Toggle via `window.soundSystem.toggle()`
-- Categories: UI clicks, correct/incorrect answers, achievements
-- Currently uses Web Audio API with oscillator (no audio files)
-- Can be extended with actual audio files if needed
+## Recent Development History
+
+The app was developed in phases:
+- **FASE 0**: Global pause system
+- **FASE 1**: Coins, feedback, fire mode
+- **FASE 2**: Economy, shop, daily missions
+- **FASE 3**: Space adventure with Canvas
+- **FASE 4**: Boss battles
+- **FASE 5**: Adaptive practice mode
+- **FASE 6**: Galaxy exploration
+
+Recent focus has been on UI improvements and bug fixes for game modes.

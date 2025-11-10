@@ -83,26 +83,60 @@ class MultiplicationGame {
             }
         });
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const category = tab.dataset.category;
+        // Función para activar un tab
+        const activateTab = (tab) => {
+            const category = tab.dataset.category;
 
-                if (window.soundSystem) {
-                    window.soundSystem.playClick();
+            if (window.soundSystem) {
+                window.soundSystem.playClick();
+            }
+
+            // Actualizar tabs activas y aria-selected
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            // Filtrar avatares
+            avatarOptions.forEach(avatar => {
+                if (avatar.dataset.category === category) {
+                    avatar.style.display = 'flex';
+                } else {
+                    avatar.style.display = 'none';
                 }
+            });
+        };
 
-                // Actualizar tabs activas
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+        tabs.forEach((tab, index) => {
+            // Click handler
+            tab.addEventListener('click', () => {
+                activateTab(tab);
+            });
 
-                // Filtrar avatares
-                avatarOptions.forEach(avatar => {
-                    if (avatar.dataset.category === category) {
-                        avatar.style.display = 'flex';
+            // Keyboard handler - Enter/Space
+            tab.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activateTab(tab);
+                }
+                // Arrow keys navigation
+                else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const tabsArray = Array.from(tabs);
+                    let newIndex = index;
+
+                    if (e.key === 'ArrowRight') {
+                        newIndex = (index + 1) % tabsArray.length;
                     } else {
-                        avatar.style.display = 'none';
+                        newIndex = (index - 1 + tabsArray.length) % tabsArray.length;
                     }
-                });
+
+                    const newTab = tabsArray[newIndex];
+                    newTab.focus();
+                    activateTab(newTab);
+                }
             });
         });
     }
@@ -111,12 +145,11 @@ class MultiplicationGame {
         return {
             name: '',
             avatar: '🦸',
-            level: 1,
-            xp: 0,
             totalStars: 0,
             totalMedals: 0,
             streak: 0,
             bestStreak: 0,
+            coins: 0, // Monedas para la tienda
             stats: {
                 totalQuestions: 0,
                 correctAnswers: 0,
@@ -128,13 +161,37 @@ class MultiplicationGame {
             medals: { gold: 0, silver: 0, bronze: 0 },
             powerups: { shield: 2, hint: 3, skip: 1 }, // Power-ups iniciales
             activePowerups: [], // Power-ups activos en la partida actual
+            purchasedItems: [], // Items comprados en la tienda
+            equippedItems: {}, // Items equipados por categoría
             lastPlayed: Date.now()
         };
     }
 
     loadPlayer() {
         const saved = localStorage.getItem('multiplicationPlayer');
-        return saved ? JSON.parse(saved) : null;
+        if (!saved) return null;
+
+        const player = JSON.parse(saved);
+
+        // Migración de datos: Eliminar sistema XP/Nivel
+        if (player.hasOwnProperty('level') || player.hasOwnProperty('xp')) {
+            console.log('🔄 Migrando datos de jugador: removiendo sistema XP/Nivel');
+            delete player.level;
+            delete player.xp;
+
+            // Asegurar que campos nuevos existan
+            if (!player.hasOwnProperty('coins')) {
+                player.coins = 0;
+            }
+            if (!player.hasOwnProperty('purchasedItems')) {
+                player.purchasedItems = [];
+            }
+            if (!player.hasOwnProperty('equippedItems')) {
+                player.equippedItems = {};
+            }
+        }
+
+        return player;
     }
 
     savePlayer() {
@@ -204,24 +261,63 @@ class MultiplicationGame {
             }
         }
 
-        playerAvatar.textContent = this.player.avatar;
-        if (playerLevel) playerLevel.textContent = this.player.level;
-        if (totalStars) totalStars.textContent = this.player.totalStars;
-        if (totalMedals) totalMedals.textContent = this.player.totalMedals;
-        if (streak) streak.textContent = this.player.streak;
+        document.getElementById('playerAvatar').textContent = this.player.avatar;
 
-        if (xpBar) {
-            const xpNeeded = this.player.level * 100;
-            const xpProgress = (this.player.xp / xpNeeded) * 100;
-            xpBar.style.width = xpProgress + '%';
+        // Calcular y mostrar maestría global (promedio de todas las tablas)
+        const globalMastery = this.calculateGlobalMastery();
+        const masteryEl = document.getElementById('playerMastery');
+        if (masteryEl) {
+            masteryEl.textContent = globalMastery + '%';
+        }
+
+        document.getElementById('totalStars').textContent = this.player.totalStars;
+        document.getElementById('totalMedals').textContent = this.player.totalMedals;
+        document.getElementById('streak').textContent = this.player.streak;
+
+        // Barra de progreso ahora muestra maestría global
+        const masteryBar = document.getElementById('masteryBar');
+        if (masteryBar) {
+            masteryBar.style.width = globalMastery + '%';
         }
 
         // Actualizar equipamiento (solo si los elementos existen)
         this.updateEquipmentDisplay();
     }
 
+    // Calcular maestría global (promedio de todas las tablas 2-10)
+    calculateGlobalMastery() {
+        let totalMastery = 0;
+        let tableCount = 0;
+
+        // Intentar obtener datos del practiceSystem primero (más actualizado)
+        if (this.practiceSystem && this.practiceSystem.tableMastery) {
+            for (let i = 2; i <= 10; i++) {
+                const mastery = this.practiceSystem.tableMastery[i] || 0;
+                totalMastery += mastery;
+                tableCount++;
+            }
+            return tableCount > 0 ? Math.round(totalMastery / tableCount) : 0;
+        }
+
+        // Fallback a player.tableMastery
+        for (let i = 2; i <= 10; i++) {
+            const tableData = this.player.tableMastery[i];
+            if (tableData && tableData.mastery !== undefined) {
+                // mastery está entre 0-1, convertir a 0-100
+                totalMastery += tableData.mastery * 100;
+                tableCount++;
+            }
+        }
+
+        return tableCount > 0 ? Math.round(totalMastery / tableCount) : 0;
+    }
+
     updateEquipmentDisplay() {
-        if (!window.shopSystem) return;
+        // Validar que shopSystem existe y tiene items
+        if (!window.shopSystem || !window.shopSystem.items) {
+            console.warn('⚠️ ShopSystem no disponible, saltando actualización de equipamiento');
+            return;
+        }
 
         // Obtener items equipados
         const equipped = {
@@ -233,11 +329,9 @@ class MultiplicationGame {
 
         // Obtener nombres de los items
         const getItemName = (category, icon) => {
-            if (!window.shopSystem || !window.shopSystem.shopData) {
-                return 'Básico';
-            }
-            const items = window.shopSystem.shopData[category];
-            const item = items?.find(i => i.icon === icon);
+            const items = window.shopSystem.items?.[category];
+            if (!items) return 'Básico';
+            const item = items.find(i => i.icon === icon);
             return item ? item.name : 'Básico';
         };
 
@@ -267,38 +361,30 @@ class MultiplicationGame {
     }
 
     // ================================
-    // SISTEMA DE EXPERIENCIA Y NIVELES
+    // SISTEMA DE RECOMPENSAS (Solo Monedas)
     // ================================
+    // Nota: XP/Nivel eliminado. Progresión basada en % de Maestría
 
-    addXP(amount) {
-        this.player.xp += amount;
-        const xpNeeded = this.player.level * 100;
-
-        if (this.player.xp >= xpNeeded) {
-            this.player.xp -= xpNeeded;
-            this.player.level++;
-            this.showLevelUpAnimation();
-            this.checkAchievements();
+    addCoins(amount) {
+        if (!this.player.coins) {
+            this.player.coins = 0;
         }
 
-        this.updateHeader();
+        this.player.coins += amount;
         this.savePlayer();
-    }
 
-    showLevelUpAnimation() {
-        // Sonido épico de nivel up
-        if (window.soundSystem) {
-            window.soundSystem.playLevelUp();
-            setTimeout(() => window.soundSystem.playConfetti(), 300);
+        // Actualizar HUD de monedas si el coinSystem está disponible
+        if (window.coinSystem) {
+            window.coinSystem.stars = this.player.coins;
+            window.coinSystem.updateHUD();
         }
 
-        this.createConfetti();
-        this.showNotification(`¡Nivel ${this.player.level}! 🎉`, 'success');
-
-        // Mostrar Mateo celebrando nivel up
-        if (window.mateoMascot) {
-            window.mateoMascot.onLevelUp(this.player.level);
+        // Mostrar notificación
+        if (amount > 0) {
+            this.showNotification(`+${amount} monedas 💰`, 'success');
         }
+
+        console.log(`💰 +${amount} monedas. Total: ${this.player.coins}`);
     }
 
     // ================================
@@ -331,22 +417,129 @@ class MultiplicationGame {
         this.setupAvatarTabs();
 
         // Modos de juego
-        document.getElementById('practiceMode')?.addEventListener('click', () => this.startPracticeMode());
-        document.getElementById('challengeMode')?.addEventListener('click', () => this.startChallengeMode());
-        document.getElementById('adventureMode')?.addEventListener('click', () => this.startAdventureMode());
-        document.getElementById('raceMode')?.addEventListener('click', () => this.startRaceMode());
-        document.getElementById('bossMode')?.addEventListener('click', () => this.startBossMode());
-        document.getElementById('progressMode')?.addEventListener('click', () => this.showProgressScreen());
-        document.getElementById('shopMode')?.addEventListener('click', () => this.openShop());
-        document.getElementById('missionsMode')?.addEventListener('click', () => this.openMissions());
+        // Botón CTA Principal
+        document.getElementById('ctaStartLearning')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startPracticeMode();
+        });
+
+        document.getElementById('practiceMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openCastleMap(); // Abrir mapa de castillo en lugar de práctica directa
+        });
+        document.getElementById('challengeMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startChallengeMode();
+        });
+        document.getElementById('speedDrillMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startSpeedDrillMode();
+        });
+        document.getElementById('shipDefenseMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startShipDefenseMode();
+        });
+        document.getElementById('factorChainMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startFactorChainMode();
+        });
+        document.getElementById('adventureMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startAdventureMode();
+        });
+        document.getElementById('raceMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startRaceMode();
+        });
+        document.getElementById('bossMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.startBossMode();
+        });
+        document.getElementById('progressMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.showProgressScreen();
+        });
+        document.getElementById('shopMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openShop();
+        });
+        document.getElementById('missionsMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openMissions();
+        });
+        document.getElementById('grimorioMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openGrimorio();
+        });
+        document.getElementById('advancedModesBtn')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openAdvancedModes();
+        });
+        document.getElementById('heroShowcaseMode')?.addEventListener('click', () => {
+            window.soundSystem?.playClick();
+            this.openHeroShowcase();
+        });
+
+        // ================================
+        // ACCESIBILIDAD: Keyboard handlers
+        // Enter/Space para activar mode-cards
+        // ================================
+        const modeCards = [
+            { id: 'ctaStartLearning', handler: () => this.startPracticeMode() },
+            { id: 'practiceMode', handler: () => this.openCastleMap() },
+            { id: 'challengeMode', handler: () => this.startChallengeMode() },
+            { id: 'speedDrillMode', handler: () => this.startSpeedDrillMode() },
+            { id: 'shipDefenseMode', handler: () => this.startShipDefenseMode() },
+            { id: 'factorChainMode', handler: () => this.startFactorChainMode() },
+            { id: 'adventureMode', handler: () => this.startAdventureMode() },
+            { id: 'raceMode', handler: () => this.startRaceMode() },
+            { id: 'bossMode', handler: () => this.startBossMode() },
+            { id: 'progressMode', handler: () => this.showProgressScreen() },
+            { id: 'shopMode', handler: () => this.openShop() },
+            { id: 'missionsMode', handler: () => this.openMissions() },
+            { id: 'grimorioMode', handler: () => this.openGrimorio() },
+            { id: 'advancedModesBtn', handler: () => this.openAdvancedModes() },
+            { id: 'heroShowcaseMode', handler: () => this.openHeroShowcase() }
+        ];
+
+        modeCards.forEach(({ id, handler }) => {
+            document.getElementById(id)?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Prevenir scroll con Space
+                    window.soundSystem?.playClick();
+                    handler();
+                }
+            });
+        });
 
         // Botones de vuelta
         document.getElementById('backFromPractice')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromGrimorio')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromCastle')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromAdvancedModes')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromChallenge')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromSpeedDrill')?.addEventListener('click', () => {
+            if (window.speedDrillEngine) {
+                window.speedDrillEngine.stop();
+            }
+            this.showMainScreen();
+        });
+        document.getElementById('backFromShipDefense')?.addEventListener('click', () => {
+            if (window.shipDefense) {
+                window.shipDefense.stop();
+            }
+            this.showMainScreen();
+        });
         document.getElementById('backFromAdventure')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromRace')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromBoss')?.addEventListener('click', () => this.showMainScreen());
         document.getElementById('backFromProgress')?.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('backFromFactorChain')?.addEventListener('click', () => {
+            if (window.factorChainEngine) {
+                window.factorChainEngine.stop();
+            }
+            this.showMainScreen();
+        });
 
         // Modo Práctica
         document.querySelectorAll('.table-btn').forEach(btn => {
@@ -372,6 +565,8 @@ class MultiplicationGame {
                 this.startPracticeMode();
             } else if (this.currentMode === 'challenge') {
                 this.startChallengeMode();
+            } else if (this.currentMode === 'speedDrill') {
+                this.startSpeedDrillMode();
             }
         });
 
@@ -385,6 +580,13 @@ class MultiplicationGame {
         document.getElementById('trickModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'trickModal') {
                 this.hideTricksModal();
+            }
+        });
+
+        // Factor Chain - Hint Button
+        document.getElementById('factorHintBtn')?.addEventListener('click', () => {
+            if (window.factorChainEngine) {
+                window.factorChainEngine.useHint();
             }
         });
     }
@@ -648,17 +850,67 @@ class MultiplicationGame {
         container.innerHTML = '';
         tables.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'table-mastery-card';
+
+            // Verificar si tabla está desbloqueada (Sistema de Bloqueo)
+            const isUnlocked = window.bootstrap?.services?.player?.isTableUnlocked?.(item.table) ?? true;
+            const isDiscovered = window.bootstrap?.services?.player?.isTableDiscovered?.(item.table) ?? false;
+
+            // Determinar estado visual
+            let statusIcon = '';
+            let statusClass = '';
+
+            if (!isUnlocked) {
+                statusIcon = '🔒'; // Bloqueada
+                statusClass = 'table-locked';
+            } else if (isDiscovered) {
+                statusIcon = '✅'; // Completada/Descubierta
+                statusClass = 'table-discovered';
+            } else {
+                statusIcon = '✨'; // Disponible para aprender
+                statusClass = 'table-available';
+            }
+
+            card.className = `table-mastery-card ${statusClass}`;
             card.innerHTML = `
+                <div class="table-status-badge">${statusIcon}</div>
                 <div class="table-mastery-number">${item.table}</div>
                 <div class="table-mastery-percent">${item.mastery}%</div>
                 <div class="table-mastery-bar">
                     <div class="table-mastery-bar-fill" style="width: ${item.mastery}%; background: ${item.status.color}"></div>
                 </div>
             `;
+
+            // Event listener con validación de bloqueo
             card.addEventListener('click', () => {
+                if (!isUnlocked) {
+                    // Tabla bloqueada - mostrar mensaje
+                    console.log(`🔒 Tabla ${item.table} bloqueada`);
+
+                    if (window.mateoMascot) {
+                        window.mateoMascot.show(
+                            'sad',
+                            `¡Espera! La Tabla del ${item.table} está bloqueada. Primero debes completar la Tabla del ${item.table - 1}.`,
+                            4000
+                        );
+                    }
+
+                    if (window.soundSystem) {
+                        window.soundSystem.playError();
+                    }
+
+                    // Shake animation
+                    card.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 500);
+
+                    return;
+                }
+
+                // Tabla desbloqueada - proceder normalmente
                 this.startPracticeWithTables([item.table]);
             });
+
             container.appendChild(card);
         });
     }
@@ -889,7 +1141,7 @@ class MultiplicationGame {
         const points = 10 + (this.gameState.streak * 2);
         this.gameState.score += points;
 
-        this.addXP(5);
+        this.addCoins(5);
         this.player.stats.correctAnswers++;
         this.player.totalStars += 1;
 
@@ -1639,7 +1891,7 @@ class MultiplicationGame {
             this.gameState.score += points;
 
             this.player.stats.correctAnswers++;
-            this.addXP(3);
+            this.addCoins(3);
 
             // Tracking de misión
             this.trackMissionCorrectAnswer();
@@ -1751,6 +2003,89 @@ class MultiplicationGame {
     }
 
     // ================================
+    // MODO TALADRO RÁPIDO
+    // ================================
+
+    startSpeedDrillMode() {
+        this.currentMode = 'speedDrill';
+        this.showScreen('speedDrillScreen');
+
+        // Mateo da instrucciones
+        if (window.mateoMascot) {
+            window.mateoMascot.show('happy');
+            window.mateoMascot.speak('¡Escribe la respuesta sin opciones! ⚡', 3000);
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startSpeedDrillMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                if (window.speedDrillEngine) {
+                    window.speedDrillEngine.stop();
+                }
+                this.showMainScreen();
+            });
+        }
+
+        // Iniciar el motor del Taladro Rápido
+        if (window.speedDrillEngine) {
+            window.speedDrillEngine.start();
+        } else {
+            console.error('⚠️ speedDrillEngine no está disponible');
+        }
+    }
+
+    // ================================
+    // MODO DEFENSA DE LA NAVE
+    // ================================
+
+    startShipDefenseMode() {
+        this.currentMode = 'shipDefense';
+        this.showScreen('shipDefenseScreen');
+
+        // Mateo da instrucciones
+        if (window.mateoMascot) {
+            window.mateoMascot.show('excited');
+            window.mateoMascot.speak('¡Defiende tu nave! Haz clic en los múltiplos 🛸', 4000);
+        }
+
+        // Mostrar HUD de monedas
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        // Configurar callbacks del menú de pausa
+        if (window.pauseMenu) {
+            window.pauseMenu.setRestartCallback(() => {
+                this.startShipDefenseMode();
+            });
+            window.pauseMenu.setMainMenuCallback(() => {
+                if (window.shipDefense) {
+                    window.shipDefense.stop();
+                }
+                this.showMainScreen();
+            });
+        }
+
+        // Mostrar modal de selección de tabla
+        this.showTableSelection((selectedTable) => {
+            // Iniciar el motor de Defensa de la Nave
+            if (window.shipDefense) {
+                window.shipDefense.start(selectedTable);
+            } else {
+                console.error('⚠️ shipDefense no está disponible');
+            }
+        });
+    }
+
+    // ================================
     // MODO AVENTURA ESPACIAL
     // ================================
 
@@ -1846,7 +2181,7 @@ class MultiplicationGame {
         // Agregar puntos y XP
         this.gameState.score += points;
         this.gameState.planet++;
-        this.addXP(5);
+        this.addCoins(5);
 
         // Agregar estrellas del sistema de monedas
         if (window.coinSystem) {
@@ -1960,9 +2295,17 @@ class MultiplicationGame {
             });
         }
 
-        // Configurar avatar del jugador
-        document.getElementById('playerRaceAvatar').textContent = this.player.avatar;
+        // Configurar avatar y vehículo del jugador
+        const equippedCar = window.shopSystem ? window.shopSystem.getEquipped('cars') : '🏎️';
+
+        document.getElementById('playerRaceAvatar').textContent = equippedCar;
         document.getElementById('playerRaceName').textContent = this.player.name;
+
+        // Actualizar ícono en la pista
+        const playerRaceIcon = document.querySelector('#playerRacePosition .racer-icon');
+        if (playerRaceIcon) {
+            playerRaceIcon.textContent = equippedCar;
+        }
 
         this.gameState = {
             mode: 'race',
@@ -2055,7 +2398,7 @@ class MultiplicationGame {
             btnElement.classList.add('correct');
             this.gameState.correct++;
             this.player.stats.correctAnswers++;
-            this.addXP(5);
+            this.addCoins(5);
 
             // Sonidos
             if (window.soundSystem) {
@@ -2286,7 +2629,7 @@ class MultiplicationGame {
         this.player.stats.correctAnswers++;
 
         // Agregar XP
-        this.addXP(7);
+        this.addCoins(7);
 
         // Agregar estrellas
         if (window.coinSystem) {
@@ -2450,6 +2793,324 @@ class MultiplicationGame {
         }
     }
 
+    openGrimorio() {
+        console.log('📖 Abriendo Grimorio de Trucos Secretos');
+        this.showScreen('grimorioScreen');
+        this.renderGrimorio();
+    }
+
+    renderGrimorio() {
+        const playerService = window.bootstrap?.services?.player;
+        if (!playerService) {
+            console.error('❌ PlayerService no disponible');
+            return;
+        }
+
+        // Obtener trucos coleccionados
+        const collectedTricks = playerService.getCollectedTricks();
+        const tricksList = document.getElementById('tricksList');
+        const grimorioEmpty = document.getElementById('grimorioEmpty');
+        const grimorioBook = document.querySelector('.grimorio-book');
+        const grimorioCollected = document.getElementById('grimorioCollected');
+        const grimorioTotal = document.getElementById('grimorioTotal');
+
+        // Actualizar contador
+        if (grimorioCollected) grimorioCollected.textContent = collectedTricks.length;
+        if (grimorioTotal) grimorioTotal.textContent = 9; // Tablas 2-10
+
+        // Mostrar/ocultar según tenga trucos
+        if (collectedTricks.length === 0) {
+            grimorioBook.style.display = 'none';
+            grimorioEmpty.style.display = 'block';
+
+            // Botón para empezar a aprender
+            const startBtn = document.getElementById('startLearningFromGrimorio');
+            if (startBtn) {
+                startBtn.onclick = () => {
+                    this.showScreen('practiceScreen');
+                    this.showDomainMap();
+                };
+            }
+            return;
+        }
+
+        grimorioBook.style.display = 'grid';
+        grimorioEmpty.style.display = 'none';
+
+        // Renderizar lista de trucos
+        if (!tricksList) return;
+        tricksList.innerHTML = '';
+
+        // Ordenar por número de tabla
+        const sortedTricks = [...collectedTricks].sort((a, b) => a.table - b.table);
+
+        sortedTricks.forEach((trick, index) => {
+            const trickItem = document.createElement('div');
+            trickItem.className = 'trick-item';
+            if (index === 0) trickItem.classList.add('selected'); // Seleccionar primero
+
+            trickItem.innerHTML = `
+                <div class="trick-item-icon">✨</div>
+                <div class="trick-item-content">
+                    <h3>Tabla del ${trick.table}</h3>
+                    <p>${new Date(trick.collectedAt).toLocaleDateString()}</p>
+                </div>
+            `;
+
+            trickItem.addEventListener('click', () => {
+                // Remover selección de otros
+                document.querySelectorAll('.trick-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                trickItem.classList.add('selected');
+
+                // Mostrar detalle
+                this.showTrickDetail(trick);
+            });
+
+            tricksList.appendChild(trickItem);
+        });
+
+        // Mostrar detalle del primer truco automáticamente
+        if (sortedTricks.length > 0) {
+            this.showTrickDetail(sortedTricks[0]);
+        }
+    }
+
+    showTrickDetail(trick) {
+        const detailContent = document.getElementById('trickDetailContent');
+        if (!detailContent) return;
+
+        detailContent.innerHTML = `
+            <div class="trick-detail">
+                <div class="trick-detail-header">
+                    <div class="trick-detail-icon">🧙‍♂️</div>
+                    <h2 class="trick-detail-title">Tabla del ${trick.table}</h2>
+                </div>
+                <div class="trick-detail-body">
+                    <div class="trick-explanation">
+                        <strong>🎯 Truco Secreto:</strong>
+                        <p>${trick.trick}</p>
+                    </div>
+                    ${trick.tip ? `
+                        <div class="trick-tip">
+                            <strong>💡 Consejo de Mateo:</strong>
+                            <p>${trick.tip}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        // Reproducir sonido
+        if (window.soundSystem) {
+            window.soundSystem.playTransition();
+        }
+    }
+
+    openCastleMap() {
+        console.log('🏰 Abriendo Mapa del Castillo');
+        this.showScreen('castleMapScreen');
+        this.renderCastleMap();
+    }
+
+    renderCastleMap() {
+        const playerService = window.bootstrap?.services?.player;
+        if (!playerService) {
+            console.error('❌ PlayerService no disponible');
+            return;
+        }
+
+        const modeController = window.bootstrap?.controllers?.mode;
+        const castleTower = document.getElementById('castleTower');
+        const castleCompleted = document.getElementById('castleCompleted');
+
+        if (!castleTower) return;
+
+        // Obtener estado de todas las tablas
+        const tablesStatus = playerService.getAllTablesStatus();
+
+        // Contar completadas
+        const completedCount = tablesStatus.filter(t => t.discovered).length;
+        if (castleCompleted) castleCompleted.textContent = completedCount;
+
+        // Limpiar torre
+        castleTower.innerHTML = '';
+
+        // Renderizar pisos (de arriba hacia abajo: tabla 10 → tabla 2)
+        tablesStatus.reverse().forEach((tableInfo, index) => {
+            const floor = document.createElement('div');
+            floor.className = 'castle-floor';
+
+            // Determinar estado
+            if (!tableInfo.unlocked) {
+                floor.classList.add('locked');
+            } else if (tableInfo.discovered) {
+                floor.classList.add('completed');
+            } else {
+                floor.classList.add('available');
+            }
+
+            // Avatar en el piso actual (primera tabla no descubierta y desbloqueada)
+            const isCurrent = tableInfo.unlocked && !tableInfo.discovered &&
+                              (index === 0 || tablesStatus[index - 1]?.discovered);
+
+            if (isCurrent) {
+                floor.classList.add('current');
+            }
+
+            // Iconos según estado
+            let statusIcon = '🔒';
+            if (!tableInfo.unlocked) {
+                statusIcon = '🔒';
+            } else if (tableInfo.discovered) {
+                statusIcon = '🎉';
+            } else {
+                statusIcon = '✨';
+            }
+
+            // Contenido del piso
+            floor.innerHTML = `
+                ${isCurrent ? `<div class="floor-avatar">${this.player.avatar}</div>` : ''}
+                <div class="floor-icon ${!tableInfo.unlocked ? 'locked-icon' : ''}">
+                    ${statusIcon}
+                </div>
+                <div class="floor-content">
+                    <h2 class="floor-title">Tabla del ${tableInfo.table}</h2>
+                    <p class="floor-description">
+                        ${!tableInfo.unlocked ? `Completa la tabla del ${tableInfo.table - 1} primero` :
+                          tableInfo.discovered ? `¡Completada!` :
+                          `¡Descubre esta tabla!`}
+                    </p>
+                    <div class="floor-progress ${tableInfo.discovered ? 'completed-progress' : ''}">
+                        ${tableInfo.discovered ? `✅ Dominada al ${tableInfo.mastery}%` :
+                          tableInfo.unlocked ? `🎯 Disponible para aprender` :
+                          `🔒 Bloqueada`}
+                    </div>
+                </div>
+                <div class="floor-badge">${statusIcon}</div>
+            `;
+
+            // Event listener
+            floor.addEventListener('click', () => {
+                if (!tableInfo.unlocked) {
+                    // Bloqueada
+                    console.log(`🔒 Tabla ${tableInfo.table} bloqueada`);
+                    window.soundSystem?.playError();
+
+                    if (window.mateoMascot) {
+                        window.mateoMascot.show(
+                            'sad',
+                            `¡Alto ahí! Primero debes conquistar la Tabla del ${tableInfo.table - 1} para desbloquear este piso del castillo.`,
+                            4000
+                        );
+                    }
+
+                    // Shake animation
+                    floor.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        floor.style.animation = '';
+                    }, 500);
+                } else {
+                    // Desbloqueada - abrir modal "Aprender vs Practicar"
+                    window.soundSystem?.playClick();
+
+                    if (modeController) {
+                        modeController.handleTableSelection(tableInfo.table, 'auto');
+                    } else {
+                        console.error('❌ ModeController no disponible');
+                    }
+                }
+            });
+
+            castleTower.appendChild(floor);
+        });
+    }
+
+    openAdvancedModes() {
+        console.log('🎮 Abriendo Modos Avanzados');
+        this.showScreen('advancedModesScreen');
+
+        const advancedModesGrid = document.querySelector('.advanced-modes-grid');
+        if (!advancedModesGrid) return;
+
+        // Limpiar grid
+        advancedModesGrid.innerHTML = '';
+
+        // IDs de los 6 modos avanzados
+        const advancedModeIds = [
+            'speedDrillMode',
+            'shipDefenseMode',
+            'factorChainMode',
+            'adventureMode',
+            'raceMode',
+            'bossMode'
+        ];
+
+        // Clonar cada modo al grid
+        advancedModeIds.forEach(id => {
+            const originalCard = document.getElementById(id);
+            if (originalCard) {
+                const clonedCard = originalCard.cloneNode(true);
+
+                // Mantener el mismo event listener
+                clonedCard.addEventListener('click', () => {
+                    window.soundSystem?.playClick();
+
+                    // Llamar al método correspondiente según el modo
+                    switch(id) {
+                        case 'speedDrillMode':
+                            this.startSpeedDrillMode();
+                            break;
+                        case 'shipDefenseMode':
+                            this.startShipDefenseMode();
+                            break;
+                        case 'factorChainMode':
+                            this.startFactorChainMode();
+                            break;
+                        case 'adventureMode':
+                            this.startAdventureMode();
+                            break;
+                        case 'raceMode':
+                            this.startRaceMode();
+                            break;
+                        case 'bossMode':
+                            this.startBossMode();
+                            break;
+                    }
+                });
+
+                advancedModesGrid.appendChild(clonedCard);
+            }
+        });
+    }
+
+    openHeroShowcase() {
+        if (window.heroShowcase) {
+            window.heroShowcase.open(this.player);
+        } else {
+            console.error('❌ Sistema de Escaparate del Héroe no disponible');
+        }
+    }
+
+    startFactorChainMode() {
+        this.currentMode = 'factorChain';
+        this.showScreen('factorChainScreen');
+
+        if (window.mateoMascot) {
+            window.mateoMascot.show('happy');
+            window.mateoMascot.speak('¡Descompón el número en factores! 🧩', 3000);
+        }
+
+        if (window.coinSystem) {
+            window.coinSystem.show();
+        }
+
+        if (window.factorChainEngine) {
+            window.factorChainEngine.start(1);
+        }
+    }
+
     // Tracking de misiones
     trackMissionCorrectAnswer() {
         if (window.dailyMissionsSystem) {
@@ -2547,8 +3208,11 @@ class MultiplicationGame {
             { id: 'first_step', icon: '👣', name: 'Primeros Pasos', desc: 'Responde tu primera pregunta', condition: () => this.player.stats.totalQuestions >= 1 },
             { id: 'ten_streak', icon: '🔥', name: 'En Racha', desc: 'Consigue una racha de 10', condition: () => this.player.bestStreak >= 10 },
             { id: 'hundred_questions', icon: '💯', name: 'Centenario', desc: 'Responde 100 preguntas', condition: () => this.player.stats.totalQuestions >= 100 },
-            { id: 'level_5', icon: '⭐', name: 'Estrella Brillante', desc: 'Alcanza el nivel 5', condition: () => this.player.level >= 5 },
-            { id: 'level_10', icon: '🌟', name: 'Superestrella', desc: 'Alcanza el nivel 10', condition: () => this.player.level >= 10 },
+            { id: 'mastery_25', icon: '⭐', name: 'Aprendiz', desc: 'Alcanza 25% de maestría global', condition: () => this.calculateGlobalMastery() >= 25 },
+            { id: 'mastery_50', icon: '🌟', name: 'Estudiante', desc: 'Alcanza 50% de maestría global', condition: () => this.calculateGlobalMastery() >= 50 },
+            { id: 'mastery_75', icon: '💫', name: 'Experto', desc: 'Alcanza 75% de maestría global', condition: () => this.calculateGlobalMastery() >= 75 },
+            { id: 'mastery_90', icon: '🎖️', name: 'Maestro', desc: 'Alcanza 90% de maestría global', condition: () => this.calculateGlobalMastery() >= 90 },
+            { id: 'mastery_100', icon: '👑', name: 'Gran Maestro', desc: 'Alcanza 100% de maestría global', condition: () => this.calculateGlobalMastery() >= 100 },
             { id: 'master_table', icon: '🏆', name: 'Maestro de Tabla', desc: 'Domina completamente una tabla', condition: () => Object.values(this.player.tableMastery).some(m => m.mastery >= 0.95) },
             { id: 'perfect_game', icon: '💎', name: 'Perfección', desc: 'Completa un juego sin errores', condition: () => false }, // Se verifica en tiempo real
             { id: 'speed_demon', icon: '⚡', name: 'Rayo Veloz', desc: 'Responde 20 preguntas en desafío', condition: () => false }
@@ -2626,11 +3290,11 @@ class MultiplicationGame {
                 date: null
             },
             {
-                id: 'level_10',
+                id: 'mastery_50',
                 icon: '⭐',
-                name: 'Estrella Suprema',
-                description: 'Alcanza nivel 10',
-                unlocked: this.player.level >= 10,
+                name: 'Estudiante Avanzado',
+                description: 'Alcanza 50% de maestría global',
+                unlocked: this.calculateGlobalMastery() >= 50,
                 date: null
             },
             {
@@ -3058,34 +3722,41 @@ class MultiplicationGame {
                 check: () => this.player.streak >= 50
             },
 
-            // Logros de nivel
+            // Logros de maestría global
             {
-                id: 'level_5',
-                name: 'Ascenso',
-                desc: 'Alcanza nivel 5',
+                id: 'mastery_25',
+                name: 'Aprendiz',
+                desc: 'Alcanza 25% de maestría global',
                 icon: '⬆️',
-                check: () => this.player.level >= 5
+                check: () => this.calculateGlobalMastery() >= 25
             },
             {
-                id: 'level_10',
-                name: 'Veterano',
-                desc: 'Alcanza nivel 10',
+                id: 'mastery_50',
+                name: 'Estudiante',
+                desc: 'Alcanza 50% de maestría global',
                 icon: '🏆',
-                check: () => this.player.level >= 10
+                check: () => this.calculateGlobalMastery() >= 50
             },
             {
-                id: 'level_20',
-                name: 'Élite',
-                desc: 'Alcanza nivel 20',
+                id: 'mastery_75',
+                name: 'Experto',
+                desc: 'Alcanza 75% de maestría global',
                 icon: '💪',
-                check: () => this.player.level >= 20
+                check: () => this.calculateGlobalMastery() >= 75
             },
             {
-                id: 'level_50',
-                name: 'Dios de las Matemáticas',
-                desc: 'Alcanza nivel 50',
-                icon: '⚡👑',
-                check: () => this.player.level >= 50
+                id: 'mastery_90',
+                name: 'Maestro',
+                desc: 'Alcanza 90% de maestría global',
+                icon: '⚡',
+                check: () => this.calculateGlobalMastery() >= 90
+            },
+            {
+                id: 'mastery_100',
+                name: 'Gran Maestro Global',
+                desc: 'Alcanza 100% de maestría global',
+                icon: '👑',
+                check: () => this.calculateGlobalMastery() >= 100
             },
 
             // Logros de maestría
