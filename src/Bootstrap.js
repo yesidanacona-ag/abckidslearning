@@ -333,13 +333,13 @@ class ApplicationBootstrap {
         }
 
         // Preload critical images
-        if (this.performance.assetOptimizer) {
-            const criticalImages = [
-                'assets/characters/mateo-neutral.png'
-                // Add more critical images here
-            ];
-            this.performance.assetOptimizer.preloadCriticalImages(criticalImages);
-        }
+        // DISABLED: Only SVG files exist in assets/
+        // if (this.performance.assetOptimizer) {
+        //     const criticalImages = [
+        //         'assets/characters/mateo-happy.svg'
+        //     ];
+        //     this.performance.assetOptimizer.preloadCriticalImages(criticalImages);
+        // }
     }
 
     /**
