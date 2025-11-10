@@ -3541,7 +3541,14 @@ class MultiplicationGame {
         // Iniciar modo práctica con esa tabla específica
         const table = this.currentPlanetTable;
 
-        // Si tenemos practiceSystem, usarlo
+        // Usar ModeController si está disponible (permite flujo de descubrimiento)
+        if (window.bootstrap && window.bootstrap.controllers && window.bootstrap.controllers.mode) {
+            console.log(`🌌 Galaxy → Usando ModeController para tabla ${table}`);
+            window.bootstrap.controllers.mode.handleTableSelection(table, 'auto');
+            return;
+        }
+
+        // Fallback: Si tenemos practiceSystem, usarlo
         if (this.practiceSystem) {
             this.showScreen('practiceGameScreen');
             this.startPracticeModeWithTable(table);
