@@ -83,26 +83,60 @@ class MultiplicationGame {
             }
         });
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const category = tab.dataset.category;
+        // Función para activar un tab
+        const activateTab = (tab) => {
+            const category = tab.dataset.category;
 
-                if (window.soundSystem) {
-                    window.soundSystem.playClick();
+            if (window.soundSystem) {
+                window.soundSystem.playClick();
+            }
+
+            // Actualizar tabs activas y aria-selected
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            // Filtrar avatares
+            avatarOptions.forEach(avatar => {
+                if (avatar.dataset.category === category) {
+                    avatar.style.display = 'flex';
+                } else {
+                    avatar.style.display = 'none';
                 }
+            });
+        };
 
-                // Actualizar tabs activas
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+        tabs.forEach((tab, index) => {
+            // Click handler
+            tab.addEventListener('click', () => {
+                activateTab(tab);
+            });
 
-                // Filtrar avatares
-                avatarOptions.forEach(avatar => {
-                    if (avatar.dataset.category === category) {
-                        avatar.style.display = 'flex';
+            // Keyboard handler - Enter/Space
+            tab.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activateTab(tab);
+                }
+                // Arrow keys navigation
+                else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const tabsArray = Array.from(tabs);
+                    let newIndex = index;
+
+                    if (e.key === 'ArrowRight') {
+                        newIndex = (index + 1) % tabsArray.length;
                     } else {
-                        avatar.style.display = 'none';
+                        newIndex = (index - 1 + tabsArray.length) % tabsArray.length;
                     }
-                });
+
+                    const newTab = tabsArray[newIndex];
+                    newTab.focus();
+                    activateTab(newTab);
+                }
             });
         });
     }
@@ -433,6 +467,38 @@ class MultiplicationGame {
         document.getElementById('heroShowcaseMode')?.addEventListener('click', () => {
             window.soundSystem?.playClick();
             this.openHeroShowcase();
+        });
+
+        // ================================
+        // ACCESIBILIDAD: Keyboard handlers
+        // Enter/Space para activar mode-cards
+        // ================================
+        const modeCards = [
+            { id: 'ctaStartLearning', handler: () => this.startPracticeMode() },
+            { id: 'practiceMode', handler: () => this.openCastleMap() },
+            { id: 'challengeMode', handler: () => this.startChallengeMode() },
+            { id: 'speedDrillMode', handler: () => this.startSpeedDrillMode() },
+            { id: 'shipDefenseMode', handler: () => this.startShipDefenseMode() },
+            { id: 'factorChainMode', handler: () => this.startFactorChainMode() },
+            { id: 'adventureMode', handler: () => this.startAdventureMode() },
+            { id: 'raceMode', handler: () => this.startRaceMode() },
+            { id: 'bossMode', handler: () => this.startBossMode() },
+            { id: 'progressMode', handler: () => this.showProgressScreen() },
+            { id: 'shopMode', handler: () => this.openShop() },
+            { id: 'missionsMode', handler: () => this.openMissions() },
+            { id: 'grimorioMode', handler: () => this.openGrimorio() },
+            { id: 'advancedModesBtn', handler: () => this.openAdvancedModes() },
+            { id: 'heroShowcaseMode', handler: () => this.openHeroShowcase() }
+        ];
+
+        modeCards.forEach(({ id, handler }) => {
+            document.getElementById(id)?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Prevenir scroll con Space
+                    window.soundSystem?.playClick();
+                    handler();
+                }
+            });
         });
 
         // Botones de vuelta
