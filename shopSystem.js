@@ -42,7 +42,7 @@ class ShopSystem {
 
     createCatalog() {
         return {
-            // AVATARES
+            // AVATARES - COSMÉTICO
             avatars: [
                 {
                     id: 'martin',
@@ -50,7 +50,7 @@ class ShopSystem {
                     icon: '👦',
                     price: 0,
                     rarity: 'common',
-                    description: 'El héroe clásico'
+                    description: 'Estilo clásico y amigable'
                 },
                 {
                     id: 'sofia',
@@ -58,7 +58,7 @@ class ShopSystem {
                     icon: '👧',
                     price: 100,
                     rarity: 'common',
-                    description: 'La genio matemática'
+                    description: 'Personalidad curiosa y brillante'
                 },
                 {
                     id: 'superhero',
@@ -66,7 +66,7 @@ class ShopSystem {
                     icon: '🦸‍♂️',
                     price: 250,
                     rarity: 'rare',
-                    description: 'Poder ilimitado'
+                    description: 'Look épico de héroe'
                 },
                 {
                     id: 'wizard',
@@ -74,7 +74,7 @@ class ShopSystem {
                     icon: '🧙‍♂️',
                     price: 500,
                     rarity: 'epic',
-                    description: 'Magia matemática'
+                    description: 'Apariencia mística y sabia'
                 },
                 {
                     id: 'ninja',
@@ -82,7 +82,7 @@ class ShopSystem {
                     icon: '🥷',
                     price: 350,
                     rarity: 'rare',
-                    description: 'Velocidad extrema'
+                    description: 'Estilo ágil y misterioso'
                 },
                 {
                     id: 'robot',
@@ -90,7 +90,7 @@ class ShopSystem {
                     icon: '🤖',
                     price: 400,
                     rarity: 'epic',
-                    description: 'Cálculo perfecto'
+                    description: 'Diseño tecnológico futurista'
                 },
                 {
                     id: 'alien',
@@ -98,7 +98,7 @@ class ShopSystem {
                     icon: '👽',
                     price: 600,
                     rarity: 'epic',
-                    description: 'Inteligencia cósmica'
+                    description: 'Aspecto extraterrestre único'
                 },
                 {
                     id: 'dragon',
@@ -107,11 +107,11 @@ class ShopSystem {
                     price: 1000,
                     rarity: 'legendary',
                     trophiesRequired: 10,
-                    description: 'Poder legendario'
+                    description: 'Apariencia legendaria imponente'
                 }
             ],
 
-            // NAVES (para Aventura Espacial)
+            // NAVES (para Aventura Espacial) - COSMÉTICO
             ships: [
                 {
                     id: 'basic',
@@ -119,8 +119,7 @@ class ShopSystem {
                     icon: '🚀',
                     price: 0,
                     rarity: 'common',
-                    description: 'Tu primera nave',
-                    stats: { speed: 5, firepower: 5 }
+                    description: 'Diseño clásico y confiable'
                 },
                 {
                     id: 'fast',
@@ -128,8 +127,7 @@ class ShopSystem {
                     icon: '🛸',
                     price: 200,
                     rarity: 'rare',
-                    description: 'El doble de rápida',
-                    stats: { speed: 10, firepower: 5 }
+                    description: 'Estilo aerodinámico elegante'
                 },
                 {
                     id: 'epic',
@@ -137,8 +135,7 @@ class ShopSystem {
                     icon: '🛰️',
                     price: 500,
                     rarity: 'epic',
-                    description: 'Tecnología avanzada',
-                    stats: { speed: 10, firepower: 10 }
+                    description: 'Tecnología de última generación'
                 },
                 {
                     id: 'star',
@@ -146,8 +143,7 @@ class ShopSystem {
                     icon: '✨',
                     price: 750,
                     rarity: 'epic',
-                    description: 'Brilla en la oscuridad',
-                    stats: { speed: 12, firepower: 12 }
+                    description: 'Brilla con luz propia'
                 },
                 {
                     id: 'legendary',
@@ -156,12 +152,11 @@ class ShopSystem {
                     price: 1200,
                     rarity: 'legendary',
                     trophiesRequired: 15,
-                    description: 'La nave definitiva',
-                    stats: { speed: 15, firepower: 15 }
+                    description: 'Diseño legendario único'
                 }
             ],
 
-            // ARMAS (para Batalla de Jefes)
+            // ARMAS (para Batalla de Jefes) - COSMÉTICO
             weapons: [
                 {
                     id: 'sword',
@@ -169,8 +164,7 @@ class ShopSystem {
                     icon: '🗡️',
                     price: 0,
                     rarity: 'common',
-                    description: 'Clásica y efectiva',
-                    damage: 10
+                    description: 'Clásica y elegante'
                 },
                 {
                     id: 'double',
@@ -178,8 +172,7 @@ class ShopSystem {
                     icon: '⚔️',
                     price: 150,
                     rarity: 'rare',
-                    description: 'Doble daño',
-                    damage: 15
+                    description: 'Estilo de guerrero experto'
                 },
                 {
                     id: 'trident',
@@ -187,8 +180,7 @@ class ShopSystem {
                     icon: '🔱',
                     price: 400,
                     rarity: 'epic',
-                    description: 'Poder del mar',
-                    damage: 20
+                    description: 'Símbolo del poder oceánico'
                 },
                 {
                     id: 'hammer',
@@ -196,8 +188,7 @@ class ShopSystem {
                     icon: '🔨',
                     price: 300,
                     rarity: 'rare',
-                    description: 'Golpes devastadores',
-                    damage: 18
+                    description: 'Fuerza y determinación'
                 },
                 {
                     id: 'staff',
@@ -205,8 +196,7 @@ class ShopSystem {
                     icon: '🪄',
                     price: 550,
                     rarity: 'epic',
-                    description: 'Magia destructiva',
-                    damage: 25
+                    description: 'Sabiduría y misticismo'
                 },
                 {
                     id: 'excalibur',
@@ -215,12 +205,11 @@ class ShopSystem {
                     price: 1000,
                     rarity: 'legendary',
                     trophiesRequired: 20,
-                    description: 'La espada legendaria',
-                    damage: 35
+                    description: 'El arma legendaria perfecta'
                 }
             ],
 
-            // AUTOS (para Carrera Matemática)
+            // AUTOS (para Carrera Matemática) - COSMÉTICO
             cars: [
                 {
                     id: 'basic',
@@ -228,8 +217,7 @@ class ShopSystem {
                     icon: '🏎️',
                     price: 0,
                     rarity: 'common',
-                    description: 'Tu primer auto',
-                    speed: 5
+                    description: 'Estilo clásico de carreras'
                 },
                 {
                     id: 'sport',
@@ -237,8 +225,7 @@ class ShopSystem {
                     icon: '🏁',
                     price: 180,
                     rarity: 'rare',
-                    description: 'Velocidad pura',
-                    speed: 10
+                    description: 'Diseño aerodinámico moderno'
                 },
                 {
                     id: 'formula',
@@ -246,8 +233,7 @@ class ShopSystem {
                     icon: '🏆',
                     price: 450,
                     rarity: 'epic',
-                    description: 'El más rápido',
-                    speed: 15
+                    description: 'Estética de campeón'
                 },
                 {
                     id: 'rocket',
@@ -255,8 +241,7 @@ class ShopSystem {
                     icon: '💨',
                     price: 700,
                     rarity: 'epic',
-                    description: 'Impulso a chorro',
-                    speed: 18
+                    description: 'Futurista con propulsión'
                 }
             ],
 

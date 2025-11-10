@@ -5,15 +5,28 @@
 
 class SpaceGameEngine {
     constructor(canvasId, onCorrectAnswer, onWrongAnswer, onGameOver) {
-        this.canvas = document.getElementById(canvasId);
-        if (!this.canvas) {
-            console.error('❌ Canvas no encontrado:', canvasId);
-            return;
-        }
+        try {
+            this.canvas = document.getElementById(canvasId);
+            if (!this.canvas) {
+                console.error('❌ Canvas no encontrado:', canvasId);
+                this.hasError = true;
+                return;
+            }
 
-        this.ctx = this.canvas.getContext('2d');
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+            this.ctx = this.canvas.getContext('2d');
+            if (!this.ctx) {
+                console.error('❌ No se pudo obtener contexto 2D del canvas');
+                this.hasError = true;
+                return;
+            }
+
+            this.width = this.canvas.width;
+            this.height = this.canvas.height;
+            this.hasError = false;
+        } catch (error) {
+            console.error('❌ Error al inicializar SpaceGameEngine:', error);
+            this.hasError = true;
+        }
 
         // Callbacks
         this.onCorrectAnswer = onCorrectAnswer || (() => {});
@@ -148,11 +161,18 @@ class SpaceGameEngine {
     }
 
     render() {
-        // Limpiar canvas
-        this.ctx.fillStyle = this.getBackgroundColor();
-        this.ctx.fillRect(0, 0, this.width, this.height);
+        try {
+            // Validar que tenemos contexto
+            if (!this.ctx || this.hasError) {
+                console.warn('⚠️ No se puede renderizar: contexto no disponible');
+                return;
+            }
 
-        // Renderizar estrellas de fondo
+            // Limpiar canvas
+            this.ctx.fillStyle = this.getBackgroundColor();
+            this.ctx.fillRect(0, 0, this.width, this.height);
+
+            // Renderizar estrellas de fondo
         this.renderStars();
 
         // Renderizar partículas
@@ -174,6 +194,10 @@ class SpaceGameEngine {
 
         // Renderizar UI
         this.renderUI();
+        } catch (error) {
+            console.error('❌ Error en render():', error);
+            this.handleRenderError(error);
+        }
     }
 
     // =============================
@@ -860,6 +884,36 @@ class SpaceGameEngine {
     stop() {
         this.isRunning = false;
         console.log('⏹️ Juego detenido');
+    }
+
+    // =============================
+    // ERROR HANDLING
+    // =============================
+
+    handleRenderError(error) {
+        console.error('🔴 Error crítico en renderizado:', error);
+        this.hasError = true;
+        this.isRunning = false;
+
+        // Intentar mostrar mensaje al usuario
+        if (this.ctx) {
+            try {
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+                this.ctx.fillStyle = '#FF0000';
+                this.ctx.font = '20px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('Error en el juego', this.width / 2, this.height / 2);
+                this.ctx.fillText('Por favor recarga la página', this.width / 2, this.height / 2 + 30);
+            } catch (e) {
+                console.error('❌ No se pudo mostrar mensaje de error:', e);
+            }
+        }
+
+        // Llamar callback de game over
+        if (this.onGameOver) {
+            this.onGameOver();
+        }
     }
 }
 

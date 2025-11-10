@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplicar Mágico - Sin conexión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            max-width: 500px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .offline-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .offline-icon {
+                font-size: 80px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .retry-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>Sin conexión a Internet</h1>
+        <p>
+            Parece que no tienes conexión a Internet en este momento.
+            Algunas funciones de <strong>Multiplicar Mágico</strong> pueden estar limitadas.
+        </p>
+        <button class="retry-btn" onclick="window.location.reload()">
+            🔄 Reintentar
+        </button>
+        <div class="info">
+            💡 Las tablas de multiplicar que ya practicaste están disponibles offline
+        </div>
+    </div>
+
+    <script>
+        // Auto-retry when connection restored
+        window.addEventListener('online', () => {
+            console.log('Connection restored, reloading...');
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        });
+
+        // Show online/offline status
+        window.addEventListener('offline', () => {
+            console.log('Connection lost');
+        });
+    </script>
+</body>
+</html>

@@ -5,17 +5,23 @@
 
 class PracticeSystemEngine {
     constructor() {
-        // Estado del sistema
-        this.hasDiagnostic = false;
-        this.diagnosticResults = null;
-        this.tableMastery = {}; // Dominio por tabla (0-100%)
+        try {
+            // Estado del sistema
+            this.hasDiagnostic = false;
+            this.diagnosticResults = null;
+            this.tableMastery = {}; // Dominio por tabla (0-100%)
+            this.hasError = false;
 
-        // Cargar datos guardados
-        this.loadProgress();
+            // Cargar datos guardados
+            this.loadProgress();
 
-        // Si no hay diagnóstico, marcar para hacerlo
-        if (!this.hasDiagnostic) {
-            this.needsDiagnostic = true;
+            // Si no hay diagnóstico, marcar para hacerlo
+            if (!this.hasDiagnostic) {
+                this.needsDiagnostic = true;
+            }
+        } catch (error) {
+            console.error('❌ Error al inicializar PracticeSystemEngine:', error);
+            this.hasError = true;
         }
     }
 
@@ -76,66 +82,78 @@ class PracticeSystemEngine {
     }
 
     processDiagnosticResults(answers) {
-        // answers = [{ table, correct, time }]
-        const tableStats = {};
+        try {
+            // answers = [{ table, correct, time }]
+            if (!answers || !Array.isArray(answers)) {
+                console.error('❌ Respuestas inválidas para diagnóstico');
+                return { mastery: {}, weakTables: [], strongTables: [] };
+            }
 
-        // Inicializar estadísticas
-        for (let table = 2; table <= 10; table++) {
-            tableStats[table] = {
-                correct: 0,
-                total: 0,
-                avgTime: 0,
-                times: []
+            const tableStats = {};
+
+            // Inicializar estadísticas
+            for (let table = 2; table <= 10; table++) {
+                tableStats[table] = {
+                    correct: 0,
+                    total: 0,
+                    avgTime: 0,
+                    times: []
+                };
+            }
+
+            // Procesar respuestas
+            answers.forEach(answer => {
+                const stats = tableStats[answer.table];
+                if (stats) {
+                    stats.total++;
+                    if (answer.correct) {
+                        stats.correct++;
+                        stats.times.push(answer.time);
+                    }
+                }
+            });
+
+            // Calcular mastery por tabla
+            const mastery = {};
+            for (let table = 2; table <= 10; table++) {
+                const stats = tableStats[table];
+                if (stats.total === 0) {
+                    mastery[table] = 0;
+                } else {
+                    // Mastery basado en aciertos y velocidad
+                    const accuracy = (stats.correct / stats.total) * 100;
+                    const avgTime = stats.times.length > 0
+                        ? stats.times.reduce((a, b) => a + b, 0) / stats.times.length
+                        : 10000;
+
+                    // Penalizar por lentitud (óptimo = 3s, máximo = 10s)
+                    const speedFactor = Math.max(0, Math.min(1, (10000 - avgTime) / 7000));
+                    const finalMastery = accuracy * (0.7 + speedFactor * 0.3);
+
+                    mastery[table] = Math.round(finalMastery);
+                }
+            }
+
+            // Guardar resultados
+            this.diagnosticResults = {
+                timestamp: Date.now(),
+                tableStats: tableStats,
+                answers: answers
             };
+            this.tableMastery = mastery;
+            this.hasDiagnostic = true;
+
+            this.saveProgress();
+
+            return {
+                mastery: mastery,
+                weakTables: this.getWeakTables(),
+                strongTables: this.getStrongTables()
+            };
+        } catch (error) {
+            console.error('❌ Error procesando resultados de diagnóstico:', error);
+            return { mastery: {}, weakTables: [], strongTables: [] };
         }
-
-        // Procesar respuestas
-        answers.forEach(answer => {
-            const stats = tableStats[answer.table];
-            stats.total++;
-            if (answer.correct) {
-                stats.correct++;
-                stats.times.push(answer.time);
-            }
-        });
-
-        // Calcular mastery por tabla
-        const mastery = {};
-        for (let table = 2; table <= 10; table++) {
-            const stats = tableStats[table];
-            if (stats.total === 0) {
-                mastery[table] = 0;
-            } else {
-                // Mastery basado en aciertos y velocidad
-                const accuracy = (stats.correct / stats.total) * 100;
-                const avgTime = stats.times.length > 0
-                    ? stats.times.reduce((a, b) => a + b, 0) / stats.times.length
-                    : 10000;
-
-                // Penalizar por lentitud (óptimo = 3s, máximo = 10s)
-                const speedFactor = Math.max(0, Math.min(1, (10000 - avgTime) / 7000));
-                const finalMastery = accuracy * (0.7 + speedFactor * 0.3);
-
-                mastery[table] = Math.round(finalMastery);
-            }
-        }
-
-        // Guardar resultados
-        this.diagnosticResults = {
-            timestamp: Date.now(),
-            tableStats: tableStats,
-            answers: answers
-        };
-        this.tableMastery = mastery;
-        this.hasDiagnostic = true;
-
-        this.saveProgress();
-
-        return {
-            mastery: mastery,
-            weakTables: this.getWeakTables(),
-            strongTables: this.getStrongTables()
-        };
     }
 
     // =============================

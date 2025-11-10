@@ -4,22 +4,28 @@
 
 class FireModeSystem {
     constructor() {
-        // Estado
-        this.isActive = false;
-        this.streak = 0;
-        this.streakThreshold = 5; // 5 aciertos para activar
-        this.duration = 30000; // 30 segundos
-        this.multiplier = 2; // x2 puntos
-        this.timeRemaining = 0;
-        this.timer = null;
+        try {
+            // Estado
+            this.isActive = false;
+            this.streak = 0;
+            this.streakThreshold = 5; // 5 aciertos para activar
+            this.duration = 30000; // 30 segundos
+            this.multiplier = 2; // x2 puntos
+            this.timeRemaining = 0;
+            this.timer = null;
+            this.hasError = false;
 
-        // Referencias DOM
-        this.overlay = null;
-        this.indicator = null;
-        this.timerDisplay = null;
+            // Referencias DOM
+            this.overlay = null;
+            this.indicator = null;
+            this.timerDisplay = null;
 
-        this.createFireOverlay();
-        console.log('🔥 Sistema de Modo Fuego inicializado');
+            this.createFireOverlay();
+            console.log('🔥 Sistema de Modo Fuego inicializado');
+        } catch (error) {
+            console.error('❌ Error al inicializar FireModeSystem:', error);
+            this.hasError = true;
+        }
     }
 
     // =============================
@@ -27,40 +33,45 @@ class FireModeSystem {
     // =============================
 
     createFireOverlay() {
-        // Overlay de llamas en bordes
-        this.overlay = document.createElement('div');
-        this.overlay.id = 'fireModeOverlay';
-        this.overlay.className = 'fire-mode-overlay';
-        this.overlay.style.display = 'none';
+        try {
+            // Overlay de llamas en bordes
+            this.overlay = document.createElement('div');
+            this.overlay.id = 'fireModeOverlay';
+            this.overlay.className = 'fire-mode-overlay';
+            this.overlay.style.display = 'none';
 
-        this.overlay.innerHTML = `
-            <!-- Llamas en bordes -->
-            <div class="fire-border fire-border-top"></div>
-            <div class="fire-border fire-border-right"></div>
-            <div class="fire-border fire-border-bottom"></div>
-            <div class="fire-border fire-border-left"></div>
-        `;
+            this.overlay.innerHTML = `
+                <!-- Llamas en bordes -->
+                <div class="fire-border fire-border-top"></div>
+                <div class="fire-border fire-border-right"></div>
+                <div class="fire-border fire-border-bottom"></div>
+                <div class="fire-border fire-border-left"></div>
+            `;
 
-        document.body.appendChild(this.overlay);
+            document.body.appendChild(this.overlay);
 
-        // Indicador de modo fuego
-        this.indicator = document.createElement('div');
-        this.indicator.id = 'fireModeIndicator';
-        this.indicator.className = 'fire-mode-indicator';
-        this.indicator.style.display = 'none';
+            // Indicador de modo fuego
+            this.indicator = document.createElement('div');
+            this.indicator.id = 'fireModeIndicator';
+            this.indicator.className = 'fire-mode-indicator';
+            this.indicator.style.display = 'none';
 
-        this.indicator.innerHTML = `
-            <div class="fire-mode-icon">🔥</div>
-            <div class="fire-mode-info">
-                <div class="fire-mode-title">¡MODO FUEGO!</div>
-                <div class="fire-mode-multiplier">×${this.multiplier} PUNTOS</div>
-                <div class="fire-mode-timer" id="fireModeTimer">30s</div>
-            </div>
-        `;
+            this.indicator.innerHTML = `
+                <div class="fire-mode-icon">🔥</div>
+                <div class="fire-mode-info">
+                    <div class="fire-mode-title">¡MODO FUEGO!</div>
+                    <div class="fire-mode-multiplier">×${this.multiplier} PUNTOS</div>
+                    <div class="fire-mode-timer" id="fireModeTimer">30s</div>
+                </div>
+            `;
 
-        document.body.appendChild(this.indicator);
+            document.body.appendChild(this.indicator);
 
-        this.timerDisplay = document.getElementById('fireModeTimer');
+            this.timerDisplay = document.getElementById('fireModeTimer');
+        } catch (error) {
+            console.error('❌ Error creando overlay de modo fuego:', error);
+            this.hasError = true;
+        }
     }
 
     // =============================
@@ -105,38 +116,52 @@ class FireModeSystem {
     // =============================
 
     activate() {
-        if (this.isActive) return;
+        try {
+            if (this.isActive || this.hasError) return;
 
-        console.log('🔥🔥🔥 ¡MODO FUEGO ACTIVADO!');
+            console.log('🔥🔥🔥 ¡MODO FUEGO ACTIVADO!');
 
-        this.isActive = true;
-        this.timeRemaining = this.duration;
+            this.isActive = true;
+            this.timeRemaining = this.duration;
 
-        // Mostrar efectos visuales
-        this.overlay.style.display = 'block';
-        setTimeout(() => {
-            this.overlay.classList.add('fire-active');
-        }, 10);
+            // Mostrar efectos visuales
+            if (this.overlay) {
+                this.overlay.style.display = 'block';
+                setTimeout(() => {
+                    if (this.overlay) {
+                        this.overlay.classList.add('fire-active');
+                    }
+                }, 10);
+            }
 
-        this.indicator.style.display = 'flex';
-        setTimeout(() => {
-            this.indicator.classList.add('fire-indicator-active');
-        }, 10);
+            if (this.indicator) {
+                this.indicator.style.display = 'flex';
+                setTimeout(() => {
+                    if (this.indicator) {
+                        this.indicator.classList.add('fire-indicator-active');
+                    }
+                }, 10);
+            }
 
-        // Animación de activación
-        this.showActivationMessage();
+            // Animación de activación
+            this.showActivationMessage();
 
-        // Acelerar música
-        if (window.soundSystem) {
-            window.soundSystem.setMusicSpeed(1.2); // +20% tempo
-        }
+            // Acelerar música
+            if (window.soundSystem) {
+                window.soundSystem.setMusicSpeed(1.2); // +20% tempo
+            }
 
-        // Iniciar timer
-        this.startTimer();
+            // Iniciar timer
+            this.startTimer();
 
-        // Sonido especial
-        if (window.soundSystem) {
-            window.soundSystem.playPowerUp();
+            // Sonido especial
+            if (window.soundSystem) {
+                window.soundSystem.playPowerUp();
+            }
+        } catch (error) {
+            console.error('❌ Error activando modo fuego:', error);
+            this.hasError = true;
+            this.deactivate();
         }
     }
 
@@ -145,31 +170,44 @@ class FireModeSystem {
     // =============================
 
     deactivate() {
-        if (!this.isActive) return;
+        try {
+            if (!this.isActive) return;
 
-        console.log('🧯 Modo Fuego desactivado');
+            console.log('🧯 Modo Fuego desactivado');
 
-        this.isActive = false;
-        this.streak = 0;
+            this.isActive = false;
+            this.streak = 0;
 
-        // Ocultar efectos visuales
-        this.overlay.classList.remove('fire-active');
-        setTimeout(() => {
-            this.overlay.style.display = 'none';
-        }, 500);
+            // Ocultar efectos visuales
+            if (this.overlay) {
+                this.overlay.classList.remove('fire-active');
+                setTimeout(() => {
+                    if (this.overlay) {
+                        this.overlay.style.display = 'none';
+                    }
+                }, 500);
+            }
 
-        this.indicator.classList.remove('fire-indicator-active');
-        setTimeout(() => {
-            this.indicator.style.display = 'none';
-        }, 500);
+            if (this.indicator) {
+                this.indicator.classList.remove('fire-indicator-active');
+                setTimeout(() => {
+                    if (this.indicator) {
+                        this.indicator.style.display = 'none';
+                    }
+                }, 500);
+            }
 
-        // Restaurar velocidad de música
-        if (window.soundSystem) {
-            window.soundSystem.setMusicSpeed(1.0);
+            // Restaurar velocidad de música
+            if (window.soundSystem) {
+                window.soundSystem.setMusicSpeed(1.0);
+            }
+
+            // Detener timer
+            this.stopTimer();
+        } catch (error) {
+            console.error('❌ Error desactivando modo fuego:', error);
+            this.hasError = true;
         }
-
-        // Detener timer
-        this.stopTimer();
     }
 
     // =============================
