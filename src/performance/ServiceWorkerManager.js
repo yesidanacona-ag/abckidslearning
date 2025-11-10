@@ -28,11 +28,15 @@ class ServiceWorkerManager {
         try {
             console.log('📦 Registering service worker...');
 
-            this.registration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
+            // Detect if running on GitHub Pages or localhost
+            const isGitHubPages = window.location.hostname === 'yesidanacona-ag.github.io';
+            const baseUrl = isGitHubPages ? '/abckidslearning' : '';
+
+            this.registration = await navigator.serviceWorker.register(`${baseUrl}/sw.js`, {
+                scope: `${baseUrl}/`
             });
 
-            console.log('✅ Service worker registered');
+            console.log('✅ Service worker registered with scope:', `${baseUrl}/`);
 
             // Listen for updates
             this.listenForUpdates();
