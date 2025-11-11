@@ -4,11 +4,12 @@
 // ================================
 
 class ModeController {
-    constructor(store, eventBus, screenController, gameController) {
+    constructor(store, eventBus, screenController, gameController, services) {
         this.store = store;
         this.eventBus = eventBus;
         this.screenController = screenController;
         this.gameController = gameController;
+        this.services = services;
 
         // Referencias a game engines externos
         this.engines = {
@@ -496,10 +497,18 @@ class ModeController {
      * @returns {boolean} true si necesita descubrimiento
      */
     needsDiscovery(table) {
-        if (!this.services?.player) return false;
+        // Fail-safe: si no hay PlayerService, asumir que SÍ necesita descubrimiento
+        if (!this.services?.player) {
+            console.warn(`⚠️ PlayerService no disponible para tabla ${table}, asumiendo que necesita descubrimiento`);
+            return true;
+        }
 
         const isDiscovered = this.services.player.isTableDiscovered(table);
-        return !isDiscovered;
+        const needs = !isDiscovered;
+
+        console.log(`🔍 Tabla ${table}: isDiscovered=${isDiscovered}, needsDiscovery=${needs}`);
+
+        return needs;
     }
 
     /**
@@ -508,19 +517,25 @@ class ModeController {
      * @param {string} mode - 'discover' o 'practice'
      */
     handleTableSelection(table, mode = 'auto') {
+        console.log(`🎯 ModeController.handleTableSelection(table=${table}, mode=${mode})`);
+
         // Auto-detect si necesita descubrimiento
         if (mode === 'auto') {
-            if (this.needsDiscovery(table)) {
-                // Mostrar opciones: Aprender o Practicar
+            const needs = this.needsDiscovery(table);
+            console.log(`📊 needsDiscovery(${table}) = ${needs}`);
+
+            if (needs) {
+                console.log(`🎓 Mostrando opciones APRENDER/PRACTICAR para tabla ${table}`);
                 this.showDiscoveryOptions(table);
                 return;
             } else {
-                // Ya completó descubrimiento, ir directo a práctica
+                console.log(`⚡ Tabla ${table} ya descubierta, ir directo a práctica`);
                 mode = 'practice';
             }
         }
 
         // Ejecutar modo seleccionado
+        console.log(`🚀 Ejecutando modo: ${mode} para tabla ${table}`);
         if (mode === 'discover') {
             this.startTableDiscovery(table);
         } else if (mode === 'practice') {

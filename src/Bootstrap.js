@@ -381,6 +381,12 @@ class ApplicationBootstrap {
         } else {
             console.error('  ❌ AchievementService no disponible');
         }
+
+        // Verificar que servicios críticos se inicializaron correctamente
+        if (!this.services.player) {
+            console.error('🚨 CRÍTICO: PlayerService no se inicializó correctamente');
+            console.error('   El sistema de descubrimiento puede no funcionar');
+        }
     }
 
     /**
@@ -418,11 +424,21 @@ class ApplicationBootstrap {
 
         // ModeController
         if (typeof ModeController !== 'undefined') {
+            console.log('🔧 Inicializando ModeController con:', {
+                store: !!this.store,
+                eventBus: !!this.eventBus,
+                screen: !!this.controllers.screen,
+                game: !!this.controllers.game,
+                services: !!this.services,
+                player: !!this.services?.player
+            });
+
             this.controllers.mode = new ModeController(
                 this.store,
                 this.eventBus,
                 this.controllers.screen,
-                this.controllers.game
+                this.controllers.game,
+                this.services
             );
             console.log('  ✓ ModeController');
         } else {
